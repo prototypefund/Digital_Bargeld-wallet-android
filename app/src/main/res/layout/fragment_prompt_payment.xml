@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:layout_margin="15dp"
+             tools:context=".PromptPayment">
+
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/prompt_payment_details">
+
+        <Space android:layout_width="match_parent"
+               android:layout_height="15dp"
+               android:layout_weight="1"/>
+
+        <TextView
+                android:text="Order Summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/textView2"/>
+
+        <TextView
+                android:text="One Cappuccino"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:layout_gravity="center"
+                android:id="@+id/order_summary"/>
+
+        <Space android:layout_width="match_parent"
+               android:layout_height="25dp"/>
+
+
+        <TextView
+                android:text="Amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/textView3"/>
+        <TextView
+                android:text="10 TESTKUDOS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:layout_gravity="center"
+                android:id="@+id/order_amount"/>
+
+        <LinearLayout android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal"
+                      android:layout_gravity="center"
+                      android:id="@+id/order_fees_box">
+
+            <TextView
+                    android:text="(plus additional "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"/>
+
+            <TextView
+                    android:text="0.5 TESTKUDOS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/order_fees_amount"/>
+
+            <TextView
+                    android:text=" payment fees)"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    />
+
+        </LinearLayout>
+
+        <Space android:layout_width="match_parent"
+               android:layout_height="15dp"
+               android:layout_weight="1"/>
+
+        <TextView
+                android:text="Balance Insufficient!"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:layout_gravity="center"
+                android:id="@+id/balance_insufficient_warning" android:textColor="@android:color/holo_red_dark"/>
+
+
+        <Space android:layout_width="match_parent"
+               android:layout_height="15dp"
+               android:layout_weight="1"/>
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal">
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Abort Payment"
+                    android:id="@+id/button_abort_payment"/>
+
+            <Space android:layout_width="15dp" android:layout_height="match_parent"
+                   android:layout_weight="1"/>
+
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:id="@+id/button_confirm_payment"
+                    android:text="Confirm Payment"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>

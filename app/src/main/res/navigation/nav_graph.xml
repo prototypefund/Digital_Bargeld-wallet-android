@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_graph"
+            app:startDestination="@id/showBalance">
+
+    <fragment android:id="@+id/showBalance" android:name="net.taler.wallet.ShowBalance"
+              android:label="Balances" tools:layout="@layout/fragment_show_balance">
+        <action android:id="@+id/action_showBalance_to_promptPayment" app:destination="@id/promptPayment"/>
+    </fragment>
+    <fragment android:id="@+id/promptPayment" android:name="net.taler.wallet.PromptPayment"
+              android:label="Review Payment" tools:layout="@layout/fragment_prompt_payment">
+        <action android:id="@+id/action_promptPayment_to_paymentSuccessful" app:destination="@id/paymentSuccessful"
+                app:popUpTo="@id/showBalance"/>
+    </fragment>
+    <fragment android:id="@+id/paymentSuccessful" android:name="net.taler.wallet.PaymentSuccessful"
+              android:label="Payment Successful" tools:layout="@layout/fragment_payment_successful"/>
+    <fragment android:id="@+id/settings" android:name="net.taler.wallet.Settings" android:label="Settings"
+              tools:layout="@layout/fragment_settings"/>
+    <fragment android:id="@+id/walletHistory" android:name="net.taler.wallet.WalletHistory"
+              android:label="History" tools:layout="@layout/fragment_show_history"/>
+</navigation>
