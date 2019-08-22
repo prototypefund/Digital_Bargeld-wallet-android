@@ -1,7 +1,10 @@
 package net.taler.wallet
 
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -11,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -21,6 +23,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
+
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -54,6 +58,50 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         model.init()
         model.getBalances()
+
+        val triggerPaymentFilter = IntentFilter(HostCardEmulatorService.TRIGGER_PAYMENT_ACTION)
+        registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(p0: Context?, p1: Intent?) {
+
+                if (model.payStatus.value !is PayStatus.None) {
+                    return
+                }
+
+                val url = p1!!.extras!!.get("contractUrl") as String
+
+                findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptPayment)
+                model.preparePay(url)
+
+            }
+        }, triggerPaymentFilter)
+
+        val nfcConnectedFilter = IntentFilter(HostCardEmulatorService.MERCHANT_NFC_CONNECTED)
+        registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(p0: Context?, p1: Intent?) {
+                Log.v(TAG, "got MERCHANT_NFC_CONNECTED")
+                //model.startTunnel()
+            }
+        }, nfcConnectedFilter)
+
+        val nfcDisconnectedFilter = IntentFilter(HostCardEmulatorService.MERCHANT_NFC_DISCONNECTED)
+        registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(p0: Context?, p1: Intent?) {
+                Log.v(TAG, "got MERCHANT_NFC_DISCONNECTED")
+                //model.stopTunnel()
+            }
+        }, nfcDisconnectedFilter)
+
+
+        IntentFilter(HostCardEmulatorService.HTTP_TUNNEL_RESPONSE).also { filter ->
+            registerReceiver(object : BroadcastReceiver() {
+                override fun onReceive(p0: Context?, p1: Intent?) {
+                    Log.v("taler-tunnel", "got HTTP_TUNNEL_RESPONSE")
+                    model.tunnelResponse(p1!!.getStringExtra("response"))
+                }
+            }, filter)
+        }
+
+        //model.startTunnel()
     }
 
     override fun onBackPressed() {

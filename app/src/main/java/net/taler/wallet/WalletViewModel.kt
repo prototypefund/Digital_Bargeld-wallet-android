@@ -3,6 +3,7 @@ package net.taler.wallet
 import akono.AkonoJni
 import akono.ModuleResult
 import android.app.Application
+import android.content.Intent
 import android.content.res.AssetManager
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -139,6 +140,7 @@ data class WalletBalances(val initialized: Boolean, val byCurrency: List<Amount>
 data class ContractTerms(val summary: String, val amount: Amount)
 
 open class PayStatus {
+    class None : PayStatus()
     class Loading : PayStatus()
     data class Prepared(val contractTerms: ContractTerms, val proposalId: Int, val totalFees: Amount) : PayStatus()
     data class InsufficientBalance(val contractTerms: ContractTerms) : PayStatus()
@@ -165,6 +167,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     init {
         isBalanceLoading.value = false
         balances.value = WalletBalances(false, listOf())
+        payStatus.value = PayStatus.None()
     }
 
     fun init() {
@@ -184,6 +187,14 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
                 when (type) {
                     "notification" -> {
                         getBalances()
+                    }
+                    "tunnelHttp" -> {
+                        Log.v(TAG, "got http tunnel request!")
+                        Intent().also { intent ->
+                            intent.action = HostCardEmulatorService.HTTP_TUNNEL_REQUEST
+                            intent.putExtra("tunnelMessage", messageStr)
+                            app.sendBroadcast(intent)
+                        }
                     }
                     "response" -> {
                         val operation = message.getString("operation")
@@ -251,6 +262,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
         sendInitMessage()
 
+
         this.initialized = true
     }
 
@@ -301,6 +313,8 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         msg.put("args", args)
         args.put("url", url)
 
+        this.payStatus.value = PayStatus.Loading()
+
         myAkono.sendMessage(msg.toString())
     }
 
@@ -327,5 +341,30 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         balances.value = WalletBalances(false, listOf())
 
         getBalances()
+    }
+
+    fun startTunnel() {
+        val msg = JSONObject()
+        msg.put("operation", "startTunnel")
+
+        myAkono.sendMessage(msg.toString())
+    }
+
+    fun stopTunnel() {
+        val msg = JSONObject()
+        msg.put("operation", "stopTunnel")
+
+        myAkono.sendMessage(msg.toString())
+    }
+
+    fun tunnelResponse(resp: String) {
+        val respJson = JSONObject(resp)
+
+        val msg = JSONObject()
+        msg.put("operation", "tunnelResponse")
+        msg.put("args", respJson)
+
+        myAkono.sendMessage(msg.toString())
+
     }
 }

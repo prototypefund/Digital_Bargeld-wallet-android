@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="15dp"
+        tools:context=".PaymentSuccessful">
+
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <Space android:layout_width="match_parent" android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+        <TextView
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:textAlignment="center"
+                android:layout_height="50dp"
+                android:text="You've already paid for this order."
+                android:autoSizeTextType="uniform"
+                android:textColor="@android:color/holo_green_dark"/>
+
+
+        <Space android:layout_width="match_parent" android:layout_height="0dp"
+                android:layout_weight="1"/>
+        <Button
+                android:text="Go Back"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_success_back"/>
+
+    </LinearLayout>
+
+</FrameLayout>

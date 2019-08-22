@@ -32,7 +32,8 @@ class PromptPayment : Fragment() {
 
     var fragmentView: View? = null
 
-    fun triggerLoading(loading: Boolean) {
+    fun triggerLoading() {
+        val loading = model.payStatus.value == null || (model.payStatus.value is PayStatus.Loading)
         val myActivity = activity!!
         val progressBar = myActivity.findViewById<MaterialProgressBar>(R.id.progress_bar)
         if (loading) {
@@ -49,13 +50,13 @@ class PromptPayment : Fragment() {
             ViewModelProviders.of(this)[WalletViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
 
-        triggerLoading(true)
+        triggerLoading()
     }
 
     override fun onResume() {
         super.onResume()
         Log.v("taler-wallet", "called onResume on PromptPayment")
-        triggerLoading(model.payStatus.value == null || model.payStatus.value is PayStatus.Loading)
+        triggerLoading()
     }
 
     fun fillOrderInfo(view: View, contractTerms: ContractTerms, totalFees: Amount?) {
@@ -90,24 +91,31 @@ class PromptPayment : Fragment() {
 
                 confirmPaymentButton.setOnClickListener {
                     model.confirmPay(payStatus.proposalId)
-                    triggerLoading(true)
                     confirmPaymentButton.isEnabled = false
                 }
-                triggerLoading(false)
             }
             is PayStatus.InsufficientBalance -> {
                 fillOrderInfo(view, payStatus.contractTerms, null)
                 promptPaymentDetails.visibility = View.VISIBLE
                 balanceInsufficientWarning.visibility = View.VISIBLE
                 confirmPaymentButton.isEnabled = false
-                triggerLoading(false)
             }
             is PayStatus.Success -> {
-                triggerLoading(false)
+                model.payStatus.value = PayStatus.None()
                 activity!!.findNavController(R.id.nav_host_fragment).navigate(R.id.action_promptPayment_to_paymentSuccessful)
             }
+            is PayStatus.AlreadyPaid -> {
+                activity!!.findNavController(R.id.nav_host_fragment).navigate(R.id.action_promptPayment_to_alreadyPaid)
+                model.payStatus.value = PayStatus.None()
+            }
+            is PayStatus.None -> {
+                // No payment active.
+            }
+            is PayStatus.Loading -> {
+                // Wait until loaded ...
+            }
             else -> {
-                val bar = Snackbar.make(view , "Unexpected result", Snackbar.LENGTH_SHORT)
+                val bar = Snackbar.make(view , "Bug: Unexpected result", Snackbar.LENGTH_SHORT)
                 bar.show()
             }
         }
@@ -133,9 +141,10 @@ class PromptPayment : Fragment() {
             activity!!.findNavController(R.id.nav_host_fragment).navigateUp()
         }
 
-        triggerLoading(true)
+        triggerLoading()
 
         model.payStatus.observe(this, Observer {
+            triggerLoading()
             showPayStatus(view, it)
         })
         return view
