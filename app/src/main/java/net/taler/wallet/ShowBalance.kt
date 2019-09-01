@@ -1,7 +1,6 @@
 package net.taler.wallet
 
 
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -15,7 +14,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 
@@ -35,10 +33,22 @@ class MyAdapter(private var myDataset: WalletBalances) : RecyclerView.Adapter<My
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val amount = myDataset.byCurrency[position].available
+        val amountIncoming = myDataset.byCurrency[position].pendingIncoming
         val currencyView = holder.rowView.findViewById<TextView>(R.id.balance_currency)
-        currencyView.text = myDataset.byCurrency[position].currency
+        currencyView.text = amount.currency
         val amountView = holder.rowView.findViewById<TextView>(R.id.balance_amount)
-        amountView.text = myDataset.byCurrency[position].amount
+        amountView.text = amount.amount
+
+        val amountIncomingRow = holder.rowView.findViewById<View>(R.id.balance_row_pending)
+
+        val amountIncomingView = holder.rowView.findViewById<TextView>(R.id.balance_pending)
+        if (amountIncoming.isZero()) {
+            amountIncomingRow.visibility = View.GONE
+        } else {
+            amountIncomingRow.visibility = View.VISIBLE
+            amountIncomingView.text = "${amountIncoming.amount} ${amountIncoming.currency}"
+        }
     }
 
     fun update(updatedBalances: WalletBalances) {
@@ -63,7 +73,7 @@ class ShowBalance : Fragment() {
 
     fun triggerLoading() {
         val loading: Boolean =
-            (model.isBalanceLoading.value == true) || (model.balances.value == null) || !model.balances.value!!.initialized
+            (model.testWithdrawalInProgress.value == true) || (model.balances.value == null) || !model.balances.value!!.initialized
 
         val myActivity = activity!!
         val progressBar = myActivity.findViewById<MaterialProgressBar>(R.id.progress_bar)
@@ -87,11 +97,6 @@ class ShowBalance : Fragment() {
             ViewModelProviders.of(this)[WalletViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
 
-
-        model.isBalanceLoading.observe(this, Observer { loading ->
-            Log.v("taler-wallet", "observing balance loading ${loading} in show balance")
-            triggerLoading()
-        })
     }
 
 
@@ -129,13 +134,6 @@ class ShowBalance : Fragment() {
             model.withdrawTestkudos()
         }
 
-        val payNfcButton = view.findViewById<Button>(R.id.button_pay_nfc)
-        payNfcButton.setOnClickListener {
-            val bar: Snackbar = Snackbar.make(view, "Sorry, NFC is not implemented yet!", Snackbar.LENGTH_SHORT)
-            bar.show()
-        }
-
-
         this.balancesView = view.findViewById(R.id.list_balances)
         this.balancesPlaceholderView = view.findViewById(R.id.list_balances_placeholder)
 
@@ -157,6 +155,12 @@ class ShowBalance : Fragment() {
         model.balances.observe(this, Observer {
             triggerLoading()
             updateBalances(it)
+        })
+
+        model.testWithdrawalInProgress.observe(this, Observer { loading ->
+            Log.v("taler-wallet", "observing balance loading ${loading} in show balance")
+            withdrawTestkudosButton.isEnabled = !loading
+            triggerLoading()
         })
 
         return view

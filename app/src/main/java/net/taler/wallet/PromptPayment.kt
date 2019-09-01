@@ -32,7 +32,7 @@ class PromptPayment : Fragment() {
 
     var fragmentView: View? = null
 
-    fun triggerLoading() {
+    private fun triggerLoading() {
         val loading = model.payStatus.value == null || (model.payStatus.value is PayStatus.Loading)
         val myActivity = activity!!
         val progressBar = myActivity.findViewById<MaterialProgressBar>(R.id.progress_bar)

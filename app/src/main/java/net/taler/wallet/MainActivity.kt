@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
@@ -40,6 +41,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navView: NavigationView = findViewById(R.id.nav_view)
 
         navView.menu.getItem(0).isChecked = true
+
+        val fab: FloatingActionButton = findViewById(R.id.fab)
+        fab.setOnClickListener {
+            val integrator = IntentIntegrator(this)
+            integrator.setPrompt("Place merchant's QR Code inside the viewfinder rectangle to initiate payment.")
+            integrator.initiateScan(listOf("QR_CODE"))
+        }
+        fab.hide()
 
 
         navView.setNavigationItemSelectedListener(this)
@@ -166,20 +175,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val url = scanResult.contents!!
-        if (!url.startsWith("talerpay:")) {
-            val bar: Snackbar = Snackbar.make(
-                findViewById(R.id.nav_host_fragment),
-                "Scanned QR code doesn't contain Taler payment.",
-                Snackbar.LENGTH_SHORT
-            )
-            bar.show()
-            return
+        when {
+            url.startsWith("taler://pay") -> {
+                Log.v(TAG, "navigating!")
+                findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptPayment)
+                model.preparePay(url)
+            }
+            url.startsWith("taler://withdraw") -> {
+                Log.v(TAG, "navigating!")
+                findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptWithdraw)
+                model.getWithdrawalInfo(url)
+            }
+            else -> {
+                val bar: Snackbar = Snackbar.make(
+                    findViewById(R.id.nav_host_fragment),
+                    "Scanned QR code doesn't contain Taler payment.",
+                    Snackbar.LENGTH_SHORT
+                )
+                bar.show()
+            }
         }
-
-        Log.v(TAG, "navigating!")
-
-        findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptPayment)
-        model.preparePay(url)
     }
 
 
