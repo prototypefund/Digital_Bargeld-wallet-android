@@ -210,6 +210,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             Log.e(TAG, "WalletViewModel already initialized")
             return
         }
+
         val app = this.getApplication<Application>()
         myAkono = AkonoJni()
         myAkono.setLoadModuleHandler(AssetModuleLoader(app.assets))

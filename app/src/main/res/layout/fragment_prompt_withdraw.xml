@@ -32,6 +32,12 @@
                 android:layout_gravity="center"
                 android:id="@+id/withdraw_amount"/>
 
+        <TextView
+                android:text="(minus exchange fees not shown in this prototype)"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
         <Space android:layout_width="match_parent"
                 android:layout_height="25dp"/>
 
