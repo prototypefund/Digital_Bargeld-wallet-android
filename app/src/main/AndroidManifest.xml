@@ -21,8 +21,13 @@
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="taler" />
             </intent-filter>
         </activity>
 
@@ -38,6 +43,10 @@
                     android:name="android.nfc.cardemulation.host_apdu_service"
                     android:resource="@xml/apduservice" />
         </service>
+
+        <service
+                android:name=".backend.WalletBackendService"
+                android:process=":WalletBackendService" />
     </application>
 
 </manifest>

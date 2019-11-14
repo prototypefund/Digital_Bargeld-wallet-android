@@ -26,7 +26,6 @@ import com.google.zxing.integration.android.IntentResult
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 
 
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     lateinit var model: WalletViewModel
@@ -49,7 +48,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             integrator.initiateScan(listOf("QR_CODE"))
         }
         fab.hide()
-
 
         navView.setNavigationItemSelectedListener(this)
 
@@ -78,7 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 val url = p1!!.extras!!.get("contractUrl") as String
 
-                findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptPayment)
+                findNavController(R.id.nav_host_fragment).navigate(R.id.action_global_promptPayment)
                 model.preparePay(url)
 
             }
@@ -100,7 +98,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }, nfcDisconnectedFilter)
 
-
         IntentFilter(HostCardEmulatorService.HTTP_TUNNEL_RESPONSE).also { filter ->
             registerReceiver(object : BroadcastReceiver() {
                 override fun onReceive(p0: Context?, p1: Intent?) {
@@ -108,6 +105,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     model.tunnelResponse(p1!!.getStringExtra("response"))
                 }
             }, filter)
+        }
+
+        if (intent.action == Intent.ACTION_VIEW) {
+            val uri = intent.dataString
+            if (uri != null)
+                handleTalerUri(uri, "intent")
         }
 
         //model.startTunnel()
@@ -175,6 +178,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val url = scanResult.contents!!
+        handleTalerUri(url, "QR code")
+    }
+
+    private fun handleTalerUri(url: String, from: String) {
         when {
             url.startsWith("taler://pay") -> {
                 Log.v(TAG, "navigating!")
@@ -189,13 +196,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else -> {
                 val bar: Snackbar = Snackbar.make(
                     findViewById(R.id.nav_host_fragment),
-                    "Scanned QR code doesn't contain Taler payment.",
+                    "URL from $from doesn't contain Taler payment.",
                     Snackbar.LENGTH_SHORT
                 )
                 bar.show()
             }
         }
     }
-
-
 }
