@@ -42,5 +42,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/button_pay_qr"/>
+
+        <TextView
+                android:id="@+id/pending_operations_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pending Operations:" />
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_pending"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"/>
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -48,7 +48,7 @@ open class PayStatus {
     class Loading : PayStatus()
     data class Prepared(
         val contractTerms: ContractTerms,
-        val proposalId: Int,
+        val proposalId: String,
         val totalFees: Amount
     ) : PayStatus()
 
@@ -71,6 +71,24 @@ open class WithdrawStatus {
     data class Withdrawing(val talerWithdrawUri: String) : WithdrawStatus()
 }
 
+open class HistoryResult(
+    val history: List<HistoryEntry>
+)
+
+open class HistoryEntry(
+    val detail: JSONObject,
+    val type: String
+)
+
+open class PendingOperationInfo(
+    val type: String,
+    val detail: JSONObject
+)
+
+open class PendingOperations(
+    val pending: List<PendingOperationInfo>
+)
+
 
 class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     private var initialized = false
@@ -91,6 +109,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         value = WithdrawStatus.None()
     }
 
+    val pendingOperations = MutableLiveData<PendingOperations>().apply {
+        value = PendingOperations(listOf())
+    }
+
     private val walletBackendApi = WalletBackendApi(app)
 
     fun init() {
@@ -101,9 +123,13 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
         this.initialized = true
 
+        getBalances()
+        getPending()
+
         walletBackendApi.notificationHandler = {
             Log.i(TAG, "got notification from wallet")
             getBalances()
+            getPending()
         }
     }
 
@@ -126,6 +152,37 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         }
     }
 
+    private fun getPending() {
+        walletBackendApi.sendRequest("getPendingOperations", null) { result ->
+            Log.i(TAG, "got getPending result")
+            val pendingList = mutableListOf<PendingOperationInfo>()
+            val pendingJson = result.getJSONArray("pendingOperations")
+            for (i in 0 until pendingJson.length()) {
+                val p = pendingJson.getJSONObject(i)
+                val type = p.getString("type")
+                pendingList.add(PendingOperationInfo(type, p))
+            }
+            Log.i(TAG, "Got ${pendingList.size} pending operations")
+            pendingOperations.postValue(PendingOperations((pendingList)))
+        }
+    }
+
+    fun getHistory(cb: (r: HistoryResult) -> Unit) {
+        walletBackendApi.sendRequest("getHistory", null) { result ->
+            val historyEntries = mutableListOf<HistoryEntry>()
+            val historyList = result.getJSONArray("history")
+            for (i in 0 until historyList.length()) {
+                val h = historyList.getJSONObject(i)
+                Log.v(TAG, "got history entry $h")
+                val type = h.getString("type")
+                Log.v(TAG, "got history entry type $type")
+                val detail = h.getJSONObject("detail")
+                historyEntries.add(HistoryEntry(detail, type))
+            }
+            cb(HistoryResult(historyEntries))
+        }
+    }
+
     fun withdrawTestkudos() {
         testWithdrawalInProgress.value = true
 
@@ -144,10 +201,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             Log.v(TAG, "got preparePay result")
             val status = result.getString("status")
             var contractTerms: ContractTerms? = null
-            var proposalId: Int? = null
+            var proposalId: String? = null
             var totalFees: Amount? = null
             if (result.has("proposalId")) {
-                proposalId = result.getInt("proposalId")
+                proposalId = result.getString("proposalId")
             }
             if (result.has("contractTerms")) {
                 val ctJson = result.getJSONObject("contractTerms")
@@ -175,7 +232,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun confirmPay(proposalId: Int) {
+    fun confirmPay(proposalId: String) {
         val msg = JSONObject()
         msg.put("operation", "confirmPay")
 
@@ -191,7 +248,6 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         walletBackendApi.sendRequest("reset", null)
         testWithdrawalInProgress.value = false
         balances.value = WalletBalances(false, listOf())
-        getBalances()
     }
 
     fun startTunnel() {
@@ -247,6 +303,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             }
             withdrawStatus.postValue(WithdrawStatus.Success())
         }
+    }
+
+    fun retryPendingNow() {
+        walletBackendApi.sendRequest("retryPendingNow", null)
     }
 
     override fun onCleared() {

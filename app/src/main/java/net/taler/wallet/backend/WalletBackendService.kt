@@ -14,11 +14,13 @@ import net.taler.wallet.HostCardEmulatorService
 import org.json.JSONObject
 import java.io.File
 import java.io.InputStream
+import java.lang.Process
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.system.exitProcess
 
-val TAG = "taler-wallet-backend"
+private const val TAG = "taler-wallet-backend"
 
 /**
  * Module loader to handle module loading requests from the wallet-core running on node/v8.
@@ -110,17 +112,7 @@ private class AssetModuleLoader(
 
 private class AssetDataHandler(private val assetManager: AssetManager) : AkonoJni.GetDataHandler {
     override fun handleGetData(what: String): ByteArray? {
-        if (what == "taler-emscripten-lib.wasm") {
-            Log.i(TAG, "loading emscripten binary from taler-wallet")
-            val stream =
-                assetManager.open("node_modules/taler-wallet/emscripten/taler-emscripten-lib.wasm")
-            val bytes: ByteArray = stream.readBytes()
-            Log.i(TAG, "size of emscripten binary: ${bytes.size}")
-            return bytes
-        } else {
-            Log.w(TAG, "data '$what' requested by akono not found")
-            return null
-        }
+        return null
     }
 }
 
@@ -144,6 +136,7 @@ class WalletBackendService : Service() {
     private val subscribers = LinkedList<Messenger>()
 
     override fun onCreate() {
+        Log.i(TAG, "onCreate in wallet backend service")
         akono = AkonoJni()
         akono.setLoadModuleHandler(AssetModuleLoader(application.assets))
         akono.setGetDataHandler(AssetDataHandler(application.assets))
@@ -161,13 +154,12 @@ class WalletBackendService : Service() {
         super.onCreate()
     }
 
-    fun sendInitMessage() {
+    private fun sendInitMessage() {
         val msg = JSONObject()
         msg.put("operation", "init")
         val args = JSONObject()
         msg.put("args", args)
         args.put("persistentStoragePath", "${application.filesDir}/talerwalletdb.json")
-
         akono.sendMessage(msg.toString())
     }
 
@@ -242,30 +234,34 @@ class WalletBackendService : Service() {
         return messenger.binder
     }
 
+    private fun sendNotify() {
+        var rm: LinkedList<Messenger>? = null
+        for (s in subscribers) {
+            val m = Message.obtain(null, MSG_NOTIFY)
+            try {
+                s.send(m)
+            } catch (e: RemoteException) {
+                if (rm == null) {
+                    rm = LinkedList<Messenger>()
+                }
+                rm.add(s)
+                subscribers.remove(s)
+            }
+        }
+        if (rm != null) {
+            for (s in rm) {
+                subscribers.remove(s)
+            }
+        }
+    }
+
     private fun handleAkonoMessage(messageStr: String) {
         Log.v(TAG, "got back message: ${messageStr}")
         val message = JSONObject(messageStr)
         val type = message.getString("type")
         when (type) {
             "notification" -> {
-                var rm: LinkedList<Messenger>? = null
-                for (s in subscribers) {
-                    val m = Message.obtain(null, MSG_NOTIFY)
-                    try {
-                        s.send(m)
-                    } catch (e: RemoteException) {
-                        if (rm == null) {
-                            rm = LinkedList<Messenger>()
-                        }
-                        rm.add(s)
-                        subscribers.remove(s)
-                    }
-                }
-                if (rm != null) {
-                    for (s in rm) {
-                        subscribers.remove(s)
-                    }
-                }
+                sendNotify()
             }
             "tunnelHttp" -> {
                 Log.v(TAG, "got http tunnel request!")
@@ -280,6 +276,10 @@ class WalletBackendService : Service() {
                 when (operation) {
                     "init" -> {
                         Log.v(TAG, "got response for init operation")
+                        sendNotify()
+                    }
+                    "reset" -> {
+                        exitProcess(1)
                     }
                     else -> {
                         val id = message.getInt("id")
@@ -298,6 +298,7 @@ class WalletBackendService : Service() {
                             b.putString("response", "{}")
                         }
                         b.putInt("requestID", rd.clientRequestID)
+                        b.putString("operation", operation)
                         rd.messenger.send(m)
                     }
                 }

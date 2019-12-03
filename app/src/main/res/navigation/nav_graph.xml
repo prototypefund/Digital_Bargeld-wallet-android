@@ -8,7 +8,7 @@
     <fragment
             android:id="@+id/showBalance"
             android:name="net.taler.wallet.ShowBalance"
-            android:label="Balances"
+            android:label="Home"
             tools:layout="@layout/fragment_show_balance">
         <action
                 android:id="@+id/action_showBalance_to_promptPayment"

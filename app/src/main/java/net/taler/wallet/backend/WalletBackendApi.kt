@@ -43,6 +43,8 @@ class WalletBackendApi(private val app: Application) {
             when (msg.what) {
                 WalletBackendService.MSG_REPLY -> {
                     val requestID = msg.data.getInt("requestID", 0)
+                    val operation = msg.data.getString("operation", "??")
+                    Log.i(TAG, "got reply for operation $operation ($requestID)")
                     val h = api.handlers.get(requestID)
                     if (h == null) {
                         Log.e(TAG, "request ID not associated with a handler")
@@ -87,8 +89,8 @@ class WalletBackendApi(private val app: Application) {
         args: JSONObject?,
         onResponse: (message: JSONObject) -> Unit = { }
     ) {
-        Log.i(TAG, "sending request for operation $operation")
         val requestID = nextRequestID++
+        Log.i(TAG, "sending request for operation $operation ($requestID)")
         val msg = Message.obtain(null, WalletBackendService.MSG_COMMAND)
         handlers.put(requestID, onResponse)
         msg.replyTo = incomingMessenger

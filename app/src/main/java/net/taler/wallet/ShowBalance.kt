@@ -3,10 +3,8 @@ package net.taler.wallet
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.Observer
@@ -17,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.zxing.integration.android.IntentIntegrator
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 
-class MyAdapter(private var myDataset: WalletBalances) : RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
+class WalletBalanceAdapter(private var myDataset: WalletBalances) : RecyclerView.Adapter<WalletBalanceAdapter.MyViewHolder>() {
 
     init {
         setHasStableIds(false)
@@ -59,6 +57,35 @@ class MyAdapter(private var myDataset: WalletBalances) : RecyclerView.Adapter<My
     class MyViewHolder(val rowView: View) : RecyclerView.ViewHolder(rowView)
 }
 
+class PendingOperationsAdapter(private var myDataset: PendingOperations) : RecyclerView.Adapter<PendingOperationsAdapter.MyViewHolder>() {
+
+    init {
+        setHasStableIds(false)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val rowView = LayoutInflater.from(parent.context).inflate(R.layout.pending_row, parent, false)
+        return MyViewHolder(rowView)
+    }
+
+    override fun getItemCount(): Int {
+        return myDataset.pending.size
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val p = myDataset.pending[position]
+        val textView = holder.rowView.findViewById<TextView>(R.id.pending_text)
+        textView.text = p.type
+    }
+
+    fun update(updatedDataset: PendingOperations) {
+        this.myDataset = updatedDataset
+        this.notifyDataSetChanged()
+    }
+
+    class MyViewHolder(val rowView: View) : RecyclerView.ViewHolder(rowView)
+}
+
 
 /**
  * A simple [Fragment] subclass.
@@ -66,12 +93,15 @@ class MyAdapter(private var myDataset: WalletBalances) : RecyclerView.Adapter<My
  */
 class ShowBalance : Fragment() {
 
+    private lateinit var pendingOperationsLabel: View
     lateinit var balancesView: RecyclerView
     lateinit var balancesPlaceholderView: TextView
     lateinit var model: WalletViewModel
-    lateinit var balancesAdapter: MyAdapter
+    lateinit var balancesAdapter: WalletBalanceAdapter
 
-    fun triggerLoading() {
+    lateinit var pendingAdapter: PendingOperationsAdapter
+
+    private fun triggerLoading() {
         val loading: Boolean =
             (model.testWithdrawalInProgress.value == true) || (model.balances.value == null) || !model.balances.value!!.initialized
 
@@ -90,8 +120,29 @@ class ShowBalance : Fragment() {
         Log.v("taler-wallet", "called onResume on ShowBalance")
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.retry_pending -> {
+                model.retryPendingNow()
+                true
+            }
+            R.id.reload_balance -> {
+                triggerLoading()
+                model.balances.value = WalletBalances(false, listOf())
+                model.getBalances()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        activity?.menuInflater?.inflate(R.menu.balance, menu)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
 
         model = activity?.run {
             ViewModelProviders.of(this)[WalletViewModel::class.java]
@@ -113,7 +164,15 @@ class ShowBalance : Fragment() {
         }
         Log.v(TAG, "updating balances ${balances}")
         balancesAdapter.update(balances)
-        //this.balancesView.adapter = balancesAdapter
+    }
+
+    private fun updatePending(pendingOperations: PendingOperations) {
+        if (pendingOperations.pending.size == 0) {
+            pendingOperationsLabel.visibility = View.GONE
+        } else {
+            pendingOperationsLabel.visibility = View.VISIBLE
+        }
+        pendingAdapter.update(pendingOperations)
     }
 
     override fun onCreateView(
@@ -137,14 +196,14 @@ class ShowBalance : Fragment() {
         this.balancesView = view.findViewById(R.id.list_balances)
         this.balancesPlaceholderView = view.findViewById(R.id.list_balances_placeholder)
 
-        val myLayoutManager = LinearLayoutManager(context)
-        val myItemDecoration = DividerItemDecoration(context, myLayoutManager.orientation)
 
         val balances = model.balances.value!!
 
-        balancesAdapter = MyAdapter(balances)
+        balancesAdapter = WalletBalanceAdapter(balances)
 
         view.findViewById<RecyclerView>(R.id.list_balances).apply {
+            val myLayoutManager = LinearLayoutManager(context)
+            val myItemDecoration = DividerItemDecoration(context, myLayoutManager.orientation)
             layoutManager = myLayoutManager
             adapter = balancesAdapter
             addItemDecoration(myItemDecoration)
@@ -161,6 +220,22 @@ class ShowBalance : Fragment() {
             Log.v("taler-wallet", "observing balance loading ${loading} in show balance")
             withdrawTestkudosButton.isEnabled = !loading
             triggerLoading()
+        })
+
+        pendingAdapter = PendingOperationsAdapter(PendingOperations(listOf()))
+
+        this.pendingOperationsLabel = view.findViewById<View>(R.id.pending_operations_label)
+
+        view.findViewById<RecyclerView>(R.id.list_pending).apply {
+            val myLayoutManager = LinearLayoutManager(context)
+            val myItemDecoration = DividerItemDecoration(context, myLayoutManager.orientation)
+            layoutManager = myLayoutManager
+            adapter = pendingAdapter
+            addItemDecoration(myItemDecoration)
+        }
+
+        model.pendingOperations.observe(this, Observer {
+            updatePending(it)
         })
 
         return view

@@ -127,8 +127,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
+        //menuInflater.inflate(R.menu.main, menu)
+        return false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
