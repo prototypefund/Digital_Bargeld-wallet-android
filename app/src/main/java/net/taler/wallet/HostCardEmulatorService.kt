@@ -1,11 +1,13 @@
 package net.taler.wallet
 
 import android.content.*
+import android.net.Uri
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
 import android.util.Log
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.net.URI
 import java.util.concurrent.ConcurrentLinkedDeque
 
 fun makeApduSuccessResponse(payload: ByteArray): ByteArray {
@@ -123,10 +125,11 @@ class HostCardEmulatorService: HostApduService() {
                     val url = String(bodyBytes, Charsets.UTF_8)
                     Log.v(TAG, "got URL: '$url'")
 
-                    Intent().also { intent ->
-                        intent.action = TRIGGER_PAYMENT_ACTION
-                        intent.putExtra("contractUrl", url)
-                        sendBroadcast(intent)
+                    Intent(this, MainActivity::class.java).also { intent ->
+                        intent.data = Uri.parse(url)
+                        intent.action = Intent.ACTION_VIEW
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
                     }
                 }
                 2 -> {
