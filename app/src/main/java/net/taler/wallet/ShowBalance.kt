@@ -75,6 +75,8 @@ class PendingOperationsAdapter(private var myDataset: PendingOperations) : Recyc
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val p = myDataset.pending[position]
         val textView = holder.rowView.findViewById<TextView>(R.id.pending_text)
+        val subTextView = holder.rowView.findViewById<TextView>(R.id.pending_subtext)
+        subTextView.text = p.detail.toString(1)
         textView.text = p.type
     }
 

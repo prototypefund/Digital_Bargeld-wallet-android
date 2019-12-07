@@ -1,53 +1,12 @@
 package net.taler.wallet
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
 import android.util.Log
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.util.*
 import java.util.concurrent.ConcurrentLinkedDeque
-import java.util.concurrent.ConcurrentLinkedQueue
-
-class Utils {
-    companion object {
-        private val HEX_CHARS = "0123456789ABCDEF"
-        fun hexStringToByteArray(data: String) : ByteArray {
-
-            val result = ByteArray(data.length / 2)
-
-            for (i in 0 until data.length step 2) {
-                val firstIndex = HEX_CHARS.indexOf(data[i]);
-                val secondIndex = HEX_CHARS.indexOf(data[i + 1]);
-
-                val octet = firstIndex.shl(4).or(secondIndex)
-                result.set(i.shr(1), octet.toByte())
-            }
-
-            return result
-        }
-
-        private val HEX_CHARS_ARRAY = "0123456789ABCDEF".toCharArray()
-        fun toHex(byteArray: ByteArray) : String {
-            val result = StringBuffer()
-
-            byteArray.forEach {
-                val octet = it.toInt()
-                val firstIndex = (octet and 0xF0).ushr(4)
-                val secondIndex = octet and 0x0F
-                result.append(HEX_CHARS_ARRAY[firstIndex])
-                result.append(HEX_CHARS_ARRAY[secondIndex])
-            }
-
-            return result.toString()
-        }
-    }
-}
-
 
 fun makeApduSuccessResponse(payload: ByteArray): ByteArray {
     val stream = ByteArrayOutputStream()
@@ -84,19 +43,27 @@ fun readApduBodySize(stream: ByteArrayInputStream): Int {
 class HostCardEmulatorService: HostApduService() {
 
     val queuedRequests: ConcurrentLinkedDeque<String> = ConcurrentLinkedDeque()
+    lateinit var receiver: BroadcastReceiver
 
     override fun onCreate() {
+        super.onCreate()
+        receiver = object : BroadcastReceiver() {
+            override fun onReceive(p0: Context?, p1: Intent?) {
+                queuedRequests.addLast(p1!!.getStringExtra("tunnelMessage"))
+            }
+        }
         IntentFilter(HTTP_TUNNEL_REQUEST).also { filter ->
-            registerReceiver(object : BroadcastReceiver() {
-                override fun onReceive(p0: Context?, p1: Intent?) {
-                    queuedRequests.addLast(p1!!.getStringExtra("tunnelMessage"))
-                }
-            }, filter)
+            registerReceiver(receiver, filter)
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
+    }
+
     override fun onDeactivated(reason: Int) {
-        Log.d(TAG, "Deactivated: " + reason)
+        Log.d(TAG, "Deactivated: $reason")
         Intent().also { intent ->
             intent.action = MERCHANT_NFC_DISCONNECTED
             sendBroadcast(intent)
@@ -106,7 +73,7 @@ class HostCardEmulatorService: HostApduService() {
     override fun processCommandApdu(commandApdu: ByteArray?,
                                     extras: Bundle?): ByteArray {
 
-        //Log.d(TAG, "Processing command APDU")
+        Log.d(TAG, "Processing command APDU")
 
         if (commandApdu == null) {
             Log.d(TAG, "APDU is null")
@@ -124,14 +91,9 @@ class HostCardEmulatorService: HostApduService() {
 
         val instruction = stream.read()
 
-        val instructionStr = "%02x".format(instruction)
-
-        //Log.v(TAG, "Processing instruction $instructionStr")
-
-        val p1 = stream.read()
-        val p2 = stream.read()
-
-        //Log.v(TAG, "instruction paramaters $p1 $p2")
+        // Read instruction parameters, currently ignored.
+        stream.read()
+        stream.read()
 
         if (instruction == SELECT_INS) {
             // FIXME: validate body!
@@ -150,15 +112,16 @@ class HostCardEmulatorService: HostApduService() {
 
         if (instruction == PUT_INS) {
             val bodySize = readApduBodySize(stream)
-
-
             val talerInstr = stream.read()
             val bodyBytes = stream.readBytes()
+            if (1 + bodyBytes.size != bodySize) {
+                Log.w(TAG, "mismatched body size ($bodySize vs ${bodyBytes.size}")
+            }
 
-
-            when (talerInstr.toInt()) {
+            when (talerInstr) {
                 1 -> {
                     val url = String(bodyBytes, Charsets.UTF_8)
+                    Log.v(TAG, "got URL: '$url'")
 
                     Intent().also { intent ->
                         intent.action = TRIGGER_PAYMENT_ACTION
@@ -187,18 +150,17 @@ class HostCardEmulatorService: HostApduService() {
     }
 
     companion object {
-        val TAG = "taler-wallet-hce"
-        val AID = "A0000002471001"
-        val SELECT_INS = 0xA4
-        val PUT_INS = 0xDA
-        val GET_INS = 0xCA
+        const val TAG = "taler-wallet-hce"
+        const val SELECT_INS = 0xA4
+        const val PUT_INS = 0xDA
+        const val GET_INS = 0xCA
 
-        val TRIGGER_PAYMENT_ACTION = "net.taler.TRIGGER_PAYMENT_ACTION"
+        const val TRIGGER_PAYMENT_ACTION = "net.taler.TRIGGER_PAYMENT_ACTION"
 
-        val MERCHANT_NFC_CONNECTED = "net.taler.MERCHANT_NFC_CONNECTED"
-        val MERCHANT_NFC_DISCONNECTED = "net.taler.MERCHANT_NFC_DISCONNECTED"
+        const val MERCHANT_NFC_CONNECTED = "net.taler.MERCHANT_NFC_CONNECTED"
+        const val MERCHANT_NFC_DISCONNECTED = "net.taler.MERCHANT_NFC_DISCONNECTED"
 
-        val HTTP_TUNNEL_RESPONSE = "net.taler.HTTP_TUNNEL_RESPONSE"
-        val HTTP_TUNNEL_REQUEST = "net.taler.HTTP_TUNNEL_REQUEST"
+        const val HTTP_TUNNEL_RESPONSE = "net.taler.HTTP_TUNNEL_RESPONSE"
+        const val HTTP_TUNNEL_REQUEST = "net.taler.HTTP_TUNNEL_REQUEST"
     }
 }

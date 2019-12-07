@@ -19,10 +19,12 @@ class WalletBackendApi(private val app: Application) {
     private val handlers = SparseArray<(message: JSONObject) -> Unit>()
     private var nextRequestID = 1
     var notificationHandler: (() -> Unit)? = null
+    var connectedHandler: (() -> Unit)? = null
 
     private val walletBackendConn = object : ServiceConnection {
         override fun onServiceDisconnected(p0: ComponentName?) {
             Log.w(TAG, "wallet backend service disconnected (crash?)")
+            walletBackendMessenger = null
         }
 
         override fun onServiceConnected(componentName: ComponentName?, binder: IBinder?) {
@@ -33,6 +35,10 @@ class WalletBackendApi(private val app: Application) {
             val msg = Message.obtain(null, WalletBackendService.MSG_SUBSCRIBE_NOTIFY)
             msg.replyTo = incomingMessenger
             bm.send(msg)
+            val ch = connectedHandler
+            if (ch != null) {
+                ch()
+            }
         }
     }
 

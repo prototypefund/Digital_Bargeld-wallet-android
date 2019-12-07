@@ -26,8 +26,11 @@ class WalletHistoryAdapter(private var myDataset: HistoryResult) : RecyclerView.
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val h = myDataset.history[position]
         val text = holder.rowView.findViewById<TextView>(R.id.history_text)
-        text.text = myDataset.history[position].type
+        val subText = holder.rowView.findViewById<TextView>(R.id.history_subtext)
+        text.text = h.type
+        subText.text = h.timestamp.toString() + "\n" + h.detail.toString(1)
     }
 
     fun update(updatedHistory: HistoryResult) {

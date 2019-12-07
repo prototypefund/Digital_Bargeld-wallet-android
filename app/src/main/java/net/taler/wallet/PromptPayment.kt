@@ -16,12 +16,6 @@ import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
  * A simple [Fragment] subclass.
  *
@@ -59,7 +53,7 @@ class PromptPayment : Fragment() {
         triggerLoading()
     }
 
-    fun fillOrderInfo(view: View, contractTerms: ContractTerms, totalFees: Amount?) {
+    private fun fillOrderInfo(view: View, contractTerms: ContractTerms, totalFees: Amount?) {
         val feesAmountView = view.findViewById<TextView>(R.id.order_fees_amount)
         val amountView = view.findViewById<TextView>(R.id.order_amount)
         val summaryView = view.findViewById<TextView>(R.id.order_summary)
@@ -78,7 +72,8 @@ class PromptPayment : Fragment() {
 
     }
 
-    fun showPayStatus(view: View, payStatus: PayStatus) {
+
+    private fun showPayStatus(view: View, payStatus: PayStatus) {
         val promptPaymentDetails = view.findViewById<View>(R.id.prompt_payment_details)
         val balanceInsufficientWarning = view.findViewById<View>(R.id.balance_insufficient_warning)
         val confirmPaymentButton = view.findViewById<Button>(R.id.button_confirm_payment)
@@ -138,7 +133,8 @@ class PromptPayment : Fragment() {
         val abortPaymentButton = view.findViewById<Button>(R.id.button_abort_payment)
 
         abortPaymentButton.setOnClickListener {
-            activity!!.findNavController(R.id.nav_host_fragment).navigateUp()
+            model.payStatus.value = PayStatus.None()
+            requireActivity().findNavController(R.id.nav_host_fragment).navigateUp()
         }
 
         triggerLoading()

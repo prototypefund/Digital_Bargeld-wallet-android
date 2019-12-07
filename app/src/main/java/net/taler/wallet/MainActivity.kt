@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -24,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -52,6 +54,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
 
         val navController = findNavController(R.id.nav_host_fragment)
+
         val appBarConfiguration =
             AppBarConfiguration(setOf(R.id.showBalance, R.id.settings, R.id.walletHistory), drawerLayout)
 
@@ -70,7 +73,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(p0: Context?, p1: Intent?) {
 
-                if (model.payStatus.value !is PayStatus.None) {
+                if (navController.currentDestination?.id == R.id.promptPayment) {
                     return
                 }
 
@@ -183,12 +186,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun handleTalerUri(url: String, from: String) {
         when {
-            url.startsWith("taler://pay") -> {
+            url.toLowerCase(Locale.ROOT).startsWith("taler://pay/") -> {
                 Log.v(TAG, "navigating!")
                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptPayment)
                 model.preparePay(url)
             }
-            url.startsWith("taler://withdraw") -> {
+            url.toLowerCase(Locale.ROOT).startsWith("taler://withdraw/") -> {
                 Log.v(TAG, "navigating!")
                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptWithdraw)
                 model.getWithdrawalInfo(url)

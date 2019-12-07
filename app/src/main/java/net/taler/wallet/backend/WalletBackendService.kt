@@ -22,100 +22,6 @@ import kotlin.system.exitProcess
 
 private const val TAG = "taler-wallet-backend"
 
-/**
- * Module loader to handle module loading requests from the wallet-core running on node/v8.
- */
-private class AssetModuleLoader(
-    private val assetManager: AssetManager,
-    private val rootPath: String = "node_modules"
-) : AkonoJni.LoadModuleHandler {
-
-    private fun makeResult(localPath: String, stream: InputStream): ModuleResult {
-        val moduleString = stream.bufferedReader().use {
-            it.readText()
-        }
-        return ModuleResult("/vmodroot/$localPath", moduleString)
-    }
-
-    private fun tryPath(rawAssetPath: String): ModuleResult? {
-        //val assetPath = Paths.get(rawAssetPath).normalize().toString()
-        val assetPath = File(rawAssetPath).normalize().path
-        try {
-            val moduleStream = assetManager.open(assetPath)
-            return makeResult(assetPath, moduleStream)
-        } catch (e: Exception) {
-        }
-        try {
-            val jsPath = "$assetPath.js"
-            val moduleStream = assetManager.open(jsPath)
-            return makeResult(jsPath, moduleStream)
-        } catch (e: Exception) {
-            // ignore
-        }
-        val packageJsonPath = "$assetPath/package.json"
-        try {
-            val packageStream = assetManager.open(packageJsonPath)
-            val packageString = packageStream.bufferedReader().use {
-                it.readText()
-            }
-            val packageJson = JSONObject(packageString)
-            val mainFile = try {
-                packageJson.getString("main")
-            } catch (e: Exception) {
-                Log.w(TAG, "package.json does not have a 'main' filed")
-                throw e
-            }
-            try {
-                //val modPath = Paths.get("$assetPath/$mainFile").normalize().toString()
-                val modPath = File("$assetPath/$mainFile").normalize().path
-                return makeResult(modPath, assetManager.open(modPath))
-            } catch (e: Exception) {
-                // ignore
-            }
-            try {
-                //val modPath = Paths.get("$assetPath/$mainFile.js").normalize().toString()
-                val modPath = File("$assetPath/$mainFile.js").normalize().path
-                return makeResult(modPath, assetManager.open(modPath))
-            } catch (e: Exception) {
-            }
-        } catch (e: Exception) {
-        }
-        try {
-            val jsPath = "$assetPath/index.js"
-            val moduleStream = assetManager.open(jsPath)
-            return makeResult(jsPath, moduleStream)
-        } catch (e: Exception) {
-        }
-        return null
-    }
-
-    override fun loadModule(name: String, paths: Array<String>): ModuleResult? {
-        for (path in paths) {
-            val prefix = "/vmodroot"
-            if (!path.startsWith(prefix)) {
-                continue
-            }
-            if (path == prefix) {
-                val res = tryPath("$rootPath/$name")
-                if (res != null)
-                    return res
-            } else {
-                val res = tryPath(path.drop(prefix.length + 1) + "/$name")
-                if (res != null)
-                    return res
-            }
-        }
-        return null
-    }
-}
-
-
-private class AssetDataHandler(private val assetManager: AssetManager) : AkonoJni.GetDataHandler {
-    override fun handleGetData(what: String): ByteArray? {
-        return null
-    }
-}
-
 class RequestData(val clientRequestID: Int, val messenger: Messenger)
 
 
@@ -138,16 +44,14 @@ class WalletBackendService : Service() {
     override fun onCreate() {
         Log.i(TAG, "onCreate in wallet backend service")
         akono = AkonoJni()
-        akono.setLoadModuleHandler(AssetModuleLoader(application.assets))
-        akono.setGetDataHandler(AssetDataHandler(application.assets))
         akono.setMessageHandler(object : AkonoJni.MessageHandler {
             override fun handleMessage(message: String) {
                 this@WalletBackendService.handleAkonoMessage(message)
             }
         })
         akono.evalNodeCode("console.log('hello world from taler wallet-android')")
-        akono.evalNodeCode("require('source-map-support').install();")
-        akono.evalNodeCode("tw = require('taler-wallet');")
+        //akono.evalNodeCode("require('source-map-support').install();")
+        akono.evalNodeCode("tw = require('taler-wallet-android');")
         akono.evalNodeCode("tw.installAndroidWalletListener();")
         sendInitMessage()
         initialized = true
@@ -159,7 +63,7 @@ class WalletBackendService : Service() {
         msg.put("operation", "init")
         val args = JSONObject()
         msg.put("args", args)
-        args.put("persistentStoragePath", "${application.filesDir}/talerwalletdb.json")
+        args.put("persistentStoragePath", "${application.filesDir}/talerwalletdb-v27.json")
         akono.sendMessage(msg.toString())
     }
 

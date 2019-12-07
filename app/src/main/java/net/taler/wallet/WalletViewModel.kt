@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
 
-val TAG = "taler-wallet"
+const val TAG = "taler-wallet"
 
 
 data class Amount(val currency: String, val amount: String) {
@@ -77,7 +77,8 @@ open class HistoryResult(
 
 open class HistoryEntry(
     val detail: JSONObject,
-    val type: String
+    val type: String,
+    val timestamp: JSONObject
 )
 
 open class PendingOperationInfo(
@@ -113,6 +114,11 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         value = PendingOperations(listOf())
     }
 
+    private var activeGetBalance = 0
+    private var activeGetPending = 0
+
+    private var currentPayRequestId = 0
+
     private val walletBackendApi = WalletBackendApi(app)
 
     fun init() {
@@ -131,11 +137,22 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             getBalances()
             getPending()
         }
+        walletBackendApi.connectedHandler = {
+            activeGetBalance = 0
+            activeGetPending = 0
+            getBalances()
+            getPending()
+        }
     }
 
 
     fun getBalances() {
+        if (activeGetBalance > 0) {
+            return
+        }
+        activeGetBalance++
         walletBackendApi.sendRequest("getBalances", null) { result ->
+            activeGetBalance--
             val balanceList = mutableListOf<BalanceEntry>()
             val byCurrency = result.getJSONObject("byCurrency")
             val currencyList = byCurrency.keys().asSequence().toList().sorted()
@@ -153,7 +170,12 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     private fun getPending() {
+        if (activeGetPending > 0) {
+            return
+        }
+        activeGetPending++
         walletBackendApi.sendRequest("getPendingOperations", null) { result ->
+            activeGetPending--
             Log.i(TAG, "got getPending result")
             val pendingList = mutableListOf<PendingOperationInfo>()
             val pendingJson = result.getJSONArray("pendingOperations")
@@ -177,7 +199,8 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
                 val type = h.getString("type")
                 Log.v(TAG, "got history entry type $type")
                 val detail = h.getJSONObject("detail")
-                historyEntries.add(HistoryEntry(detail, type))
+                val timestamp = h.getJSONObject("timestamp")
+                historyEntries.add(HistoryEntry(detail, type, timestamp))
             }
             cb(HistoryResult(historyEntries))
         }
@@ -191,14 +214,21 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         }
     }
 
+
     fun preparePay(url: String) {
         val args = JSONObject()
         args.put("url", url)
 
+        this.currentPayRequestId += 1
+        val myPayRequestId = this.currentPayRequestId
         this.payStatus.value = PayStatus.Loading()
 
         walletBackendApi.sendRequest("preparePay", args) { result ->
             Log.v(TAG, "got preparePay result")
+            if (myPayRequestId != this.currentPayRequestId) {
+                Log.v(TAG, "preparePay result was for old request")
+                return@sendRequest
+            }
             val status = result.getString("status")
             var contractTerms: ContractTerms? = null
             var proposalId: String? = null
