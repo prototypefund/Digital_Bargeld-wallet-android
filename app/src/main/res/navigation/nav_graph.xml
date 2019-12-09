@@ -60,6 +60,10 @@
                 android:id="@+id/action_promptWithdraw_to_withdrawSuccessful"
                 app:destination="@id/withdrawSuccessful"
                 app:popUpTo="@id/showBalance" />
+        <action
+                android:id="@+id/action_promptWithdraw_to_reviewExchangeTOS"
+                app:destination="@id/reviewExchangeTOS"
+                app:popUpTo="@id/showBalance"/>
     </fragment>
     <fragment
             android:id="@+id/withdrawSuccessful"
@@ -69,4 +73,14 @@
     <action
             android:id="@+id/action_global_promptPayment"
             app:destination="@id/promptPayment" />
+    <fragment
+            android:id="@+id/reviewExchangeTOS"
+            android:name="net.taler.wallet.ReviewExchangeTOS"
+            android:label="Exchange's Terms of Service"
+            tools:layout="@layout/fragment_review_exchange_tos" >
+        <action
+                android:id="@+id/action_reviewExchangeTOS_to_promptWithdraw"
+                app:popUpTo="@id/showBalance"
+                app:destination="@id/promptWithdraw" />
+    </fragment>
 </navigation>

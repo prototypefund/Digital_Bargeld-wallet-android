@@ -63,7 +63,7 @@ class WalletBackendService : Service() {
         msg.put("operation", "init")
         val args = JSONObject()
         msg.put("args", args)
-        args.put("persistentStoragePath", "${application.filesDir}/talerwalletdb-v27.json")
+        args.put("persistentStoragePath", "${application.filesDir}/talerwalletdb-v29.json")
         akono.sendMessage(msg.toString())
     }
 

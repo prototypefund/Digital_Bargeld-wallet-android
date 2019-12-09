@@ -62,6 +62,10 @@ class PromptWithdraw : Fragment() {
             is WithdrawStatus.None -> {
 
             }
+            is WithdrawStatus.TermsOfServiceReviewRequired -> {
+                val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+                navController.navigate(R.id.action_promptWithdraw_to_reviewExchangeTOS)
+            }
             else -> {
                 val bar = Snackbar.make(view, "Bug: Unexpected result", Snackbar.LENGTH_SHORT)
                 bar.show()
@@ -87,6 +91,12 @@ class PromptWithdraw : Fragment() {
             triggerLoading()
             showWithdrawStatus(view, it)
         })
+
+        view.findViewById<Button>(R.id.button_cancel_withdraw).setOnClickListener {
+            val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+            model.cancelCurrentWithdraw()
+            navController.navigateUp()
+        }
 
         view.findViewById<Button>(R.id.button_confirm_withdraw).setOnClickListener {
             val status = this.model.withdrawStatus.value
