@@ -263,7 +263,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
                     contractTerms!!
                 )
                 "error" -> PayStatus.Error("got some error")
-                else -> PayStatus.Error("unkown status")
+                else -> PayStatus.Error("unknown status")
             }
             payStatus.postValue(res)
         }
