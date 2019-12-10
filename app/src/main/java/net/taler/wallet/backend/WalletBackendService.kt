@@ -1,20 +1,12 @@
 package net.taler.wallet.backend
 
 import akono.AkonoJni
-import akono.ModuleResult
 import android.app.Service
 import android.content.Intent
-import android.content.res.AssetManager
 import android.os.*
 import android.util.Log
-import android.util.SparseArray
-import android.widget.Toast
-import androidx.core.util.set
 import net.taler.wallet.HostCardEmulatorService
 import org.json.JSONObject
-import java.io.File
-import java.io.InputStream
-import java.lang.Process
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -42,8 +34,14 @@ class WalletBackendService : Service() {
     private val subscribers = LinkedList<Messenger>()
 
     override fun onCreate() {
+        val talerWalletAndroidCode = assets.open("taler-wallet-android.js").use {
+            it.readBytes().toString(Charsets.UTF_8)
+        }
+
+
         Log.i(TAG, "onCreate in wallet backend service")
         akono = AkonoJni()
+        akono.putModuleCode("taler-wallet-android", talerWalletAndroidCode)
         akono.setMessageHandler(object : AkonoJni.MessageHandler {
             override fun handleMessage(message: String) {
                 this@WalletBackendService.handleAkonoMessage(message)
@@ -51,6 +49,7 @@ class WalletBackendService : Service() {
         })
         akono.evalNodeCode("console.log('hello world from taler wallet-android')")
         //akono.evalNodeCode("require('source-map-support').install();")
+        akono.evalNodeCode("require('akono');")
         akono.evalNodeCode("tw = require('taler-wallet-android');")
         akono.evalNodeCode("tw.installAndroidWalletListener();")
         sendInitMessage()
@@ -104,7 +103,10 @@ class WalletBackendService : Service() {
                     request.put("id", serviceRequestID)
                     request.put("args", argsObj)
                     svc.akono.sendMessage(request.toString(2))
-                    Log.i(TAG, "mapping service request ID $serviceRequestID to client request ID $clientRequestID")
+                    Log.i(
+                        TAG,
+                        "mapping service request ID $serviceRequestID to client request ID $clientRequestID"
+                    )
                     svc.requests.put(
                         serviceRequestID,
                         RequestData(clientRequestID, msg.replyTo)
