@@ -1,5 +1,20 @@
-package net.taler.wallet
+/*
+ This file is part of GNU Taler
+ (C) 2019 Taler Systems S.A.
 
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+
+package net.taler.wallet
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -17,8 +32,7 @@ import com.google.android.material.snackbar.Snackbar
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 
 /**
- * A simple [Fragment] subclass.
- *
+ * Show a payment and ask the user to accept/decline.
  */
 class PromptPayment : Fragment() {
 
@@ -28,8 +42,7 @@ class PromptPayment : Fragment() {
 
     private fun triggerLoading() {
         val loading = model.payStatus.value == null || (model.payStatus.value is PayStatus.Loading)
-        val myActivity = activity!!
-        val progressBar = myActivity.findViewById<MaterialProgressBar>(R.id.progress_bar)
+        val progressBar = requireActivity().findViewById<MaterialProgressBar>(R.id.progress_bar)
         if (loading) {
             progressBar.visibility = View.VISIBLE
         } else {
@@ -43,8 +56,6 @@ class PromptPayment : Fragment() {
         model = activity?.run {
             ViewModelProviders.of(this)[WalletViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
-
-        triggerLoading()
     }
 
     override fun onResume() {
@@ -139,7 +150,7 @@ class PromptPayment : Fragment() {
 
         triggerLoading()
 
-        model.payStatus.observe(this, Observer {
+        model.payStatus.observe(viewLifecycleOwner, Observer {
             triggerLoading()
             showPayStatus(view, it)
         })
