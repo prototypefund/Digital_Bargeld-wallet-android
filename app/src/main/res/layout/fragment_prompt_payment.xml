@@ -6,6 +6,14 @@
              android:layout_margin="15dp"
              tools:context=".PromptPayment">
 
+    <TextView
+            android:text="Error:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_gravity="center"
+            android:id="@+id/pay_error_text" android:textColor="@android:color/holo_red_dark"/>
+
 
     <LinearLayout
             android:orientation="vertical"

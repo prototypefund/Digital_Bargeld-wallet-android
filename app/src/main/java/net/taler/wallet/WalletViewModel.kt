@@ -20,6 +20,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.google.android.material.snackbar.Snackbar
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
 
@@ -174,8 +175,11 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             return
         }
         activeGetBalance++
-        walletBackendApi.sendRequest("getBalances", null) { result ->
+        walletBackendApi.sendRequest("getBalances", null) { isError, result ->
             activeGetBalance--
+            if (isError) {
+                return@sendRequest
+            }
             val balanceList = mutableListOf<BalanceEntry>()
             val byCurrency = result.getJSONObject("byCurrency")
             val currencyList = byCurrency.keys().asSequence().toList().sorted()
@@ -197,8 +201,12 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             return
         }
         activeGetPending++
-        walletBackendApi.sendRequest("getPendingOperations", null) { result ->
+        walletBackendApi.sendRequest("getPendingOperations", null) { isError, result ->
             activeGetPending--
+            if (isError) {
+                Log.i(TAG, "got getPending error result")
+                return@sendRequest
+            }
             Log.i(TAG, "got getPending result")
             val pendingList = mutableListOf<PendingOperationInfo>()
             val pendingJson = result.getJSONArray("pendingOperations")
@@ -213,7 +221,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     fun getHistory(cb: (r: HistoryResult) -> Unit) {
-        walletBackendApi.sendRequest("getHistory", null) { result ->
+        walletBackendApi.sendRequest("getHistory", null) { isError, result ->
+            if (isError) {
+                return@sendRequest
+            }
             val historyEntries = mutableListOf<HistoryEntry>()
             val historyList = result.getJSONArray("history")
             for (i in 0 until historyList.length()) {
@@ -232,7 +243,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     fun withdrawTestkudos() {
         testWithdrawalInProgress.value = true
 
-        walletBackendApi.sendRequest("withdrawTestkudos", null) {
+        walletBackendApi.sendRequest("withdrawTestkudos", null) { _, _ ->
             testWithdrawalInProgress.postValue(false)
         }
     }
@@ -246,7 +257,12 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         val myPayRequestId = this.currentPayRequestId
         this.payStatus.value = PayStatus.Loading()
 
-        walletBackendApi.sendRequest("preparePay", args) { result ->
+        walletBackendApi.sendRequest("preparePay", args) { isError, result ->
+            if (isError) {
+                Log.v(TAG, "got preparePay error result")
+                payStatus.value = PayStatus.Error(result.toString(0))
+                return@sendRequest
+            }
             Log.v(TAG, "got preparePay result")
             if (myPayRequestId != this.currentPayRequestId) {
                 Log.v(TAG, "preparePay result was for old request")
@@ -292,7 +308,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         val args = JSONObject()
         args.put("proposalId", proposalId)
 
-        walletBackendApi.sendRequest("confirmPay", args) {
+        walletBackendApi.sendRequest("confirmPay", args) { isError, result ->
             payStatus.postValue(PayStatus.Success())
         }
     }
@@ -325,7 +341,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         this.currentWithdrawRequestId++
         val myWithdrawRequestId = this.currentWithdrawRequestId
 
-        walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { result ->
+        walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
+            if (isError) {
+                return@sendRequest
+            }
             if (myWithdrawRequestId != this.currentWithdrawRequestId) {
                 return@sendRequest
             }
@@ -351,7 +370,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         this.currentWithdrawRequestId++
         val myWithdrawRequestId = this.currentWithdrawRequestId
 
-        walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { result ->
+        walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
+            if (isError) {
+                return@sendRequest
+            }
             if (myWithdrawRequestId != this.currentWithdrawRequestId) {
                 return@sendRequest
             }
@@ -397,7 +419,11 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
         withdrawStatus.value = WithdrawStatus.Withdrawing(talerWithdrawUri)
 
-        walletBackendApi.sendRequest("acceptWithdrawal", args) {
+        walletBackendApi.sendRequest("acceptWithdrawal", args) { isError, _ ->
+            if (isError) {
+                Log.v(TAG, "got acceptWithdrawal error result")
+                return@sendRequest
+            }
             Log.v(TAG, "got acceptWithdrawal result")
             val status = withdrawStatus.value
             if (status !is WithdrawStatus.Withdrawing) {
@@ -425,7 +451,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
                 val args = JSONObject()
                 args.put("exchangeBaseUrl", s.exchangeBaseUrl)
                 args.put("etag", s.tosEtag)
-                walletBackendApi.sendRequest("acceptExchangeTermsOfService", args) {
+                walletBackendApi.sendRequest("acceptExchangeTermsOfService", args) { isError, _ ->
+                    if (isError) {
+                        return@sendRequest
+                    }
                     // Try withdrawing again with accepted ToS
                     getWithdrawalInfo(s.talerWithdrawUri)
                 }

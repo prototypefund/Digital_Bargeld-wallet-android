@@ -220,6 +220,7 @@ class WalletBackendService : Service() {
                         } else {
                             b.putString("response", "{}")
                         }
+                        b.putBoolean("isError", message.getBoolean("isError"))
                         b.putInt("requestID", rd.clientRequestID)
                         b.putString("operation", operation)
                         rd.messenger.send(m)

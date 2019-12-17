@@ -33,7 +33,7 @@ class WalletBackendApi(private val app: Application) {
 
     private var walletBackendMessenger: Messenger? = null
     private val queuedMessages = LinkedList<Message>()
-    private val handlers = SparseArray<(message: JSONObject) -> Unit>()
+    private val handlers = SparseArray<(isError: Boolean, message: JSONObject) -> Unit>()
     private var nextRequestID = 1
     var notificationHandler: (() -> Unit)? = null
     var connectedHandler: (() -> Unit)? = null
@@ -78,8 +78,9 @@ class WalletBackendApi(private val app: Application) {
                         Log.e(TAG, "response did not contain response payload")
                         return
                     }
+                    val isError = msg.data.getBoolean("isError")
                     val json = JSONObject(response)
-                    h(json)
+                    h(isError, json)
                 }
                 WalletBackendService.MSG_NOTIFY -> {
                     val nh = api.notificationHandler
@@ -110,7 +111,7 @@ class WalletBackendApi(private val app: Application) {
     fun sendRequest(
         operation: String,
         args: JSONObject?,
-        onResponse: (message: JSONObject) -> Unit = { }
+        onResponse: (isError: Boolean, message: JSONObject) -> Unit = { _, _ -> }
     ) {
         val requestID = nextRequestID++
         Log.i(TAG, "sending request for operation $operation ($requestID)")

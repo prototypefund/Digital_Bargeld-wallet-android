@@ -87,12 +87,14 @@ class PromptPayment : Fragment() {
     private fun showPayStatus(view: View, payStatus: PayStatus) {
         val promptPaymentDetails = view.findViewById<View>(R.id.prompt_payment_details)
         val balanceInsufficientWarning = view.findViewById<View>(R.id.balance_insufficient_warning)
+        val errorTextView = view.findViewById<TextView>(R.id.pay_error_text)
         val confirmPaymentButton = view.findViewById<Button>(R.id.button_confirm_payment)
         when (payStatus) {
             is PayStatus.Prepared -> {
                 fillOrderInfo(view, payStatus.contractTerms, payStatus.totalFees)
                 promptPaymentDetails.visibility = View.VISIBLE
                 balanceInsufficientWarning.visibility = View.GONE
+                errorTextView.visibility = View.GONE
                 confirmPaymentButton.isEnabled = true
 
                 confirmPaymentButton.setOnClickListener {
@@ -104,6 +106,7 @@ class PromptPayment : Fragment() {
                 fillOrderInfo(view, payStatus.contractTerms, null)
                 promptPaymentDetails.visibility = View.VISIBLE
                 balanceInsufficientWarning.visibility = View.VISIBLE
+                errorTextView.visibility = View.GONE
                 confirmPaymentButton.isEnabled = false
             }
             is PayStatus.Success -> {
@@ -113,6 +116,10 @@ class PromptPayment : Fragment() {
             is PayStatus.AlreadyPaid -> {
                 activity!!.findNavController(R.id.nav_host_fragment).navigate(R.id.action_promptPayment_to_alreadyPaid)
                 model.payStatus.value = PayStatus.None()
+            }
+            is PayStatus.Error -> {
+                errorTextView.visibility = View.VISIBLE
+                errorTextView.text = "Error: ${payStatus.error}"
             }
             is PayStatus.None -> {
                 // No payment active.
