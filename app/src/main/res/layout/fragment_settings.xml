@@ -70,6 +70,12 @@
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:text="Developer Settings (be careful!)" />
+        
+        <Button
+                android:text="Withdraw TESTKUDOS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_withdraw_testkudos"/>
 
         <Button
                 android:text="Reset Wallet (dangerous!)"

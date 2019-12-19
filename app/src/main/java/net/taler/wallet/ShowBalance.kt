@@ -206,11 +206,6 @@ class ShowBalance : Fragment() {
             integrator.initiateScan(listOf("QR_CODE"))
         }
 
-        val withdrawTestkudosButton = view.findViewById<Button>(R.id.button_withdraw_testkudos)
-        withdrawTestkudosButton.setOnClickListener {
-            model.withdrawTestkudos()
-        }
-
         this.balancesView = view.findViewById(R.id.list_balances)
         this.balancesPlaceholderView = view.findViewById(R.id.list_balances_placeholder)
 
@@ -229,12 +224,18 @@ class ShowBalance : Fragment() {
 
         updateBalances(balances)
 
-        model.balances.observe(this, Observer {
+        model.balances.observe(viewLifecycleOwner, Observer {
             triggerLoading()
             updateBalances(it)
         })
 
-        model.testWithdrawalInProgress.observe(this, Observer { loading ->
+
+        val withdrawTestkudosButton = view.findViewById<Button>(R.id.button_withdraw_testkudos)
+        withdrawTestkudosButton.setOnClickListener {
+            model.withdrawTestkudos()
+        }
+
+        model.testWithdrawalInProgress.observe(viewLifecycleOwner, Observer { loading ->
             Log.v("taler-wallet", "observing balance loading ${loading} in show balance")
             withdrawTestkudosButton.isEnabled = !loading
             triggerLoading()
@@ -252,7 +253,7 @@ class ShowBalance : Fragment() {
             addItemDecoration(myItemDecoration)
         }
 
-        model.pendingOperations.observe(this, Observer {
+        model.pendingOperations.observe(viewLifecycleOwner, Observer {
             updatePending(it)
         })
 
