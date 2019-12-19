@@ -69,10 +69,10 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="Test Settings" />
+                android:text="Developer Settings (be careful!)" />
 
         <Button
-                android:text="Reset Wallet (Dangerous!)"
+                android:text="Reset Wallet (dangerous!)"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/button_reset_wallet_dangerously"/>
     </LinearLayout>

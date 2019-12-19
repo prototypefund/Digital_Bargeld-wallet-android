@@ -45,7 +45,7 @@ import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ResetDialogEventListener {
 
     lateinit var model: WalletViewModel
 
@@ -222,5 +222,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 bar.show()
             }
         }
+    }
+
+    override fun onResetConfirmed() {
+        model.dangerouslyReset()
+        val snackbar = Snackbar.make(findViewById(R.id.nav_host_fragment), "Wallet has been reset", Snackbar.LENGTH_SHORT)
+        snackbar.show()
+    }
+
+    override fun onResetCancelled() {
+        val snackbar = Snackbar.make(findViewById(R.id.nav_host_fragment), "Reset cancelled", Snackbar.LENGTH_SHORT)
+        snackbar.show()
     }
 }

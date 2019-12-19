@@ -388,7 +388,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             if (!termsOfServiceAccepted) {
                 val exchange = ei.getJSONObject("exchangeInfo")
                 val tosText = exchange.getString("termsOfServiceText")
-                val tosEtag = exchange.getString("termsOfServiceLastEtag")
+                val tosEtag = exchange.optString("termsOfServiceLastEtag", "undefined")
                 withdrawStatus.postValue(
                     WithdrawStatus.TermsOfServiceReviewRequired(
                         status.talerWithdrawUri,

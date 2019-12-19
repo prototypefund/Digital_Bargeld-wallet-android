@@ -16,13 +16,59 @@
 
 package net.taler.wallet
 
+import android.app.Dialog
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
+
+
+interface ResetDialogEventListener {
+    fun onResetConfirmed()
+    fun onResetCancelled()
+}
+
+
+class ResetDialogFragment : DialogFragment() {
+    private lateinit var model: WalletViewModel
+    private lateinit var listener: ResetDialogEventListener
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return activity?.let {
+            // Use the Builder class for convenient dialog construction
+            val builder = AlertDialog.Builder(it)
+            builder.setMessage("Do you really want to reset the wallet and lose all coins and purchases?  Consider making a backup first.")
+                .setPositiveButton("Reset") { _, _ ->
+                    listener.onResetConfirmed()
+                }
+                .setNegativeButton("Cancel") { _, _ ->
+                    listener.onResetCancelled()
+                }
+            // Create the AlertDialog object and return it
+            builder.create()
+        } ?: throw IllegalStateException("Activity cannot be null")
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Verify that the host activity implements the callback interface
+        try {
+            // Instantiate the NoticeDialogListener so we can send events to the host
+            listener = context as ResetDialogEventListener
+        } catch (e: ClassCastException) {
+            // The activity doesn't implement the interface, throw exception
+            throw ClassCastException((context.toString() +
+                    " must implement ResetDialogEventListener"))
+        }
+    }
+}
 
 /**
  * A simple [Fragment] subclass.
@@ -30,16 +76,6 @@ import androidx.lifecycle.ViewModelProviders
  */
 class Settings : Fragment() {
 
-    private lateinit var model: WalletViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        model = activity?.run {
-            ViewModelProviders.of(this)[WalletViewModel::class.java]
-        } ?: throw Exception("Invalid Activity")
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,10 +84,9 @@ class Settings : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
         view.findViewById<Button>(R.id.button_reset_wallet_dangerously).setOnClickListener {
-            model.dangerouslyReset()
+            val d = ResetDialogFragment()
+            d.show(requireActivity().supportFragmentManager, "walletResetDialog")
         }
         return view
     }
-
-
 }
