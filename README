@@ -32,6 +32,7 @@ An easy way to access them is using a git worktree:
   $ git worktree add binary-deps binary-deps
   $ cp binary-deps/akono.aar akono/akono.aar
   $ cp binary-deps/taler-wallet-android.js app/src/main/assets/taler-wallet-android.js
+  $ git worktree remove binary-deps
 
 Alternatively, you can build them yourself from the respective repositories:
 
