@@ -19,7 +19,10 @@ package net.taler.wallet
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
+import android.provider.DocumentsContract
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -76,6 +79,25 @@ class ResetDialogFragment : DialogFragment() {
  */
 class Settings : Fragment() {
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            CREATE_FILE -> {
+                if (data == null) {
+                    return
+                }
+                Log.i(TAG, "got createFile result with URL ${data.data}")
+            }
+            PICK_FILE -> {
+                if (data == null) {
+                    return
+                }
+                Log.i(TAG, "got pickFile result with URL ${data.data}")
+            }
+            else -> {
+
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,6 +109,34 @@ class Settings : Fragment() {
             val d = ResetDialogFragment()
             d.show(requireActivity().supportFragmentManager, "walletResetDialog")
         }
+        view.findViewById<Button>(R.id.button_backup_export).setOnClickListener {
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/json"
+                putExtra(Intent.EXTRA_TITLE, "taler-wallet-backup.json")
+
+                // Optionally, specify a URI for the directory that should be opened in
+                // the system file picker before your app creates the document.
+                //putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+            }
+            startActivityForResult(intent, CREATE_FILE)
+        }
+        view.findViewById<Button>(R.id.button_backup_import).setOnClickListener {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/json"
+
+                //putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+            }
+
+            startActivityForResult(intent, PICK_FILE)
+        }
         return view
+    }
+
+    companion object {
+        private const val TAG = "taler-wallet"
+        private const val CREATE_FILE = 1
+        private const val PICK_FILE = 2
     }
 }

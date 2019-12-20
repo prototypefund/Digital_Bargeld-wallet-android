@@ -1,22 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/pending_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:padding="3dp"
+        android:background="@drawable/pending_border"
+        android:orientation="vertical">
 
-        <TextView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/pending_text"
-                  android:textSize="24sp" tools:text="My Pending Operation">
-        </TextView>
+    <TextView
+            android:id="@+id/pending_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            tools:text="My Pending Operation" />
 
-        <TextView
-                android:id="@+id/pending_subtext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                tools:text="My further details" />
+    <Button
+            android:id="@+id/button_pending_action_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Cancel Operation" />
+
+    <TextView
+            android:id="@+id/pending_subtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            tools:text="My further details" />
 
 </LinearLayout>

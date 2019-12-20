@@ -154,6 +154,11 @@ class PromptPayment : Fragment() {
         errorTextView.visibility = View.GONE
 
         abortPaymentButton.setOnClickListener {
+            when (val ps = model.payStatus.value) {
+                is PayStatus.Prepared -> {
+                    model.abortProposal(ps.proposalId)
+                }
+            }
             model.payStatus.value = PayStatus.None()
             requireActivity().findNavController(R.id.nav_host_fragment).navigateUp()
         }

@@ -20,25 +20,30 @@ package net.taler.wallet
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
+import org.json.JSONObject
 
-class WalletBalanceAdapter(private var myDataset: WalletBalances) : RecyclerView.Adapter<WalletBalanceAdapter.MyViewHolder>() {
+class WalletBalanceAdapter(private var myDataset: WalletBalances, private var model: WalletViewModel) :
+    RecyclerView.Adapter<WalletBalanceAdapter.MyViewHolder>() {
 
     init {
         setHasStableIds(false)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val rowView = LayoutInflater.from(parent.context).inflate(R.layout.balance_row, parent, false)
+        val rowView =
+            LayoutInflater.from(parent.context).inflate(R.layout.balance_row, parent, false)
         return MyViewHolder(rowView)
     }
 
@@ -73,14 +78,23 @@ class WalletBalanceAdapter(private var myDataset: WalletBalances) : RecyclerView
     class MyViewHolder(val rowView: View) : RecyclerView.ViewHolder(rowView)
 }
 
-class PendingOperationsAdapter(private var myDataset: PendingOperations) : RecyclerView.Adapter<PendingOperationsAdapter.MyViewHolder>() {
+class PendingOperationsAdapter(private var myDataset: PendingOperations) :
+    RecyclerView.Adapter<PendingOperationsAdapter.MyViewHolder>() {
+
+    private var listener: PendingOperationClickListener? = null
+
 
     init {
         setHasStableIds(false)
     }
 
+    fun setPendingOperationClickListener(listener: PendingOperationClickListener) {
+        this.listener = listener
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val rowView = LayoutInflater.from(parent.context).inflate(R.layout.pending_row, parent, false)
+        val rowView =
+            LayoutInflater.from(parent.context).inflate(R.layout.pending_row, parent, false)
         return MyViewHolder(rowView)
     }
 
@@ -90,6 +104,26 @@ class PendingOperationsAdapter(private var myDataset: PendingOperations) : Recyc
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val p = myDataset.pending[position]
+        val pendingContainer = holder.rowView.findViewById<LinearLayout>(R.id.pending_container)
+        pendingContainer.setOnClickListener {
+            this.listener?.onPendingOperationClick(p.type, p.detail)
+        }
+        when (p.type) {
+            "proposal-choice" -> {
+                val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
+                btn1.text = "Refuse Proposal"
+                btn1.visibility = View.VISIBLE
+                btn1.setOnClickListener {
+                    this.listener?.onPendingOperationActionClick(p.type, p.detail)
+                }
+            }
+            else -> {
+                val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
+                btn1.text = "(no action)"
+                btn1.visibility = View.GONE
+                btn1.setOnClickListener {}
+            }
+        }
         val textView = holder.rowView.findViewById<TextView>(R.id.pending_text)
         val subTextView = holder.rowView.findViewById<TextView>(R.id.pending_subtext)
         subTextView.text = p.detail.toString(1)
@@ -104,12 +138,16 @@ class PendingOperationsAdapter(private var myDataset: PendingOperations) : Recyc
     class MyViewHolder(val rowView: View) : RecyclerView.ViewHolder(rowView)
 }
 
+interface PendingOperationClickListener {
+    fun onPendingOperationClick(type: String, detail: JSONObject)
+    fun onPendingOperationActionClick(type: String, detail: JSONObject)
+}
 
 /**
  * A simple [Fragment] subclass.
  *
  */
-class ShowBalance : Fragment() {
+class ShowBalance : Fragment(), PendingOperationClickListener {
 
     private lateinit var pendingOperationsLabel: View
     lateinit var balancesView: RecyclerView
@@ -209,10 +247,9 @@ class ShowBalance : Fragment() {
         this.balancesView = view.findViewById(R.id.list_balances)
         this.balancesPlaceholderView = view.findViewById(R.id.list_balances_placeholder)
 
-
         val balances = model.balances.value!!
 
-        balancesAdapter = WalletBalanceAdapter(balances)
+        balancesAdapter = WalletBalanceAdapter(balances, model)
 
         view.findViewById<RecyclerView>(R.id.list_balances).apply {
             val myLayoutManager = LinearLayoutManager(context)
@@ -242,6 +279,7 @@ class ShowBalance : Fragment() {
         })
 
         pendingAdapter = PendingOperationsAdapter(PendingOperations(listOf()))
+        pendingAdapter.setPendingOperationClickListener(this)
 
         this.pendingOperationsLabel = view.findViewById<View>(R.id.pending_operations_label)
 
@@ -258,5 +296,32 @@ class ShowBalance : Fragment() {
         })
 
         return view
+    }
+
+    override fun onPendingOperationClick(type: String, detail: JSONObject) {
+        val v = view ?: return
+        when (type) {
+            else -> {
+                val bar = Snackbar.make(
+                    v,
+                    "No detail view for ${type} implemented yet.",
+                    Snackbar.LENGTH_SHORT
+                )
+                bar.show()
+            }
+        }
+    }
+
+    override fun onPendingOperationActionClick(type: String, detail: JSONObject) {
+        when (type) {
+            "proposal-choice" -> {
+                Log.v(TAG, "got action click on proposal-choice")
+                val proposalId = detail.optString("proposalId", "")
+                if (proposalId == "") {
+                    return
+                }
+                model.abortProposal(proposalId)
+            }
+        }
     }
 }

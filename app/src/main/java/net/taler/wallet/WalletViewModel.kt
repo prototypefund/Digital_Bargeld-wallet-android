@@ -275,8 +275,8 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             if (result.has("proposalId")) {
                 proposalId = result.getString("proposalId")
             }
-            if (result.has("contractTerms")) {
-                val ctJson = result.getJSONObject("contractTerms")
+            if (result.has("contractTermsRaw")) {
+                val ctJson = JSONObject(result.getString("contractTermsRaw"))
                 val amount = Amount.fromString(ctJson.getString("amount"))
                 val summary = ctJson.getString("summary")
                 contractTerms = ContractTerms(summary, amount)
@@ -301,10 +301,22 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun confirmPay(proposalId: String) {
-        val msg = JSONObject()
-        msg.put("operation", "confirmPay")
+    fun abortProposal(proposalId: String) {
+        val args = JSONObject()
+        args.put("proposalId", proposalId)
 
+        Log.i(TAG, "aborting proposal")
+
+        walletBackendApi.sendRequest("abortProposal", args) { isError, _ ->
+            if (isError) {
+                Log.e(TAG, "received error response to abortProposal")
+                return@sendRequest
+            }
+            payStatus.postValue(PayStatus.None())
+        }
+    }
+
+    fun confirmPay(proposalId: String) {
         val args = JSONObject()
         args.put("proposalId", proposalId)
 

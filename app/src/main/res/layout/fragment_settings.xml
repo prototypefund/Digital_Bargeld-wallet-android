@@ -11,13 +11,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <EditText
+        <TextView
                 android:id="@+id/editText2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="Version Information" />
+                android:text="Version Information"
+                android:textSize="18sp" />
 
 
         <LinearLayout
@@ -63,14 +64,32 @@
 
         </LinearLayout>
 
-        <EditText
-                android:id="@+id/editText"
+        <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Developer Settings (be careful!)" />
-        
+                android:text="Backups"
+                android:textSize="18sp" />
+
+        <Button
+                android:text="Export wallet to file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_backup_export"/>
+
+        <Button
+                android:text="Import from file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_backup_import"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:text="Developer Settings (be careful!)"
+                android:textSize="18sp" />
+
         <Button
                 android:text="Withdraw TESTKUDOS"
                 android:layout_width="wrap_content"
