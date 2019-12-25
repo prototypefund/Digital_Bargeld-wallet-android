@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="0.6.0pre5 (Fri 20 Dec 2019" />
+                    android:text="0.6.0pre8 (Wed 25 Dec 2019" />
 
         </LinearLayout>
 

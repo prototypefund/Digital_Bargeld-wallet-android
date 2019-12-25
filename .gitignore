@@ -12,3 +12,4 @@ build
 /captures
 .externalNativeBuild
 /akono/akono.aar
+/app/release/
