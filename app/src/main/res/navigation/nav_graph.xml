@@ -43,7 +43,7 @@
             tools:layout="@layout/fragment_settings" />
     <fragment
             android:id="@+id/walletHistory"
-            android:name="net.taler.wallet.WalletHistory"
+            android:name="net.taler.wallet.history.WalletHistory"
             android:label="History"
             tools:layout="@layout/fragment_show_history" />
     <fragment

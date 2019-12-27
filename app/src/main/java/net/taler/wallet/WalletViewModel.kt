@@ -20,8 +20,8 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.google.android.material.snackbar.Snackbar
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.history.HistoryEntry
 import org.json.JSONObject
 
 const val TAG = "taler-wallet"
@@ -96,12 +96,6 @@ open class WithdrawStatus {
 
 open class HistoryResult(
     val history: List<HistoryEntry>
-)
-
-open class HistoryEntry(
-    val detail: JSONObject,
-    val type: String,
-    val timestamp: JSONObject
 )
 
 open class PendingOperationInfo(

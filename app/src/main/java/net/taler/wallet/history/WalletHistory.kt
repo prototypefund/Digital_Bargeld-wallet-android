@@ -14,49 +14,19 @@
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet
+package net.taler.wallet.history
 
 
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.widget.TextView
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-class WalletHistoryAdapter(private var myDataset: HistoryResult) : RecyclerView.Adapter<WalletHistoryAdapter.MyViewHolder>() {
-
-    init {
-        setHasStableIds(false)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val rowView = LayoutInflater.from(parent.context).inflate(R.layout.history_row, parent, false)
-        return MyViewHolder(rowView)
-    }
-
-    override fun getItemCount(): Int {
-        return myDataset.history.size
-    }
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val h = myDataset.history[myDataset.history.size - position - 1]
-        val text = holder.rowView.findViewById<TextView>(R.id.history_text)
-        val subText = holder.rowView.findViewById<TextView>(R.id.history_subtext)
-        text.text = h.type
-        subText.text = h.timestamp.toString() + "\n" + h.detail.toString(1)
-    }
-
-    fun update(updatedHistory: HistoryResult) {
-        this.myDataset = updatedHistory
-        this.notifyDataSetChanged()
-    }
-
-    class MyViewHolder(val rowView: View) : RecyclerView.ViewHolder(rowView)
-}
-
+import net.taler.wallet.HistoryResult
+import net.taler.wallet.R
+import net.taler.wallet.WalletViewModel
 
 /**
  * Wallet history.
@@ -72,7 +42,9 @@ class WalletHistory : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        historyAdapter = WalletHistoryAdapter(HistoryResult(listOf()))
+        historyAdapter = WalletHistoryAdapter(
+            HistoryResult(listOf())
+        )
 
         model = activity?.run {
             ViewModelProviders.of(this)[WalletViewModel::class.java]
@@ -96,7 +68,7 @@ class WalletHistory : Fragment() {
 
     private fun updateHistory() {
         model.getHistory {
-            if (it.history.size == 0) {
+            if (it.history.isEmpty()) {
                 historyPlaceholder.visibility = View.VISIBLE
             }
             historyAdapter.update(it)
