@@ -5,13 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
-import org.json.JSONObject
-
-open class HistoryEntry(
-    val detail: JSONObject,
-    val type: String,
-    val timestamp: JSONObject
-)
 
 enum class ReserveType {
     /**

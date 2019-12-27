@@ -24,7 +24,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import net.taler.wallet.HistoryResult
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
 
@@ -35,16 +34,12 @@ import net.taler.wallet.WalletViewModel
 class WalletHistory : Fragment() {
 
     lateinit var model: WalletViewModel
-    lateinit var historyAdapter: WalletHistoryAdapter
+    private val historyAdapter = WalletHistoryAdapter()
     lateinit var historyPlaceholder: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
-        historyAdapter = WalletHistoryAdapter(
-            HistoryResult(listOf())
-        )
 
         model = activity?.run {
             ViewModelProviders.of(this)[WalletViewModel::class.java]
@@ -68,7 +63,7 @@ class WalletHistory : Fragment() {
 
     private fun updateHistory() {
         model.getHistory {
-            if (it.history.isEmpty()) {
+            if (it.isEmpty()) {
                 historyPlaceholder.visibility = View.VISIBLE
             }
             historyAdapter.update(it)
@@ -81,7 +76,9 @@ class WalletHistory : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_show_history, container, false)
-        val myLayoutManager = LinearLayoutManager(context)
+        val myLayoutManager = LinearLayoutManager(context).apply {
+            reverseLayout = true  // show latest events first
+        }
         val myItemDecoration = DividerItemDecoration(context, myLayoutManager.orientation)
         view.findViewById<RecyclerView>(R.id.list_history).apply {
             layoutManager = myLayoutManager

@@ -16,6 +16,8 @@
     <string name="servicedesc">my service</string>
     <string name="aiddescription">my aid</string>
 
+    <string name="history_event_withdrawn">Withdraw</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

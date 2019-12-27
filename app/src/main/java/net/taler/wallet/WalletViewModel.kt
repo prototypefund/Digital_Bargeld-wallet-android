@@ -20,8 +20,11 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.history.HistoryEntry
+import net.taler.wallet.history.History
 import org.json.JSONObject
 
 const val TAG = "taler-wallet"
@@ -94,10 +97,6 @@ open class WithdrawStatus {
     data class Withdrawing(val talerWithdrawUri: String) : WithdrawStatus()
 }
 
-open class HistoryResult(
-    val history: List<HistoryEntry>
-)
-
 open class PendingOperationInfo(
     val type: String,
     val detail: JSONObject
@@ -138,6 +137,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     private var currentWithdrawRequestId = 0
 
     private val walletBackendApi = WalletBackendApi(app)
+    private val mapper = ObjectMapper().registerModule(KotlinModule())
 
     fun init() {
         if (initialized) {
@@ -214,23 +214,14 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun getHistory(cb: (r: HistoryResult) -> Unit) {
+    fun getHistory(cb: (r: History) -> Unit) {
         walletBackendApi.sendRequest("getHistory", null) { isError, result ->
             if (isError) {
+                // TODO show error message in [WalletHistory] fragment
                 return@sendRequest
             }
-            val historyEntries = mutableListOf<HistoryEntry>()
-            val historyList = result.getJSONArray("history")
-            for (i in 0 until historyList.length()) {
-                val h = historyList.getJSONObject(i)
-                Log.v(TAG, "got history entry $h")
-                val type = h.getString("type")
-                Log.v(TAG, "got history entry type $type")
-                val detail = h
-                val timestamp = h.getJSONObject("timestamp")
-                historyEntries.add(HistoryEntry(detail, type, timestamp))
-            }
-            cb(HistoryResult(historyEntries))
+            val history: History = mapper.readValue(result.getString("history"))
+            cb(history)
         }
     }
 
