@@ -16,7 +16,15 @@
     <string name="servicedesc">my service</string>
     <string name="aiddescription">my aid</string>
 
+    <!-- HistoryEvents -->
+    <string name="history_event_exchange_added">Exchange Added</string>
+    <string name="history_event_exchange_updated">Exchange Updated</string>
+    <string name="history_event_reserve_balance_updated">Reserve Balance Updated</string>
+    <string name="history_event_payment_sent">Payment Made</string>
     <string name="history_event_withdrawn">Withdraw</string>
+    <string name="history_event_order_accepted">Order Confirmed</string>
+    <string name="history_event_order_refused">Order Cancelled</string>
+    <string name="history_event_refreshed">Refresh</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
