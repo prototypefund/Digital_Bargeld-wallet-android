@@ -45,14 +45,15 @@ dependencies {
     implementation project(":akono")
     implementation 'com.google.guava:guava:28.0-android'
 
-    def nav_version = "2.2.0-rc03"
+    def nav_version = "2.2.0-rc04"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     // ViewModel and LiveData
-    def lifecycle_version = "2.1.0"
+    def lifecycle_version = "2.2.0-rc03"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
 
     // QR codes
     implementation 'com.google.zxing:core:3.4.0'

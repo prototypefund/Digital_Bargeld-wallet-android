@@ -19,11 +19,14 @@ package net.taler.wallet.history
 
 import android.os.Bundle
 import android.view.*
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.fragment_show_history.*
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
 
@@ -34,39 +37,36 @@ import net.taler.wallet.WalletViewModel
 class WalletHistory : Fragment() {
 
     lateinit var model: WalletViewModel
+    private lateinit var showAllItem: MenuItem
     private val historyAdapter = WalletHistoryAdapter()
-    lateinit var historyPlaceholder: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
         model = activity?.run {
-            ViewModelProviders.of(this)[WalletViewModel::class.java]
+            ViewModelProvider(this)[WalletViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
 
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        activity?.menuInflater?.inflate(R.menu.history, menu)
+        inflater.inflate(R.menu.history, menu)
+        showAllItem = menu.findItem(R.id.show_all_history)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.show_all_history -> {
+                item.isChecked = !item.isChecked
+                model.historyShowAll.value = item.isChecked
+                true
+            }
             R.id.reload_history -> {
-                updateHistory()
+                model.historyShowAll.value = showAllItem.isChecked
                 true
             }
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun updateHistory() {
-        model.getHistory {
-            if (it.isEmpty()) {
-                historyPlaceholder.visibility = View.VISIBLE
-            }
-            historyAdapter.update(it)
         }
     }
 
@@ -74,24 +74,28 @@ class WalletHistory : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_show_history, container, false)
-        val myLayoutManager = LinearLayoutManager(context).apply {
-            reverseLayout = true  // show latest events first
-        }
-        val myItemDecoration = DividerItemDecoration(context, myLayoutManager.orientation)
-        view.findViewById<RecyclerView>(R.id.list_history).apply {
+        return inflater.inflate(R.layout.fragment_show_history, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        historyList.apply {
+            val myLayoutManager = LinearLayoutManager(context)
+            val myItemDecoration = DividerItemDecoration(context, myLayoutManager.orientation)
             layoutManager = myLayoutManager
             adapter = historyAdapter
             addItemDecoration(myItemDecoration)
         }
 
-        historyPlaceholder = view.findViewById<View>(R.id.list_history_placeholder)
-        historyPlaceholder.visibility = View.GONE
+        model.historyProgress.observe(this, Observer { show ->
+            historyProgressBar.visibility = if (show) VISIBLE else INVISIBLE
+        })
+        model.history.observe(this, Observer { history ->
+            historyEmptyState.visibility = if (history.isEmpty()) VISIBLE else INVISIBLE
+            historyAdapter.update(history)
+        })
 
-        updateHistory()
-
-        return view
+        // kicks off initial load, needs to be adapted if showAll state is ever saved
+        if (savedInstanceState == null) model.historyShowAll.value = false
     }
 
     companion object {

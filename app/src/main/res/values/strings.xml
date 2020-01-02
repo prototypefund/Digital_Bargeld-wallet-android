@@ -20,11 +20,15 @@
     <string name="history_event_exchange_added">Exchange Added</string>
     <string name="history_event_exchange_updated">Exchange Updated</string>
     <string name="history_event_reserve_balance_updated">Reserve Balance Updated</string>
-    <string name="history_event_payment_sent">Payment Made</string>
+    <string name="history_event_payment_sent">Payment</string>
     <string name="history_event_withdrawn">Withdraw</string>
     <string name="history_event_order_accepted">Order Confirmed</string>
     <string name="history_event_order_refused">Order Cancelled</string>
     <string name="history_event_refreshed">Refresh</string>
+    <string name="history_fee_label">Fee:</string>
+    <string name="history_show_all">Show All</string>
+    <string name="history_reload">Reload History</string>
+    <string name="history_empty">The wallet history is empty</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

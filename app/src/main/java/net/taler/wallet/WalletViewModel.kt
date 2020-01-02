@@ -18,11 +18,15 @@ package net.taler.wallet
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.history.History
 import org.json.JSONObject
@@ -61,6 +65,7 @@ open class WithdrawStatus {
         val tosText: String,
         val tosEtag: String
     ) : WithdrawStatus()
+
     class Success : WithdrawStatus()
     data class ReceivedDetails(
         val talerWithdrawUri: String,
@@ -81,6 +86,7 @@ open class PendingOperations(
 )
 
 
+@Suppress("EXPERIMENTAL_API_USAGE")
 class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     private var initialized = false
 
@@ -102,6 +108,18 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
     val pendingOperations = MutableLiveData<PendingOperations>().apply {
         value = PendingOperations(listOf())
+    }
+
+    private val mHistoryProgress = MutableLiveData<Boolean>()
+    val historyProgress: LiveData<Boolean> = mHistoryProgress
+
+    val historyShowAll = MutableLiveData<Boolean>()
+
+    val history: LiveData<History> = historyShowAll.switchMap { showAll ->
+        loadHistory(showAll)
+            .onStart { mHistoryProgress.postValue(true) }
+            .onCompletion { mHistoryProgress.postValue(false) }
+            .asLiveData(Dispatchers.IO)
     }
 
     private var activeGetBalance = 0
@@ -188,15 +206,21 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun getHistory(cb: (r: History) -> Unit) {
+    private fun loadHistory(showAll: Boolean) = callbackFlow {
+        mHistoryProgress.postValue(true)
         walletBackendApi.sendRequest("getHistory", null) { isError, result ->
             if (isError) {
                 // TODO show error message in [WalletHistory] fragment
+                close()
                 return@sendRequest
             }
             val history: History = mapper.readValue(result.getString("history"))
-            cb(history)
+            history.reverse()  // show latest first
+            mHistoryProgress.postValue(false)
+            offer(if (showAll) history else history.filter { it.showToUser } as History)
+            close()
         }
+        awaitClose()
     }
 
     fun withdrawTestkudos() {

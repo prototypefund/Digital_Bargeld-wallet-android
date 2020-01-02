@@ -80,7 +80,7 @@ class ReserveShortInfo(
     val reserveCreationDetail: ReserveCreationDetail
 )
 
-class History : ArrayList<HistoryEvent>()
+typealias History = ArrayList<HistoryEvent>
 
 @JsonTypeInfo(
     use = NAME,
@@ -109,7 +109,8 @@ abstract class HistoryEvent(
     @get:StringRes
     open val title: Int = 0,
     @get:DrawableRes
-    open val icon: Int = R.drawable.ic_account_balance
+    open val icon: Int = R.drawable.ic_account_balance,
+    open val showToUser: Boolean = false
 )
 
 
@@ -178,6 +179,7 @@ class HistoryWithdrawnEvent(
     override val layout = R.layout.history_withdrawn
     override val title = R.string.history_event_withdrawn
     override val icon = R.drawable.history_withdrawn
+    override val showToUser = true
 }
 
 @JsonTypeName("order-accepted")
@@ -232,6 +234,7 @@ class HistoryPaymentSentEvent(
     override val layout = R.layout.history_payment_sent
     override val title = R.string.history_event_payment_sent
     override val icon = R.drawable.ic_cash_usd_outline
+    override val showToUser = true
 }
 
 @JsonTypeName("refreshed")

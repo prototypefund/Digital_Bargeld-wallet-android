@@ -64,7 +64,7 @@ internal class WalletHistoryAdapter(private var history: History = History()) :
 internal abstract class HistoryEventViewHolder(protected val v: View) : ViewHolder(v) {
 
     private val icon: ImageView = v.findViewById(R.id.icon)
-    private val title: TextView = v.findViewById(R.id.title)
+    protected val title: TextView = v.findViewById(R.id.title)
     private val time: TextView = v.findViewById(R.id.time)
 
     @CallSuper
@@ -77,7 +77,15 @@ internal abstract class HistoryEventViewHolder(protected val v: View) : ViewHold
 
     private fun getRelativeTime(timestamp: Long): CharSequence {
         val now = System.currentTimeMillis()
-        return getRelativeTimeSpanString(timestamp, now, MINUTE_IN_MILLIS, FORMAT_ABBREV_RELATIVE)
+        return if (now - timestamp > DAY_IN_MILLIS * 2) {
+            formatDateTime(
+                v.context,
+                timestamp,
+                FORMAT_SHOW_TIME or FORMAT_SHOW_DATE or FORMAT_ABBREV_MONTH or FORMAT_NO_YEAR
+            )
+        } else {
+            getRelativeTimeSpanString(timestamp, now, MINUTE_IN_MILLIS, FORMAT_ABBREV_RELATIVE)
+        }
     }
 
 }
@@ -132,7 +140,8 @@ internal class HistoryPaymentSentViewHolder(v: View) : HistoryEventViewHolder(v)
         super.bind(event)
         event as HistoryPaymentSentEvent
 
-        summary.text = event.orderShortInfo.summary
+        title.text = event.orderShortInfo.summary
+        summary.setText(event.title)
         amountPaidWithFees.text = parseAmount(event.amountPaidWithFees).toString()
     }
 
