@@ -284,6 +284,96 @@ class HistoryEventTest {
     }
 
     @Test
+    fun `test HistoryPaymentAbortedEvent`() {
+        val json = """{
+            "type": "payment-aborted",
+            "eventId": "payment-sent;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+            "orderShortInfo": {
+                "amount": "${orderShortInfo.amount}",
+                "orderId": "${orderShortInfo.orderId}",
+                "merchantBaseUrl": "${orderShortInfo.merchantBaseUrl}",
+                "proposalId": "${orderShortInfo.proposalId}",
+                "summary": "${orderShortInfo.summary}"
+            },
+            "timestamp": {
+              "t_ms": $timestamp
+            },
+            "amountLost": "KUDOS:0.1"
+          }""".trimIndent()
+        val event: HistoryPaymentAbortedEvent = mapper.readValue(json)
+
+        assertEquals(orderShortInfo, event.orderShortInfo)
+        assertEquals("KUDOS:0.1", event.amountLost)
+        assertEquals(timestamp, event.timestamp.ms)
+    }
+
+    @Test
+    fun `test HistoryTipAcceptedEvent`() {
+        val json = """{
+            "type": "tip-accepted",
+            "timestamp": {
+              "t_ms": $timestamp
+            },
+            "eventId": "tip-accepted;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+            "tipId": "tip-accepted;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+            "tipRaw": "KUDOS:4"
+          }""".trimIndent()
+        val event: HistoryTipAcceptedEvent = mapper.readValue(json)
+
+        assertEquals("tip-accepted;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0", event.tipId)
+        assertEquals("KUDOS:4", event.tipRaw)
+        assertEquals(timestamp, event.timestamp.ms)
+    }
+
+    @Test
+    fun `test HistoryTipDeclinedEvent`() {
+        val json = """{
+            "type": "tip-declined",
+            "timestamp": {
+              "t_ms": $timestamp
+            },
+            "eventId": "tip-accepted;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+            "tipId": "tip-accepted;998724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+            "tipAmount": "KUDOS:4"
+          }""".trimIndent()
+        val event: HistoryTipDeclinedEvent = mapper.readValue(json)
+
+        assertEquals("tip-accepted;998724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0", event.tipId)
+        assertEquals("KUDOS:4", event.tipAmount)
+        assertEquals(timestamp, event.timestamp.ms)
+    }
+
+    @Test
+    fun `test HistoryRefundedEvent`() {
+        val json = """{
+            "type": "refund",
+            "eventId": "refund;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+            "refundGroupId": "refund;998724",
+            "orderShortInfo": {
+                "amount": "${orderShortInfo.amount}",
+                "orderId": "${orderShortInfo.orderId}",
+                "merchantBaseUrl": "${orderShortInfo.merchantBaseUrl}",
+                "proposalId": "${orderShortInfo.proposalId}",
+                "summary": "${orderShortInfo.summary}"
+            },
+            "timestamp": {
+              "t_ms": $timestamp
+            },
+            "amountRefundedRaw": "KUDOS:1.0",
+            "amountRefundedInvalid": "KUDOS:0.5",
+            "amountRefundedEffective": "KUDOS:0.4"
+          }""".trimIndent()
+        val event: HistoryRefundedEvent = mapper.readValue(json)
+
+        assertEquals("refund;998724", event.refundGroupId)
+        assertEquals("KUDOS:1.0", event.amountRefundedRaw)
+        assertEquals("KUDOS:0.5", event.amountRefundedInvalid)
+        assertEquals("KUDOS:0.4", event.amountRefundedEffective)
+        assertEquals(orderShortInfo, event.orderShortInfo)
+        assertEquals(timestamp, event.timestamp.ms)
+    }
+
+    @Test
     fun `test HistoryRefreshedEvent`() {
         val json = """{
             "type": "refreshed",
@@ -308,6 +398,46 @@ class HistoryEventTest {
         assertEquals(1, event.numRefreshedInputCoins)
         assertEquals("8AVHKJFAN4QV4C11P56NEY83AJMGFF2KF412AN3Y0QBP09RSN640", event.refreshGroupId)
         assertEquals(PAY, event.refreshReason)
+        assertEquals(timestamp, event.timestamp.ms)
+    }
+
+    @Test
+    fun `test HistoryOrderRedirectedEvent`() {
+        val json = """{
+            "type": "order-redirected",
+            "eventId": "order-redirected;621J6D5SXG7M17TYA26945DYKNQZPW4600MZ1W8MADA1RRR49F8G",
+            "alreadyPaidOrderShortInfo": {
+              "amount": "KUDOS:0.5",
+              "orderId": "2019.354-01P25CD66P8NG",
+              "merchantBaseUrl": "https://backend.demo.taler.net/public/instances/FSF/",
+              "proposalId": "898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+              "summary": "Essay: 1. The Free Software Definition"
+            },
+            "newOrderShortInfo": {
+              "amount": "KUDOS:0.5",
+              "orderId": "2019.364-01M4QH6KPMJY4",
+              "merchantBaseUrl": "https://backend.demo.taler.net/public/instances/FSF/",
+              "proposalId": "621J6D5SXG7M17TYA26945DYKNQZPW4600MZ1W8MADA1RRR49F8G",
+              "summary": "Essay: 1. The Free Software Definition"
+            },
+            "timestamp": {
+              "t_ms": $timestamp
+            }
+          }""".trimIndent()
+        val event: HistoryOrderRedirectedEvent = mapper.readValue(json)
+
+        assertEquals("898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0", event.alreadyPaidOrderShortInfo.proposalId)
+        assertEquals("https://backend.demo.taler.net/public/instances/FSF/", event.alreadyPaidOrderShortInfo.merchantBaseUrl)
+        assertEquals("2019.354-01P25CD66P8NG", event.alreadyPaidOrderShortInfo.orderId)
+        assertEquals("KUDOS:0.5", event.alreadyPaidOrderShortInfo.amount)
+        assertEquals("Essay: 1. The Free Software Definition", event.alreadyPaidOrderShortInfo.summary)
+
+        assertEquals("621J6D5SXG7M17TYA26945DYKNQZPW4600MZ1W8MADA1RRR49F8G", event.newOrderShortInfo.proposalId)
+        assertEquals("https://backend.demo.taler.net/public/instances/FSF/", event.newOrderShortInfo.merchantBaseUrl)
+        assertEquals("2019.364-01M4QH6KPMJY4", event.newOrderShortInfo.orderId)
+        assertEquals("KUDOS:0.5", event.newOrderShortInfo.amount)
+        assertEquals("Essay: 1. The Free Software Definition", event.newOrderShortInfo.summary)
+
         assertEquals(timestamp, event.timestamp.ms)
     }
 

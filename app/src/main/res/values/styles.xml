@@ -15,7 +15,7 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
     <style name="HistoryTitle">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">17sp</item>
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 

@@ -87,6 +87,19 @@ typealias History = ArrayList<HistoryEvent>
     include = PROPERTY,
     property = "type"
 )
+/** missing:
+AuditorComplaintSent = "auditor-complained-sent",
+AuditorComplaintProcessed = "auditor-complaint-processed",
+AuditorTrustAdded = "auditor-trust-added",
+AuditorTrustRemoved = "auditor-trust-removed",
+ExchangeTermsAccepted = "exchange-terms-accepted",
+ExchangePolicyChanged = "exchange-policy-changed",
+ExchangeTrustAdded = "exchange-trust-added",
+ExchangeTrustRemoved = "exchange-trust-removed",
+FundsDepositedToSelf = "funds-deposited-to-self",
+FundsRecouped = "funds-recouped",
+ReserveCreated = "reserve-created",
+ */
 @JsonSubTypes(
     Type(value = ExchangeAddedEvent::class, name = "exchange-added"),
     Type(value = ExchangeUpdatedEvent::class, name = "exchange-updated"),
@@ -94,7 +107,12 @@ typealias History = ArrayList<HistoryEvent>
     Type(value = HistoryWithdrawnEvent::class, name = "withdrawn"),
     Type(value = HistoryOrderAcceptedEvent::class, name = "order-accepted"),
     Type(value = HistoryOrderRefusedEvent::class, name = "order-refused"),
+    Type(value = HistoryOrderRedirectedEvent::class, name = "order-redirected"),
     Type(value = HistoryPaymentSentEvent::class, name = "payment-sent"),
+    Type(value = HistoryPaymentAbortedEvent::class, name = "payment-aborted"),
+    Type(value = HistoryTipAcceptedEvent::class, name = "tip-accepted"),
+    Type(value = HistoryTipDeclinedEvent::class, name = "tip-declined"),
+    Type(value = HistoryRefundedEvent::class, name = "refund"),
     Type(value = HistoryRefreshedEvent::class, name = "refreshed")
 )
 @JsonIgnoreProperties(
@@ -176,7 +194,7 @@ class HistoryWithdrawnEvent(
      */
     val amountWithdrawnEffective: String
 ) : HistoryEvent(timestamp) {
-    override val layout = R.layout.history_withdrawn
+    override val layout = R.layout.history_receive
     override val title = R.string.history_event_withdrawn
     override val icon = R.drawable.history_withdrawn
     override val showToUser = true
@@ -231,9 +249,27 @@ class HistoryPaymentSentEvent(
      */
     val sessionId: String?
 ) : HistoryEvent(timestamp) {
-    override val layout = R.layout.history_payment_sent
+    override val layout = R.layout.history_payment
     override val title = R.string.history_event_payment_sent
     override val icon = R.drawable.ic_cash_usd_outline
+    override val showToUser = true
+}
+
+@JsonTypeName("payment-aborted")
+class HistoryPaymentAbortedEvent(
+    timestamp: Timestamp,
+    /**
+     * Condensed info about the order that we already paid for.
+     */
+    val orderShortInfo: OrderShortInfo,
+    /**
+     * Amount that was lost due to refund and refreshing fees.
+     */
+    val amountLost: String
+) : HistoryEvent(timestamp) {
+    override val layout = R.layout.history_payment
+    override val title = R.string.history_event_payment_aborted
+    override val icon = R.drawable.history_payment_aborted
     override val showToUser = true
 }
 
@@ -264,6 +300,88 @@ class HistoryRefreshedEvent(
 ) : HistoryEvent(timestamp) {
     override val icon = R.drawable.ic_history_black_24dp
     override val title = R.string.history_event_refreshed
+}
+
+@JsonTypeName("order-redirected")
+class HistoryOrderRedirectedEvent(
+    timestamp: Timestamp,
+    /**
+     * Condensed info about the new order that contains a
+     * product (identified by the fulfillment URL) that we've already paid for.
+     */
+    val newOrderShortInfo: OrderShortInfo,
+    /**
+     * Condensed info about the order that we already paid for.
+     */
+    val alreadyPaidOrderShortInfo: OrderShortInfo
+) : HistoryEvent(timestamp) {
+    override val icon = R.drawable.ic_directions
+    override val title = R.string.history_event_order_redirected
+}
+
+@JsonTypeName("tip-accepted")
+class HistoryTipAcceptedEvent(
+    timestamp: Timestamp,
+    /**
+     * Unique identifier for the tip to query more information.
+     */
+    val tipId: String,
+    /**
+     * Raw amount of the tip, without extra fees that apply.
+     */
+    val tipRaw: String
+) : HistoryEvent(timestamp) {
+    override val icon = R.drawable.history_tip_accepted
+    override val title = R.string.history_event_tip_accepted
+    override val layout = R.layout.history_receive
+    override val showToUser = true
+}
+
+@JsonTypeName("tip-declined")
+class HistoryTipDeclinedEvent(
+    timestamp: Timestamp,
+    /**
+     * Unique identifier for the tip to query more information.
+     */
+    val tipId: String,
+    /**
+     * Raw amount of the tip, without extra fees that apply.
+     */
+    val tipAmount: String
+) : HistoryEvent(timestamp) {
+    override val icon = R.drawable.history_tip_declined
+    override val title = R.string.history_event_tip_declined
+    override val layout = R.layout.history_receive
+    override val showToUser = true
+}
+
+@JsonTypeName("refund")
+class HistoryRefundedEvent(
+    timestamp: Timestamp,
+    val orderShortInfo: OrderShortInfo,
+    /**
+     * Unique identifier for this refund.
+     * (Identifies multiple refund permissions that were obtained at once.)
+     */
+    val refundGroupId: String,
+    /**
+     * Part of the refund that couldn't be applied because
+     * the refund permissions were expired.
+     */
+    val amountRefundedInvalid: String,
+    /**
+     * Amount that has been refunded by the merchant.
+     */
+    val amountRefundedRaw: String,
+    /**
+     * Amount will be added to the wallet's balance after fees and refreshing.
+     */
+    val amountRefundedEffective: String
+) : HistoryEvent(timestamp) {
+    override val icon = R.drawable.history_refund
+    override val title = R.string.history_event_refund
+    override val layout = R.layout.history_receive
+    override val showToUser = true
 }
 
 @JsonTypeInfo(
