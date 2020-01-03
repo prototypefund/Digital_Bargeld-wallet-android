@@ -105,6 +105,10 @@ class ParsedAmount(
         return ParsedAmount(currency, resultValue, resultFraction)
     }
 
+    fun isZero(): Boolean {
+        return value == 0u && fraction == 0.0
+    }
+
     fun toJSONString(): String {
         return "$currency:${getValueString()}"
     }

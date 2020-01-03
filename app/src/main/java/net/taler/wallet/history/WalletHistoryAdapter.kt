@@ -116,6 +116,7 @@ internal class HistoryWithdrawnViewHolder(v: View) : HistoryEventViewHolder(v) {
 
     private val exchangeUrl: TextView = v.findViewById(R.id.exchangeUrl)
     private val amountWithdrawn: TextView = v.findViewById(R.id.amountWithdrawn)
+    private val feeLabel: TextView = v.findViewById(R.id.feeLabel)
     private val fee: TextView = v.findViewById(R.id.fee)
 
     override fun bind(event: HistoryEvent) {
@@ -125,8 +126,16 @@ internal class HistoryWithdrawnViewHolder(v: View) : HistoryEventViewHolder(v) {
         exchangeUrl.text = event.exchangeBaseUrl
         val parsedEffective = parseAmount(event.amountWithdrawnEffective)
         val parsedRaw = parseAmount(event.amountWithdrawnRaw)
-        amountWithdrawn.text = parsedRaw.toString()
-        fee.text = (parsedRaw - parsedEffective).toString()
+        amountWithdrawn.text = "+${parsedRaw.toString()}"
+        val calculatedFee = parsedRaw - parsedEffective
+        if (calculatedFee.isZero()) {
+            fee.visibility = View.GONE
+            feeLabel.visibility = View.GONE
+        } else {
+            fee.text = "-${calculatedFee.toString()}"
+            fee.visibility = View.VISIBLE
+            feeLabel.visibility = View.VISIBLE
+        }
     }
 
 }
@@ -142,7 +151,7 @@ internal class HistoryPaymentSentViewHolder(v: View) : HistoryEventViewHolder(v)
 
         title.text = event.orderShortInfo.summary
         summary.setText(event.title)
-        amountPaidWithFees.text = parseAmount(event.amountPaidWithFees).toString()
+        amountPaidWithFees.text = "-${parseAmount(event.amountPaidWithFees).toString()}"
     }
 
 }
