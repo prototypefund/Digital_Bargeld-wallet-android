@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
+import net.taler.wallet.ParsedAmount.Companion.parseAmount
 import net.taler.wallet.R
 
 enum class ReserveType {
@@ -298,8 +299,11 @@ class HistoryRefreshedEvent(
      */
     val refreshGroupId: String
 ) : HistoryEvent(timestamp) {
-    override val icon = R.drawable.ic_history_black_24dp
+    override val layout = R.layout.history_payment
+    override val icon = R.drawable.history_refresh
     override val title = R.string.history_event_refreshed
+    override val showToUser =
+        !(parseAmount(amountRefreshedRaw) - parseAmount(amountRefreshedEffective)).isZero()
 }
 
 @JsonTypeName("order-redirected")

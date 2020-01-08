@@ -109,9 +109,6 @@ internal class GenericHistoryEventViewHolder(v: View) : HistoryEventViewHolder(v
             is HistoryOrderAcceptedEvent -> event.orderShortInfo.summary
             is HistoryOrderRefusedEvent -> event.orderShortInfo.summary
             is HistoryOrderRedirectedEvent -> event.newOrderShortInfo.summary
-            is HistoryRefreshedEvent -> {
-                "${parseAmount(event.amountRefreshedRaw)} - ${parseAmount(event.amountRefreshedEffective)}"
-            }
             else -> ""
         }
     }
@@ -199,6 +196,7 @@ internal class HistoryPaymentViewHolder(v: View) : HistoryEventViewHolder(v) {
         when(event) {
             is HistoryPaymentSentEvent -> bind(event)
             is HistoryPaymentAbortedEvent -> bind(event)
+            is HistoryRefreshedEvent -> bind(event)
         }
     }
 
@@ -210,6 +208,14 @@ internal class HistoryPaymentViewHolder(v: View) : HistoryEventViewHolder(v) {
     private fun bind(event: HistoryPaymentAbortedEvent) {
         title.text = event.orderShortInfo.summary
         amountPaidWithFees.text = "-${parseAmount(event.amountLost)}"
+    }
+
+    private fun bind(event: HistoryRefreshedEvent) {
+        title.text = ""
+        val fee =
+            parseAmount(event.amountRefreshedRaw) - parseAmount(event.amountRefreshedEffective)
+        if (fee.isZero()) amountPaidWithFees.text = null
+        else amountPaidWithFees.text = "-$fee"
     }
 
 }
