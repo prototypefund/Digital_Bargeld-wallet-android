@@ -87,7 +87,8 @@ typealias History = ArrayList<HistoryEvent>
 @JsonTypeInfo(
     use = NAME,
     include = PROPERTY,
-    property = "type"
+    property = "type",
+    defaultImpl = HistoryUnknownEvent::class
 )
 /** missing:
 AuditorComplaintSent = "auditor-complained-sent",
@@ -135,6 +136,10 @@ abstract class HistoryEvent(
     open lateinit var json: JSONObject
 }
 
+
+class HistoryUnknownEvent(timestamp: Timestamp) : HistoryEvent(timestamp) {
+    override val title = R.string.history_event_unknown
+}
 
 @JsonTypeName("exchange-added")
 class ExchangeAddedEvent(

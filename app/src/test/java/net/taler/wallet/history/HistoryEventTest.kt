@@ -441,4 +441,19 @@ class HistoryEventTest {
         assertEquals(timestamp, event.timestamp.ms)
     }
 
+    @Test
+    fun `test HistoryUnknownEvent`() {
+        val json = """{
+            "type": "does not exist",
+            "timestamp": {
+              "t_ms": $timestamp
+            },
+            "eventId": "does-not-exist;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0"
+          }""".trimIndent()
+        val event: HistoryEvent = mapper.readValue(json)
+
+        assertEquals(HistoryUnknownEvent::class.java, event.javaClass)
+        assertEquals(timestamp, event.timestamp.ms)
+    }
+
 }

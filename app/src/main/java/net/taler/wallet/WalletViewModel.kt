@@ -19,6 +19,7 @@ package net.taler.wallet
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
+import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -130,7 +131,9 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     private var currentWithdrawRequestId = 0
 
     private val walletBackendApi = WalletBackendApi(app)
-    private val mapper = ObjectMapper().registerModule(KotlinModule())
+    private val mapper = ObjectMapper()
+        .registerModule(KotlinModule())
+        .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     fun init() {
         if (initialized) {
