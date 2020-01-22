@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import net.taler.wallet.ParsedAmount.Companion.parseAmount
 import net.taler.wallet.R
+import org.json.JSONObject
 
 enum class ReserveType {
     /**
@@ -130,7 +131,9 @@ abstract class HistoryEvent(
     @get:DrawableRes
     open val icon: Int = R.drawable.ic_account_balance,
     open val showToUser: Boolean = false
-)
+) {
+    open lateinit var json: JSONObject
+}
 
 
 @JsonTypeName("exchange-added")

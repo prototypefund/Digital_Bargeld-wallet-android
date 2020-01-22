@@ -441,33 +441,4 @@ class HistoryEventTest {
         assertEquals(timestamp, event.timestamp.ms)
     }
 
-    @Test
-    fun `test list of events as History`() {
-        val builtIn = Random.nextBoolean()
-        val json = """[
-        {
-            "type": "exchange-updated",
-            "eventId": "exchange-updated;https%3A%2F%2Fexchange.test.taler.net%2F",
-            "exchangeBaseUrl": "https:\/\/exchange.test.taler.net\/",
-            "timestamp": {
-                "t_ms": $timestamp
-            }
-        },
-        {
-            "type": "exchange-added",
-            "builtIn": $builtIn,
-            "eventId": "exchange-added;https%3A%2F%2Fexchange.test.taler.net%2F",
-            "exchangeBaseUrl": "https:\/\/exchange.test.taler.net\/",
-            "timestamp": {
-                "t_ms": $timestamp
-            }
-        }
-        ]""".trimIndent()
-        val history: History = mapper.readValue(json)
-
-        assertEquals(2, history.size)
-        assertTrue(history[0] is ExchangeUpdatedEvent)
-        assertTrue(history[1] is ExchangeAddedEvent)
-    }
-
 }

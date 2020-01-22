@@ -29,13 +29,16 @@ import androidx.annotation.CallSuper
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import net.taler.wallet.BuildConfig
 import net.taler.wallet.ParsedAmount
 import net.taler.wallet.ParsedAmount.Companion.parseAmount
 import net.taler.wallet.R
 
 
-internal class WalletHistoryAdapter(private var history: History = History()) :
-    Adapter<HistoryEventViewHolder>() {
+internal class WalletHistoryAdapter(
+    private val listener: OnEventClickListener,
+    private var history: History = History()
+) : Adapter<WalletHistoryAdapter.HistoryEventViewHolder>() {
 
     init {
         setHasStableIds(false)
@@ -64,158 +67,163 @@ internal class WalletHistoryAdapter(private var history: History = History()) :
         this.notifyDataSetChanged()
     }
 
-}
+    internal abstract inner class HistoryEventViewHolder(protected val v: View) : ViewHolder(v) {
 
-internal abstract class HistoryEventViewHolder(protected val v: View) : ViewHolder(v) {
+        private val icon: ImageView = v.findViewById(R.id.icon)
+        protected val title: TextView = v.findViewById(R.id.title)
+        private val time: TextView = v.findViewById(R.id.time)
 
-    private val icon: ImageView = v.findViewById(R.id.icon)
-    protected val title: TextView = v.findViewById(R.id.title)
-    private val time: TextView = v.findViewById(R.id.time)
-
-    @CallSuper
-    open fun bind(event: HistoryEvent) {
-        icon.setImageResource(event.icon)
-        if (event.title == 0) title.text = event::class.java.simpleName
-        else title.setText(event.title)
-        time.text = getRelativeTime(event.timestamp.ms)
-    }
-
-    private fun getRelativeTime(timestamp: Long): CharSequence {
-        val now = System.currentTimeMillis()
-        return if (now - timestamp > DAY_IN_MILLIS * 2) {
-            formatDateTime(
-                v.context,
-                timestamp,
-                FORMAT_SHOW_TIME or FORMAT_SHOW_DATE or FORMAT_ABBREV_MONTH or FORMAT_NO_YEAR
-            )
-        } else {
-            getRelativeTimeSpanString(timestamp, now, MINUTE_IN_MILLIS, FORMAT_ABBREV_RELATIVE)
+        @CallSuper
+        open fun bind(event: HistoryEvent) {
+            if (BuildConfig.DEBUG) {  // doesn't produce recycling issues, no need to cover all cases
+                v.setOnClickListener { listener.onEventClicked(event) }
+            } else {
+                v.background = null
+            }
+            icon.setImageResource(event.icon)
+            if (event.title == 0) title.text = event::class.java.simpleName
+            else title.setText(event.title)
+            time.text = getRelativeTime(event.timestamp.ms)
         }
-    }
 
-}
-
-internal class GenericHistoryEventViewHolder(v: View) : HistoryEventViewHolder(v) {
-
-    private val info: TextView = v.findViewById(R.id.info)
-
-    override fun bind(event: HistoryEvent) {
-        super.bind(event)
-        info.text = when (event) {
-            is ExchangeAddedEvent -> event.exchangeBaseUrl
-            is ExchangeUpdatedEvent -> event.exchangeBaseUrl
-            is ReserveBalanceUpdatedEvent -> parseAmount(event.amountReserveBalance).toString()
-            is HistoryPaymentSentEvent -> event.orderShortInfo.summary
-            is HistoryOrderAcceptedEvent -> event.orderShortInfo.summary
-            is HistoryOrderRefusedEvent -> event.orderShortInfo.summary
-            is HistoryOrderRedirectedEvent -> event.newOrderShortInfo.summary
-            else -> ""
+        private fun getRelativeTime(timestamp: Long): CharSequence {
+            val now = System.currentTimeMillis()
+            return if (now - timestamp > DAY_IN_MILLIS * 2) {
+                formatDateTime(
+                    v.context,
+                    timestamp,
+                    FORMAT_SHOW_TIME or FORMAT_SHOW_DATE or FORMAT_ABBREV_MONTH or FORMAT_NO_YEAR
+                )
+            } else {
+                getRelativeTimeSpanString(timestamp, now, MINUTE_IN_MILLIS, FORMAT_ABBREV_RELATIVE)
+            }
         }
+
     }
 
-}
+    internal inner class GenericHistoryEventViewHolder(v: View) : HistoryEventViewHolder(v) {
 
-internal class HistoryReceiveViewHolder(v: View) : HistoryEventViewHolder(v) {
+        private val info: TextView = v.findViewById(R.id.info)
 
-    private val summary: TextView = v.findViewById(R.id.summary)
-    private val amountWithdrawn: TextView = v.findViewById(R.id.amountWithdrawn)
-    private val feeLabel: TextView = v.findViewById(R.id.feeLabel)
-    private val fee: TextView = v.findViewById(R.id.fee)
-
-    override fun bind(event: HistoryEvent) {
-        super.bind(event)
-        when(event) {
-            is HistoryWithdrawnEvent -> bind(event)
-            is HistoryRefundedEvent -> bind(event)
-            is HistoryTipAcceptedEvent -> bind(event)
-            is HistoryTipDeclinedEvent -> bind(event)
+        override fun bind(event: HistoryEvent) {
+            super.bind(event)
+            info.text = when (event) {
+                is ExchangeAddedEvent -> event.exchangeBaseUrl
+                is ExchangeUpdatedEvent -> event.exchangeBaseUrl
+                is ReserveBalanceUpdatedEvent -> parseAmount(event.amountReserveBalance).toString()
+                is HistoryPaymentSentEvent -> event.orderShortInfo.summary
+                is HistoryOrderAcceptedEvent -> event.orderShortInfo.summary
+                is HistoryOrderRefusedEvent -> event.orderShortInfo.summary
+                is HistoryOrderRedirectedEvent -> event.newOrderShortInfo.summary
+                else -> ""
+            }
         }
+
     }
 
-    private fun bind(event: HistoryWithdrawnEvent) {
-        title.text = getHostname(event.exchangeBaseUrl)
-        summary.setText(event.title)
+    internal inner class HistoryReceiveViewHolder(v: View) : HistoryEventViewHolder(v) {
 
-        val parsedEffective = parseAmount(event.amountWithdrawnEffective)
-        val parsedRaw = parseAmount(event.amountWithdrawnRaw)
-        showAmounts(parsedEffective, parsedRaw)
-    }
+        private val summary: TextView = v.findViewById(R.id.summary)
+        private val amountWithdrawn: TextView = v.findViewById(R.id.amountWithdrawn)
+        private val feeLabel: TextView = v.findViewById(R.id.feeLabel)
+        private val fee: TextView = v.findViewById(R.id.fee)
 
-    private fun bind(event: HistoryRefundedEvent) {
-        title.text = event.orderShortInfo.summary
-        summary.setText(event.title)
-
-        val parsedEffective = parseAmount(event.amountRefundedEffective)
-        val parsedRaw = parseAmount(event.amountRefundedRaw)
-        showAmounts(parsedEffective, parsedRaw)
-    }
-
-    private fun bind(event: HistoryTipAcceptedEvent) {
-        title.setText(event.title)
-        summary.text = null
-        val amount = parseAmount(event.tipRaw)
-        showAmounts(amount, amount)
-    }
-
-    private fun bind(event: HistoryTipDeclinedEvent) {
-        title.setText(event.title)
-        summary.text = null
-        val amount = parseAmount(event.tipAmount)
-        showAmounts(amount, amount)
-        amountWithdrawn.paintFlags = amountWithdrawn.paintFlags or STRIKE_THRU_TEXT_FLAG
-    }
-
-    private fun showAmounts(effective: ParsedAmount, raw: ParsedAmount) {
-        amountWithdrawn.text = "+$raw"
-        val calculatedFee = raw - effective
-        if (calculatedFee.isZero()) {
-            fee.visibility = GONE
-            feeLabel.visibility = GONE
-        } else {
-            fee.text = "-$calculatedFee"
-            fee.visibility = VISIBLE
-            feeLabel.visibility = VISIBLE
+        override fun bind(event: HistoryEvent) {
+            super.bind(event)
+            when (event) {
+                is HistoryWithdrawnEvent -> bind(event)
+                is HistoryRefundedEvent -> bind(event)
+                is HistoryTipAcceptedEvent -> bind(event)
+                is HistoryTipDeclinedEvent -> bind(event)
+            }
         }
-        amountWithdrawn.paintFlags = fee.paintFlags
-    }
 
-    private fun getHostname(url: String): String {
-        return url.toUri().host!!
-    }
+        private fun bind(event: HistoryWithdrawnEvent) {
+            title.text = getHostname(event.exchangeBaseUrl)
+            summary.setText(event.title)
 
-}
-
-internal class HistoryPaymentViewHolder(v: View) : HistoryEventViewHolder(v) {
-
-    private val summary: TextView = v.findViewById(R.id.summary)
-    private val amountPaidWithFees: TextView = v.findViewById(R.id.amountPaidWithFees)
-
-    override fun bind(event: HistoryEvent) {
-        super.bind(event)
-        summary.setText(event.title)
-        when(event) {
-            is HistoryPaymentSentEvent -> bind(event)
-            is HistoryPaymentAbortedEvent -> bind(event)
-            is HistoryRefreshedEvent -> bind(event)
+            val parsedEffective = parseAmount(event.amountWithdrawnEffective)
+            val parsedRaw = parseAmount(event.amountWithdrawnRaw)
+            showAmounts(parsedEffective, parsedRaw)
         }
+
+        private fun bind(event: HistoryRefundedEvent) {
+            title.text = event.orderShortInfo.summary
+            summary.setText(event.title)
+
+            val parsedEffective = parseAmount(event.amountRefundedEffective)
+            val parsedRaw = parseAmount(event.amountRefundedRaw)
+            showAmounts(parsedEffective, parsedRaw)
+        }
+
+        private fun bind(event: HistoryTipAcceptedEvent) {
+            title.setText(event.title)
+            summary.text = null
+            val amount = parseAmount(event.tipRaw)
+            showAmounts(amount, amount)
+        }
+
+        private fun bind(event: HistoryTipDeclinedEvent) {
+            title.setText(event.title)
+            summary.text = null
+            val amount = parseAmount(event.tipAmount)
+            showAmounts(amount, amount)
+            amountWithdrawn.paintFlags = amountWithdrawn.paintFlags or STRIKE_THRU_TEXT_FLAG
+        }
+
+        private fun showAmounts(effective: ParsedAmount, raw: ParsedAmount) {
+            amountWithdrawn.text = "+$raw"
+            val calculatedFee = raw - effective
+            if (calculatedFee.isZero()) {
+                fee.visibility = GONE
+                feeLabel.visibility = GONE
+            } else {
+                fee.text = "-$calculatedFee"
+                fee.visibility = VISIBLE
+                feeLabel.visibility = VISIBLE
+            }
+            amountWithdrawn.paintFlags = fee.paintFlags
+        }
+
+        private fun getHostname(url: String): String {
+            return url.toUri().host!!
+        }
+
     }
 
-    private fun bind(event: HistoryPaymentSentEvent) {
-        title.text = event.orderShortInfo.summary
-        amountPaidWithFees.text = "-${parseAmount(event.amountPaidWithFees)}"
-    }
+    internal inner class HistoryPaymentViewHolder(v: View) : HistoryEventViewHolder(v) {
 
-    private fun bind(event: HistoryPaymentAbortedEvent) {
-        title.text = event.orderShortInfo.summary
-        amountPaidWithFees.text = "-${parseAmount(event.amountLost)}"
-    }
+        private val summary: TextView = v.findViewById(R.id.summary)
+        private val amountPaidWithFees: TextView = v.findViewById(R.id.amountPaidWithFees)
 
-    private fun bind(event: HistoryRefreshedEvent) {
-        title.text = ""
-        val fee =
-            parseAmount(event.amountRefreshedRaw) - parseAmount(event.amountRefreshedEffective)
-        if (fee.isZero()) amountPaidWithFees.text = null
-        else amountPaidWithFees.text = "-$fee"
+        override fun bind(event: HistoryEvent) {
+            super.bind(event)
+            summary.setText(event.title)
+            when (event) {
+                is HistoryPaymentSentEvent -> bind(event)
+                is HistoryPaymentAbortedEvent -> bind(event)
+                is HistoryRefreshedEvent -> bind(event)
+            }
+        }
+
+        private fun bind(event: HistoryPaymentSentEvent) {
+            title.text = event.orderShortInfo.summary
+            amountPaidWithFees.text = "-${parseAmount(event.amountPaidWithFees)}"
+        }
+
+        private fun bind(event: HistoryPaymentAbortedEvent) {
+            title.text = event.orderShortInfo.summary
+            amountPaidWithFees.text = "-${parseAmount(event.amountLost)}"
+        }
+
+        private fun bind(event: HistoryRefreshedEvent) {
+            title.text = ""
+            val fee =
+                parseAmount(event.amountRefreshedRaw) - parseAmount(event.amountRefreshedEffective)
+            if (fee.isZero()) amountPaidWithFees.text = null
+            else amountPaidWithFees.text = "-$fee"
+        }
+
     }
 
 }

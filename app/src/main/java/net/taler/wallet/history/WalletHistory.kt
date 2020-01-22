@@ -30,15 +30,19 @@ import kotlinx.android.synthetic.main.fragment_show_history.*
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
 
+interface OnEventClickListener {
+    fun onEventClicked(event: HistoryEvent)
+}
+
 /**
  * Wallet history.
  *
  */
-class WalletHistory : Fragment() {
+class WalletHistory : Fragment(), OnEventClickListener {
 
     lateinit var model: WalletViewModel
     private lateinit var showAllItem: MenuItem
-    private val historyAdapter = WalletHistoryAdapter()
+    private val historyAdapter = WalletHistoryAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,6 +100,11 @@ class WalletHistory : Fragment() {
 
         // kicks off initial load, needs to be adapted if showAll state is ever saved
         if (savedInstanceState == null) model.historyShowAll.value = false
+    }
+
+    override fun onEventClicked(event: HistoryEvent) {
+        JsonDialogFragment.new(event.json.toString(4))
+            .show(parentFragmentManager, null)
     }
 
     companion object {
