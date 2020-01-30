@@ -110,6 +110,9 @@ class ObjectCodecBuilder {
                         path: [`(${objectDisplayName})`],
                     };
                 }
+                if (typeof x !== "object") {
+                    throw new DecodingError(`expected object for ${objectDisplayName} at ${renderContext(c)} but got ${typeof x}`);
+                }
                 const obj = {};
                 for (const prop of propList) {
                     const propRawVal = x[prop.name];
@@ -512,6 +515,10 @@ function isNonZero(a) {
     return a.value > 0 || a.fraction > 0;
 }
 exports.isNonZero = isNonZero;
+function isZero(a) {
+    return a.value === 0 && a.fraction === 0;
+}
+exports.isZero = isZero;
 /**
  * Parse an amount like 'EUR:20.5' for 20 Euros and 50 ct.
  */
@@ -613,10 +620,11 @@ var amounts_9 = amounts.cmp;
 var amounts_10 = amounts.copy;
 var amounts_11 = amounts.divide;
 var amounts_12 = amounts.isNonZero;
-var amounts_13 = amounts.parse;
-var amounts_14 = amounts.parseOrThrow;
-var amounts_15 = amounts.fromFloat;
-var amounts_16 = amounts.check;
+var amounts_13 = amounts.isZero;
+var amounts_14 = amounts.parse;
+var amounts_15 = amounts.parseOrThrow;
+var amounts_16 = amounts.fromFloat;
+var amounts_17 = amounts.check;
 
 var promiseUtils = createCommonjsModule(function (module, exports) {
 /*
@@ -1799,7 +1807,7 @@ exports.codecForContractTerms = () => codec.typecheckedCodec(codec.makeCodecForO
     .property("order_id", codec.codecForString)
     .property("fulfillment_url", codec.codecForString)
     .property("merchant_base_url", codec.codecForString)
-    .property("H_wire", codec.codecForString)
+    .property("h_wire", codec.codecForString)
     .property("auto_refund", codec.makeCodecOptional(time.codecForDuration))
     .property("wire_method", codec.codecForString)
     .property("summary", codec.codecForString)
@@ -1858,7 +1866,7 @@ exports.codecForWireFeesJson = () => codec.typecheckedCodec(codec.makeCodecForOb
     .property("end_date", time.codecForTimestamp)
     .build("WireFeesJson"));
 exports.codecForAccountInfo = () => codec.typecheckedCodec(codec.makeCodecForObject()
-    .property("url", codec.codecForString)
+    .property("payto_uri", codec.codecForString)
     .property("master_sig", codec.codecForString)
     .build("AccountInfo"));
 exports.codecForExchangeWireJson = () => codec.typecheckedCodec(codec.makeCodecForObject()
@@ -2003,7 +2011,7 @@ function classifyTalerUri(s) {
         return "taler-withdraw" /* TalerWithdraw */;
     }
     if (sl.startsWith("taler://notify-reserve/")) {
-        return "taler-withdraw" /* TalerWithdraw */;
+        return "taler-notify-reserve" /* TalerNotifyReserve */;
     }
     return "unknown" /* Unknown */;
 }
@@ -2096,7 +2104,7 @@ function parseRefundUri(s) {
     if (!s.toLowerCase().startsWith(pfx)) {
         return undefined;
     }
-    const path = s.slice(pfx.length);
+    const [path, search] = s.slice(pfx.length).split("?");
     let [host, maybePath, maybeInstance, orderId] = path.split("/");
     if (!host) {
         return undefined;
@@ -2118,10 +2126,12 @@ function parseRefundUri(s) {
     if (maybeInstance !== "-") {
         maybeInstancePath = `instances/${maybeInstance}/`;
     }
-    const merchantBaseUrl = "https://" + host +
-        "/" +
-        maybePath +
-        maybeInstancePath;
+    let protocol = "https";
+    const searchParams = new URLSearchParams(search);
+    if (searchParams.get("insecure") === "1") {
+        protocol = "http";
+    }
+    const merchantBaseUrl = `${protocol}://${host}/` + maybePath + maybeInstancePath;
     return {
         merchantBaseUrl,
         orderId,
@@ -2809,7 +2819,7 @@ function updateExchangeWithWireInfo(ws, exchangeBaseUrl) {
         const wireInfo = talerTypes.codecForExchangeWireJson().decode(wiJson);
         for (const a of wireInfo.accounts) {
             console.log("validating exchange acct");
-            const isValid = yield ws.cryptoApi.isValidWireAccount(a.url, a.master_sig, details.masterPublicKey);
+            const isValid = yield ws.cryptoApi.isValidWireAccount(a.payto_uri, a.master_sig, details.masterPublicKey);
             if (!isValid) {
                 throw Error("exchange acct signature invalid");
             }
@@ -2963,12 +2973,12 @@ function getExchangePaytoUri(ws, exchangeBaseUrl, supportedTargetTypes) {
             throw Error(`Exchange wire info for '${exchangeBaseUrl}' not found.`);
         }
         for (let account of exchangeWireInfo.accounts) {
-            const res = payto.parsePaytoUri(account.url);
+            const res = payto.parsePaytoUri(account.payto_uri);
             if (!res) {
                 continue;
             }
             if (supportedTargetTypes.includes(res.targetType)) {
-                return account.url;
+                return account.payto_uri;
             }
         }
         throw Error("no matching exchange account found");
@@ -3133,7 +3143,7 @@ function getBankWithdrawalInfo(ws, talerWithdrawUri) {
     return __awaiter(this, void 0, void 0, function* () {
         const uriResult = taleruri.parseWithdrawUri(talerWithdrawUri);
         if (!uriResult) {
-            throw Error("can't parse URL");
+            throw Error(`can't parse URL ${talerWithdrawUri}`);
         }
         const resp = yield ws.http.get(uriResult.statusUrl);
         if (resp.status !== 200) {
@@ -3485,7 +3495,7 @@ function getExchangeWithdrawalInfo(ws, baseUrl, amount) {
             .reduce((a, b) => Amounts.add(a, b).amount);
         const exchangeWireAccounts = [];
         for (let account of exchangeWireInfo.accounts) {
-            exchangeWireAccounts.push(account.url);
+            exchangeWireAccounts.push(account.payto_uri);
         }
         const { isTrusted, isAudited } = yield exchanges.getExchangeTrust(ws, exchangeInfo);
         let earliestDepositExpiration = selectedDenoms[0].stampExpireDeposit;
@@ -8547,11 +8557,19 @@ function refreshMelt(ws, refreshGroupId, coinIndex) {
             denom_pub_hash: coin.denomPubHash,
             denom_sig: coin.denomSig,
             rc: refreshSession.hash,
-            value_with_fee: refreshSession.amountRefreshInput,
+            value_with_fee: Amounts.toString(refreshSession.amountRefreshInput),
         };
-        logger.trace("melt request:", meltReq);
+        logger.trace(`melt request for coin:`, meltReq);
         const resp = yield ws.http.postJson(reqUrl.href, meltReq);
         if (resp.status !== 200) {
+            console.log(`got status ${resp.status} for refresh/melt`);
+            try {
+                const respJson = yield resp.json();
+                console.log(`body of refresh/melt error response:`, JSON.stringify(respJson, undefined, 2));
+            }
+            catch (e) {
+                console.log(`body of refresh/melt error response is not JSON`);
+            }
             throw Error(`unexpected status code ${resp.status} for refresh/melt`);
         }
         const respJson = yield resp.json();
@@ -8970,7 +8988,7 @@ var http_3 = http.BrowserHttpLib;
 var refund = createCommonjsModule(function (module, exports) {
 /*
  This file is part of GNU Taler
- (C) 2019 Taler Systems S.A.
+ (C) 2019-2019 Taler Systems S.A.
 
  GNU Taler is free software; you can redistribute it and/or modify it under the
  terms of the GNU General Public License as published by the Free Software
@@ -9010,6 +9028,8 @@ const Amounts = __importStar(amounts);
 
 
 
+
+const logger = new logging.Logger("refund.ts");
 function incrementPurchaseQueryRefundRetry(ws, proposalId, err) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("incrementing purchase refund query retry with error", err);
@@ -9041,7 +9061,7 @@ function incrementPurchaseApplyRefundRetry(ws, proposalId, err) {
                 return;
             }
             pr.refundApplyRetryInfo.retryCounter++;
-            dbTypes.updateRetryInfoTimeout(pr.refundStatusRetryInfo);
+            dbTypes.updateRetryInfoTimeout(pr.refundApplyRetryInfo);
             pr.lastRefundApplyError = err;
             yield tx.put(dbTypes.Stores.purchases, pr);
         }));
@@ -9185,7 +9205,7 @@ function startRefundQuery(ws, proposalId) {
 function applyRefund(ws, talerRefundUri) {
     return __awaiter(this, void 0, void 0, function* () {
         const parseResult = taleruri.parseRefundUri(talerRefundUri);
-        console.log("applying refund");
+        console.log("applying refund", parseResult);
         if (!parseResult) {
             throw Error("invalid refund URI");
         }
@@ -9194,7 +9214,7 @@ function applyRefund(ws, talerRefundUri) {
             parseResult.orderId,
         ]);
         if (!purchase) {
-            throw Error("no purchase for the taler://refund/ URI was found");
+            throw Error(`no purchase for the taler://refund/ URI (${talerRefundUri}) was found`);
         }
         console.log("processing purchase for refund");
         yield startRefundQuery(ws, purchase.proposalId);
@@ -9342,21 +9362,33 @@ function processPurchaseApplyRefundImpl(ws, proposalId, forceNow) {
                     return;
                 }
                 refreshCoinsMap[c.coinPub] = { coinPub: c.coinPub };
+                logger.trace(`commiting refund ${perm.merchant_sig} to coin ${c.coinPub}`);
+                logger.trace(`coin amount before is ${Amounts.toString(c.currentAmount)}`);
+                logger.trace(`refund amount (via merchant) is ${perm.refund_amount}`);
+                logger.trace(`refund fee (via merchant) is ${perm.refund_fee}`);
                 const refundAmount = Amounts.parseOrThrow(perm.refund_amount);
                 const refundFee = Amounts.parseOrThrow(perm.refund_fee);
                 c.status = dbTypes.CoinStatus.Dormant;
                 c.currentAmount = Amounts.add(c.currentAmount, refundAmount).amount;
                 c.currentAmount = Amounts.sub(c.currentAmount, refundFee).amount;
+                logger.trace(`coin amount after is ${Amounts.toString(c.currentAmount)}`);
                 yield tx.put(dbTypes.Stores.coins, c);
             });
             for (const pk of Object.keys(newRefundsFailed)) {
+                if (p.refundState.refundsDone[pk]) {
+                    // We already processed this one.
+                    break;
+                }
                 const r = newRefundsFailed[pk];
                 groups[r.refundGroupId] = true;
                 delete p.refundState.refundsPending[pk];
                 p.refundState.refundsFailed[pk] = r;
-                yield modCoin(r.perm);
             }
             for (const pk of Object.keys(newRefundsDone)) {
+                if (p.refundState.refundsDone[pk]) {
+                    // We already processed this one.
+                    break;
+                }
                 const r = newRefundsDone[pk];
                 groups[r.refundGroupId] = true;
                 delete p.refundState.refundsPending[pk];
@@ -9387,7 +9419,10 @@ function processPurchaseApplyRefundImpl(ws, proposalId, forceNow) {
                 allRefundsProcessed = true;
             }
             yield tx.put(dbTypes.Stores.purchases, p);
-            yield refresh.createRefreshGroup(tx, Object.values(refreshCoinsMap), "refund" /* Refund */);
+            const coinsPubsToBeRefreshed = Object.values(refreshCoinsMap);
+            if (coinsPubsToBeRefreshed.length > 0) {
+                yield refresh.createRefreshGroup(tx, coinsPubsToBeRefreshed, "refund" /* Refund */);
+            }
         }));
         if (allRefundsProcessed) {
             ws.notify({
@@ -9413,7 +9448,7 @@ var refund_5 = refund.processPurchaseApplyRefund;
 var pay = createCommonjsModule(function (module, exports) {
 /*
  This file is part of GNU Taler
- (C) Taler Systems S.A.
+ (C) 2019 Taler Systems S.A.
 
  GNU Taler is free software; you can redistribute it and/or modify it under the
  terms of the GNU General Public License as published by the Free Software
@@ -9463,74 +9498,131 @@ const Amounts = __importStar(amounts);
 
 
 
+/**
+ * Logger.
+ */
 const logger = new logging.Logger("pay.ts");
 /**
- * Select coins for a payment under the merchant's constraints.
+ * Compute the total cost of a payment to the customer.
  *
- * @param denoms all available denoms, used to compute refresh fees
+ * This includes the amount taken by the merchant, fees (wire/deposit) contributed
+ * by the customer, refreshing fees, fees for withdraw-after-refresh and "trimmings"
+ * of coins that are too small to spend.
  */
-function selectPayCoins(denoms, cds, paymentAmount, depositFeeLimit) {
-    if (cds.length === 0) {
+function getTotalPaymentCost(ws, pcs) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const costs = [
+            pcs.paymentAmount,
+            pcs.customerDepositFees,
+            pcs.customerWireFees,
+        ];
+        for (let i = 0; i < pcs.coinPubs.length; i++) {
+            const coin = yield ws.db.get(dbTypes.Stores.coins, pcs.coinPubs[i]);
+            if (!coin) {
+                throw Error("can't calculate payment cost, coin not found");
+            }
+            const denom = yield ws.db.get(dbTypes.Stores.denominations, [
+                coin.exchangeBaseUrl,
+                coin.denomPub,
+            ]);
+            if (!denom) {
+                throw Error("can't calculate payment cost, denomination for coin not found");
+            }
+            const allDenoms = yield ws.db
+                .iterIndex(dbTypes.Stores.denominations.exchangeBaseUrlIndex, coin.exchangeBaseUrl)
+                .toArray();
+            const amountLeft = Amounts.sub(denom.value, pcs.coinContributions[i])
+                .amount;
+            const refreshCost = refresh.getTotalRefreshCost(allDenoms, denom, amountLeft);
+            costs.push(refreshCost);
+        }
+        return Amounts.sum(costs).amount;
+    });
+}
+exports.getTotalPaymentCost = getTotalPaymentCost;
+/**
+ * Given a list of available coins, select coins to spend under the merchant's
+ * constraints.
+ *
+ * This function is only exported for the sake of unit tests.
+ */
+function selectPayCoins(acis, paymentAmount, depositFeeLimit) {
+    if (acis.length === 0) {
         return undefined;
     }
-    // Sort by ascending deposit fee and denomPub if deposit fee is the same
+    const coinPubs = [];
+    const coinContributions = [];
+    // Sort by available amount (descending),  deposit fee (ascending) and
+    // denomPub (ascending) if deposit fee is the same
     // (to guarantee deterministic results)
-    cds.sort((o1, o2) => Amounts.cmp(o1.denom.feeDeposit, o2.denom.feeDeposit) ||
-        helpers.strcmp(o1.denom.denomPub, o2.denom.denomPub));
-    const currency = cds[0].denom.value.currency;
-    const cdsResult = [];
-    let accDepositFee = Amounts.getZero(currency);
-    let accAmount = Amounts.getZero(currency);
-    for (const { coin, denom } of cds) {
-        if (coin.suspended) {
+    acis.sort((o1, o2) => -Amounts.cmp(o1.availableAmount, o2.availableAmount) ||
+        Amounts.cmp(o1.feeDeposit, o2.feeDeposit) ||
+        helpers.strcmp(o1.denomPub, o2.denomPub));
+    const currency = paymentAmount.currency;
+    let totalFees = Amounts.getZero(currency);
+    let amountPayRemaining = paymentAmount;
+    let amountDepositFeeLimitRemaining = depositFeeLimit;
+    let customerWireFees = Amounts.getZero(currency);
+    let customerDepositFees = Amounts.getZero(currency);
+    for (const aci of acis) {
+        // Don't use this coin if depositing it is more expensive than
+        // the amount it would give the merchant.
+        if (Amounts.cmp(aci.feeDeposit, aci.availableAmount) >= 0) {
             continue;
         }
-        if (coin.status !== dbTypes.CoinStatus.Fresh) {
-            continue;
+        if (amountPayRemaining.value === 0 && amountPayRemaining.fraction === 0) {
+            // We have spent enough!
+            break;
         }
-        if (Amounts.cmp(denom.feeDeposit, coin.currentAmount) >= 0) {
-            continue;
+        // How much does the user spend on deposit fees for this coin?
+        const depositFeeSpend = Amounts.sub(aci.feeDeposit, amountDepositFeeLimitRemaining).amount;
+        if (Amounts.isZero(depositFeeSpend)) {
+            // Fees are still covered by the merchant.
+            amountDepositFeeLimitRemaining = Amounts.sub(amountDepositFeeLimitRemaining, aci.feeDeposit).amount;
         }
-        cdsResult.push({ coin, denom });
-        accDepositFee = Amounts.add(denom.feeDeposit, accDepositFee).amount;
-        let leftAmount = Amounts.sub(coin.currentAmount, Amounts.sub(paymentAmount, accAmount).amount).amount;
-        accAmount = Amounts.add(coin.currentAmount, accAmount).amount;
-        const coversAmount = Amounts.cmp(accAmount, paymentAmount) >= 0;
-        const coversAmountWithFee = Amounts.cmp(accAmount, Amounts.add(paymentAmount, denom.feeDeposit).amount) >= 0;
-        const isBelowFee = Amounts.cmp(accDepositFee, depositFeeLimit) <= 0;
-        logger.trace("candidate coin selection", {
-            coversAmount,
-            isBelowFee,
-            accDepositFee,
-            accAmount,
-            paymentAmount,
-        });
-        if ((coversAmount && isBelowFee) || coversAmountWithFee) {
-            const depositFeeToCover = Amounts.sub(accDepositFee, depositFeeLimit)
+        else {
+            amountDepositFeeLimitRemaining = Amounts.getZero(currency);
+        }
+        let coinSpend;
+        const amountActualAvailable = Amounts.sub(aci.availableAmount, depositFeeSpend).amount;
+        if (Amounts.cmp(amountActualAvailable, amountPayRemaining) > 0) {
+            // Partial spending
+            coinSpend = Amounts.add(amountPayRemaining, depositFeeSpend).amount;
+            amountPayRemaining = Amounts.getZero(currency);
+        }
+        else {
+            // Spend the full remaining amount
+            coinSpend = aci.availableAmount;
+            amountPayRemaining = Amounts.add(amountPayRemaining, depositFeeSpend)
                 .amount;
-            leftAmount = Amounts.sub(leftAmount, depositFeeToCover).amount;
-            logger.trace("deposit fee to cover", helpers.amountToPretty(depositFeeToCover));
-            let totalFees = Amounts.getZero(currency);
-            if (coversAmountWithFee && !isBelowFee) {
-                // these are the fees the customer has to pay
-                // because the merchant doesn't cover them
-                totalFees = Amounts.sub(depositFeeLimit, accDepositFee).amount;
-            }
-            totalFees = Amounts.add(totalFees, refresh.getTotalRefreshCost(denoms, denom, leftAmount)).amount;
-            return { cds: cdsResult, totalFees };
+            amountPayRemaining = Amounts.sub(amountPayRemaining, aci.availableAmount)
+                .amount;
         }
+        coinPubs.push(aci.coinPub);
+        coinContributions.push(coinSpend);
+        totalFees = Amounts.add(totalFees, depositFeeSpend).amount;
+    }
+    if (Amounts.isZero(amountPayRemaining)) {
+        return {
+            paymentAmount,
+            coinContributions,
+            coinPubs,
+            customerDepositFees,
+            customerWireFees,
+        };
     }
     return undefined;
 }
 exports.selectPayCoins = selectPayCoins;
 /**
- * Get exchanges and associated coins that are still spendable, but only
- * if the sum the coins' remaining value covers the payment amount and fees.
+ * Select coins from the wallet's database that can be used
+ * to pay for the given contract.
+ *
+ * If payment is impossible, undefined is returned.
  */
-function getCoinsForPayment(ws, args) {
+function getCoinsForPayment(ws, contractData) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { allowedAuditors, allowedExchanges, maxDepositFee, amount, wireFeeAmortization, maxWireFee, timestamp, wireMethod, } = args;
-        let remainingAmount = amount;
+        let remainingAmount = contractData.amount;
         const exchanges = yield ws.db.iter(dbTypes.Stores.exchanges).toArray();
         for (const exchange of exchanges) {
             let isOkay = false;
@@ -9543,7 +9635,7 @@ function getCoinsForPayment(ws, args) {
                 continue;
             }
             // is the exchange explicitly allowed?
-            for (const allowedExchange of allowedExchanges) {
+            for (const allowedExchange of contractData.allowedExchanges) {
                 if (allowedExchange.exchangePub === exchangeDetails.masterPublicKey) {
                     isOkay = true;
                     break;
@@ -9551,7 +9643,7 @@ function getCoinsForPayment(ws, args) {
             }
             // is the exchange allowed because of one of its auditors?
             if (!isOkay) {
-                for (const allowedAuditor of allowedAuditors) {
+                for (const allowedAuditor of contractData.allowedAuditors) {
                     for (const auditor of exchangeDetails.auditors) {
                         if (auditor.auditor_pub === allowedAuditor.auditorPub) {
                             isOkay = true;
@@ -9585,7 +9677,7 @@ function getCoinsForPayment(ws, args) {
                 throw Error("db inconsistent");
             }
             const currency = firstDenom.value.currency;
-            const cds = [];
+            const acis = [];
             for (const coin of coins) {
                 const denom = yield ws.db.get(dbTypes.Stores.denominations, [
                     exchange.baseUrl,
@@ -9604,32 +9696,33 @@ function getCoinsForPayment(ws, args) {
                 if (coin.status !== dbTypes.CoinStatus.Fresh) {
                     continue;
                 }
-                cds.push({ coin, denom });
+                acis.push({
+                    availableAmount: coin.currentAmount,
+                    coinPub: coin.coinPub,
+                    denomPub: coin.denomPub,
+                    feeDeposit: denom.feeDeposit,
+                });
             }
             let totalFees = Amounts.getZero(currency);
             let wireFee;
-            for (const fee of exchangeFees.feesForType[wireMethod] || []) {
-                if (fee.startStamp <= timestamp && fee.endStamp >= timestamp) {
+            for (const fee of exchangeFees.feesForType[contractData.wireMethod] || []) {
+                if (fee.startStamp <= contractData.timestamp &&
+                    fee.endStamp >= contractData.timestamp) {
                     wireFee = fee.wireFee;
                     break;
                 }
             }
             if (wireFee) {
-                const amortizedWireFee = Amounts.divide(wireFee, wireFeeAmortization);
-                if (Amounts.cmp(maxWireFee, amortizedWireFee) < 0) {
+                const amortizedWireFee = Amounts.divide(wireFee, contractData.wireFeeAmortization);
+                if (Amounts.cmp(contractData.maxWireFee, amortizedWireFee) < 0) {
                     totalFees = Amounts.add(amortizedWireFee, totalFees).amount;
                     remainingAmount = Amounts.add(amortizedWireFee, remainingAmount).amount;
                 }
             }
-            const res = selectPayCoins(denoms, cds, remainingAmount, maxDepositFee);
+            // Try if paying using this exchange works
+            const res = selectPayCoins(acis, remainingAmount, contractData.maxDepositFee);
             if (res) {
-                totalFees = Amounts.add(totalFees, res.totalFees).amount;
-                return {
-                    cds: res.cds,
-                    exchangeUrl: exchange.baseUrl,
-                    totalAmount: remainingAmount,
-                    totalFees,
-                };
+                return res;
             }
         }
         return undefined;
@@ -9639,7 +9732,7 @@ function getCoinsForPayment(ws, args) {
  * Record all information that is necessary to
  * pay for a proposal in the wallet's database.
  */
-function recordConfirmPay(ws, proposal, payCoinInfo, sessionIdOverride) {
+function recordConfirmPay(ws, proposal, coinSelection, coinDepositPermissions, sessionIdOverride) {
     return __awaiter(this, void 0, void 0, function* () {
         const d = proposal.download;
         if (!d) {
@@ -9654,7 +9747,7 @@ function recordConfirmPay(ws, proposal, payCoinInfo, sessionIdOverride) {
         }
         logger.trace(`recording payment with session ID ${sessionId}`);
         const payReq = {
-            coins: payCoinInfo.coinInfo.map(x => x.sig),
+            coins: coinDepositPermissions,
             merchant_pub: d.contractData.merchantPub,
             mode: "pay",
             order_id: d.contractData.orderId,
@@ -9695,22 +9788,20 @@ function recordConfirmPay(ws, proposal, payCoinInfo, sessionIdOverride) {
                 yield tx.put(dbTypes.Stores.proposals, p);
             }
             yield tx.put(dbTypes.Stores.purchases, t);
-            for (let coinInfo of payCoinInfo.coinInfo) {
-                const coin = yield tx.get(dbTypes.Stores.coins, coinInfo.coinPub);
+            for (let i = 0; i < coinSelection.coinPubs.length; i++) {
+                const coin = yield tx.get(dbTypes.Stores.coins, coinSelection.coinPubs[i]);
                 if (!coin) {
                     throw Error("coin allocated for payment doesn't exist anymore");
                 }
                 coin.status = dbTypes.CoinStatus.Dormant;
-                const remaining = Amounts.sub(coin.currentAmount, coinInfo.subtractedAmount);
+                const remaining = Amounts.sub(coin.currentAmount, coinSelection.coinContributions[i]);
                 if (remaining.saturated) {
                     throw Error("not enough remaining balance on coin for payment");
                 }
                 coin.currentAmount = remaining.amount;
                 yield tx.put(dbTypes.Stores.coins, coin);
             }
-            const refreshCoinPubs = payCoinInfo.coinInfo.map(x => ({
-                coinPub: x.coinPub,
-            }));
+            const refreshCoinPubs = coinSelection.coinPubs.map(x => ({ coinPub: x }));
             yield refresh.createRefreshGroup(tx, refreshCoinPubs, "pay" /* Pay */);
         }));
         ws.notify({
@@ -9902,7 +9993,7 @@ function processDownloadProposalImpl(ws, proposalId, forceNow) {
                     })),
                     timestamp: parsedContractTerms.timestamp,
                     wireMethod: parsedContractTerms.wire_method,
-                    wireInfoHash: parsedContractTerms.H_wire,
+                    wireInfoHash: parsedContractTerms.h_wire,
                     maxDepositFee: Amounts.parseOrThrow(parsedContractTerms.max_fee),
                 },
                 contractTermsRaw: JSON.stringify(proposalResp.contract_terms),
@@ -9984,6 +10075,7 @@ function submitPay(ws, proposalId) {
         console.log("paying with session ID", sessionId);
         const payUrl = new URL("pay", purchase.contractData.merchantBaseUrl).href;
         try {
+            console.log("pay req", payReq);
             resp = yield ws.http.postJson(payUrl, payReq);
         }
         catch (e) {
@@ -9992,6 +10084,7 @@ function submitPay(ws, proposalId) {
             throw e;
         }
         if (resp.status !== 200) {
+            console.log(yield resp.json());
             throw Error(`unexpected status (${resp.status}) for /pay`);
         }
         const merchantResp = yield resp.json();
@@ -10044,7 +10137,7 @@ exports.submitPay = submitPay;
  * If the payment is possible, the signature are already generated but not
  * yet send to the merchant.
  */
-function preparePay(ws, talerPayUri) {
+function preparePayForUri(ws, talerPayUri) {
     return __awaiter(this, void 0, void 0, function* () {
         const uriResult = taleruri.parsePayUri(talerPayUri);
         if (!uriResult) {
@@ -10093,11 +10186,13 @@ function preparePay(ws, talerPayUri) {
                     proposalId: proposal.proposalId,
                 };
             }
+            const totalCost = yield getTotalPaymentCost(ws, res);
+            const totalFees = Amounts.sub(totalCost, res.paymentAmount).amount;
             return {
                 status: "payment-possible",
                 contractTermsRaw: d.contractTermsRaw,
                 proposalId: proposal.proposalId,
-                totalFees: res.totalFees,
+                totalFees,
             };
         }
         if (uriResult.sessionId && purchase.lastSessionId !== uriResult.sessionId) {
@@ -10119,7 +10214,7 @@ function preparePay(ws, talerPayUri) {
         };
     });
 }
-exports.preparePay = preparePay;
+exports.preparePayForUri = preparePayForUri;
 /**
  * Add a contract to the wallet and sign coins, and send them.
  */
@@ -10156,10 +10251,38 @@ function confirmPay(ws, proposalId, sessionIdOverride) {
             console.log("not confirming payment, insufficient coins");
             throw Error("insufficient balance");
         }
-        const { cds, totalAmount } = res;
-        const payCoinInfo = yield ws.cryptoApi.signDeposit(d.contractTermsRaw, d.contractData, cds, totalAmount);
-        purchase = yield recordConfirmPay(ws, proposal, payCoinInfo, sessionIdOverride);
+        const depositPermissions = [];
+        for (let i = 0; i < res.coinPubs.length; i++) {
+            const coin = yield ws.db.get(dbTypes.Stores.coins, res.coinPubs[i]);
+            if (!coin) {
+                throw Error("can't pay, allocated coin not found anymore");
+            }
+            const denom = yield ws.db.get(dbTypes.Stores.denominations, [
+                coin.exchangeBaseUrl,
+                coin.denomPub,
+            ]);
+            if (!denom) {
+                throw Error("can't pay, denomination of allocated coin not found anymore");
+            }
+            const dp = yield ws.cryptoApi.signDepositPermission({
+                coinPriv: coin.coinPriv,
+                coinPub: coin.coinPub,
+                contractTermsHash: d.contractData.contractTermsHash,
+                denomPub: coin.denomPub,
+                denomSig: coin.denomSig,
+                exchangeBaseUrl: coin.exchangeBaseUrl,
+                feeDeposit: denom.feeDeposit,
+                merchantPub: d.contractData.merchantPub,
+                refundDeadline: d.contractData.refundDeadline,
+                spendAmount: res.coinContributions[i],
+                timestamp: d.contractData.timestamp,
+                wireInfoHash: d.contractData.wireInfoHash,
+            });
+            depositPermissions.push(dp);
+        }
+        purchase = yield recordConfirmPay(ws, proposal, res, depositPermissions, sessionIdOverride);
         logger.trace("confirmPay: submitting payment after creating purchase record");
+        logger.trace("purchaseRecord:", purchase);
         return submitPay(ws, proposalId);
     });
 }
@@ -10197,18 +10320,18 @@ function processPurchasePayImpl(ws, proposalId, forceNow) {
         yield submitPay(ws, proposalId);
     });
 }
-function abortProposal(ws, proposalId) {
+function refuseProposal(ws, proposalId) {
     return __awaiter(this, void 0, void 0, function* () {
         const success = yield ws.db.runWithWriteTransaction([dbTypes.Stores.proposals], (tx) => __awaiter(this, void 0, void 0, function* () {
             const proposal = yield tx.get(dbTypes.Stores.proposals, proposalId);
             if (!proposal) {
-                logger.trace(`proposal ${proposalId} not found, won't abort proposal`);
+                logger.trace(`proposal ${proposalId} not found, won't refuse proposal`);
                 return false;
             }
             if (proposal.proposalStatus !== "proposed" /* PROPOSED */) {
                 return false;
             }
-            proposal.proposalStatus = "rejected" /* REJECTED */;
+            proposal.proposalStatus = "refused" /* REFUSED */;
             yield tx.put(dbTypes.Stores.proposals, proposal);
             return true;
         }));
@@ -10219,19 +10342,20 @@ function abortProposal(ws, proposalId) {
         }
     });
 }
-exports.abortProposal = abortProposal;
+exports.refuseProposal = refuseProposal;
 
 });
 
 unwrapExports(pay);
-var pay_1 = pay.selectPayCoins;
-var pay_2 = pay.abortFailedPayment;
-var pay_3 = pay.processDownloadProposal;
-var pay_4 = pay.submitPay;
-var pay_5 = pay.preparePay;
-var pay_6 = pay.confirmPay;
-var pay_7 = pay.processPurchasePay;
-var pay_8 = pay.abortProposal;
+var pay_1 = pay.getTotalPaymentCost;
+var pay_2 = pay.selectPayCoins;
+var pay_3 = pay.abortFailedPayment;
+var pay_4 = pay.processDownloadProposal;
+var pay_5 = pay.submitPay;
+var pay_6 = pay.preparePayForUri;
+var pay_7 = pay.confirmPay;
+var pay_8 = pay.processPurchasePay;
+var pay_9 = pay.refuseProposal;
 
 var assertUnreachable_1 = createCommonjsModule(function (module, exports) {
 /*
@@ -10420,6 +10544,16 @@ const Amounts = __importStar(amounts);
 
 
 const logger = new logging.Logger("reserves.ts");
+function resetReserveRetry(ws, reservePub) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.reserves, reservePub, x => {
+            if (x.retryInfo.active) {
+                x.retryInfo = dbTypes.initRetryInfo();
+            }
+            return x;
+        });
+    });
+}
 /**
  * Create a reserve, but do not flag it as confirmed yet.
  *
@@ -10800,6 +10934,9 @@ function processReserveImpl(ws, reservePub, forceNow = false) {
                 logger.trace("processReserve retry not due yet");
                 return;
             }
+        }
+        else {
+            yield resetReserveRetry(ws, reservePub);
         }
         logger.trace(`Processing reserve ${reservePub} with status ${reserve.reserveStatus}`);
         switch (reserve.reserveStatus) {
@@ -11353,8 +11490,8 @@ class CryptoApi {
     isValidPaymentSignature(sig, contractHash, merchantPub) {
         return this.doRpc("isValidPaymentSignature", 1, sig, contractHash, merchantPub);
     }
-    signDeposit(contractTermsRaw, contractData, cds, totalAmount) {
-        return this.doRpc("signDeposit", 3, contractTermsRaw, contractData, cds, totalAmount);
+    signDepositPermission(depositInfo) {
+        return this.doRpc("signDepositPermission", 3, depositInfo);
     }
     createEddsaKeypair() {
         return this.doRpc("createEddsaKeypair", 1);
@@ -11612,7 +11749,7 @@ function collectProposalHistory(tx, history, historyQuery) {
                 case "proposed" /* PROPOSED */:
                     // no history event needed
                     break;
-                case "rejected" /* REJECTED */:
+                case "refused" /* REFUSED */:
                     {
                         const shortInfo = getOrderShortInfo(proposal);
                         if (!shortInfo) {
@@ -11668,6 +11805,7 @@ function getHistory(ws, historyQuery) {
         yield ws.db.runWithReadTransaction([
             dbTypes.Stores.currencies,
             dbTypes.Stores.coins,
+            dbTypes.Stores.denominations,
             dbTypes.Stores.exchanges,
             dbTypes.Stores.exchangeUpdatedEvents,
             dbTypes.Stores.proposals,
@@ -11698,7 +11836,23 @@ function getHistory(ws, historyQuery) {
                 });
             });
             tx.iter(dbTypes.Stores.withdrawalSession).forEach(wsr => {
+                var _a;
                 if (wsr.timestampFinish) {
+                    const cs = [];
+                    wsr.planchets.forEach((x) => {
+                        if (x) {
+                            cs.push(x);
+                        }
+                    });
+                    let verboseDetails = undefined;
+                    if ((_a = historyQuery) === null || _a === void 0 ? void 0 : _a.verboseDetails) {
+                        verboseDetails = {
+                            coins: cs.map((x) => ({
+                                value: Amounts.toString(x.coinValue),
+                                denomPub: x.denomPub,
+                            })),
+                        };
+                    }
                     history.push({
                         type: "withdrawn" /* Withdrawn */,
                         withdrawSessionId: wsr.withdrawSessionId,
@@ -11708,11 +11862,13 @@ function getHistory(ws, historyQuery) {
                         exchangeBaseUrl: wsr.exchangeBaseUrl,
                         timestamp: wsr.timestampFinish,
                         withdrawalSource: wsr.source,
+                        verboseDetails,
                     });
                 }
             });
             yield collectProposalHistory(tx, history);
             yield tx.iter(dbTypes.Stores.payEvents).forEachAsync((pe) => __awaiter(this, void 0, void 0, function* () {
+                var _a;
                 const proposal = yield tx.get(dbTypes.Stores.proposals, pe.proposalId);
                 if (!proposal) {
                     return;
@@ -11725,6 +11881,28 @@ function getHistory(ws, historyQuery) {
                 if (!orderShortInfo) {
                     return;
                 }
+                let verboseDetails = undefined;
+                if ((_a = historyQuery) === null || _a === void 0 ? void 0 : _a.verboseDetails) {
+                    const coins = [];
+                    for (const x of purchase.payReq.coins) {
+                        const c = yield tx.get(dbTypes.Stores.coins, x.coin_pub);
+                        if (!c) {
+                            // FIXME: what to do here??
+                            continue;
+                        }
+                        const d = yield tx.get(dbTypes.Stores.denominations, [c.exchangeBaseUrl, c.denomPub]);
+                        if (!d) {
+                            // FIXME: what to do here??
+                            continue;
+                        }
+                        coins.push({
+                            contribution: x.contribution,
+                            denomPub: c.denomPub,
+                            value: Amounts.toString(d.value),
+                        });
+                    }
+                    verboseDetails = { coins };
+                }
                 const amountPaidWithFees = Amounts.sum(purchase.payReq.coins.map(x => Amounts.parseOrThrow(x.contribution))).amount;
                 history.push({
                     type: "payment-sent" /* PaymentSent */,
@@ -11735,9 +11913,11 @@ function getHistory(ws, historyQuery) {
                     timestamp: pe.timestamp,
                     numCoins: purchase.payReq.coins.length,
                     amountPaidWithFees: Amounts.toString(amountPaidWithFees),
+                    verboseDetails,
                 });
             }));
             yield tx.iter(dbTypes.Stores.refreshGroups).forEachAsync((rg) => __awaiter(this, void 0, void 0, function* () {
+                var _b;
                 if (!rg.timestampFinished) {
                     return;
                 }
@@ -11772,6 +11952,31 @@ function getHistory(ws, historyQuery) {
                 else {
                     amountRefreshedEffective = Amounts.sum(amountsEffective).amount;
                 }
+                let verboseDetails = undefined;
+                if ((_b = historyQuery) === null || _b === void 0 ? void 0 : _b.verboseDetails) {
+                    const outputCoins = [];
+                    for (const rs of rg.refreshSessionPerCoin) {
+                        if (!rs) {
+                            continue;
+                        }
+                        for (const nd of rs.newDenoms) {
+                            if (!nd) {
+                                continue;
+                            }
+                            const d = yield tx.get(dbTypes.Stores.denominations, [rs.exchangeBaseUrl, nd]);
+                            if (!d) {
+                                continue;
+                            }
+                            outputCoins.push({
+                                denomPub: d.denomPub,
+                                value: Amounts.toString(d.value),
+                            });
+                        }
+                    }
+                    verboseDetails = {
+                        outputCoins: outputCoins,
+                    };
+                }
                 history.push({
                     type: "refreshed" /* Refreshed */,
                     refreshGroupId: rg.refreshGroupId,
@@ -11783,6 +11988,7 @@ function getHistory(ws, historyQuery) {
                     numInputCoins,
                     numOutputCoins,
                     numRefreshedInputCoins,
+                    verboseDetails,
                 });
             }));
             tx.iter(dbTypes.Stores.reserveUpdatedEvents).forEachAsync((ru) => __awaiter(this, void 0, void 0, function* () {
@@ -11823,7 +12029,7 @@ function getHistory(ws, historyQuery) {
                         eventId: makeEventId("tip-accepted" /* TipAccepted */, tip.tipId),
                         timestamp: tip.acceptedTimestamp,
                         tipId: tip.tipId,
-                        tipAmount: Amounts.toString(tip.amount),
+                        tipAmountRaw: Amounts.toString(tip.amount),
                     });
                 }
             });
@@ -12220,6 +12426,7 @@ function getPendingOperations(ws, onlyDue = false) {
     return __awaiter(this, void 0, void 0, function* () {
         const resp = {
             nextRetryDelay: { d_ms: Number.MAX_SAFE_INTEGER },
+            onlyDue: onlyDue,
             pendingOperations: [],
         };
         const now = time.getTimestampNow();
@@ -12908,6 +13115,30 @@ class Wallet {
                 this.addNotificationListener(n => {
                     if (n.type === "waiting-for-retry" /* WaitingForRetry */ &&
                         n.numGivingLiveness == 0) {
+                        logger.trace("no liveness-giving operations left, returning");
+                        resolve();
+                    }
+                });
+                this.runRetryLoop().catch(e => {
+                    console.log("exception in wallet retry loop");
+                    reject(e);
+                });
+            });
+            yield p;
+        });
+    }
+    /**
+   * Run the wallet until there are no more pending operations that give
+   * liveness left.  The wallet will be in a stopped state when this function
+   * returns without resolving to an exception.
+   */
+    runUntilDoneAndStop() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const p = new Promise((resolve, reject) => {
+                // Run this asynchronously
+                this.addNotificationListener(n => {
+                    if (n.type === "waiting-for-retry" /* WaitingForRetry */ &&
+                        n.numGivingLiveness == 0) {
                         logger.trace("no liveness-giving operations left, stopping");
                         this.stop();
                     }
@@ -12943,6 +13174,7 @@ class Wallet {
             while (!this.stopped) {
                 console.log("running wallet retry loop iteration");
                 let pending = yield this.getPendingOperations(true);
+                console.log("pending ops", JSON.stringify(pending, undefined, 2));
                 if (pending.pendingOperations.length === 0) {
                     const allPending = yield this.getPendingOperations(false);
                     let numPending = 0;
@@ -13018,9 +13250,9 @@ class Wallet {
      * If the payment is possible, the signature are already generated but not
      * yet send to the merchant.
      */
-    preparePay(talerPayUri) {
+    preparePayForUri(talerPayUri) {
         return __awaiter(this, void 0, void 0, function* () {
-            return pay.preparePay(this.ws, talerPayUri);
+            return pay.preparePayForUri(this.ws, talerPayUri);
         });
     }
     /**
@@ -13340,9 +13572,9 @@ class Wallet {
             }
         });
     }
-    abortProposal(proposalId) {
+    refuseProposal(proposalId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return pay.abortProposal(this.ws, proposalId);
+            return pay.refuseProposal(this.ws, proposalId);
         });
     }
     getPurchaseDetails(hc) {
@@ -22686,6 +22918,11 @@ function makeId(length) {
     }
     return result;
 }
+function makeAuth(username, password) {
+    const auth = `${username}:${password}`;
+    const authEncoded = Buffer.from(auth).toString("base64");
+    return `Basic ${authEncoded}`;
+}
 class Bank {
     constructor(bankBaseUrl) {
         this.bankBaseUrl = bankBaseUrl;
@@ -22702,8 +22939,7 @@ class Bank {
                 data: body,
                 responseType: "json",
                 headers: {
-                    "X-Taler-Bank-Username": bankUser.username,
-                    "X-Taler-Bank-Password": bankUser.password,
+                    "Authorization": makeAuth(bankUser.username, bankUser.password),
                 },
             });
             if (resp.status != 200) {
@@ -22732,8 +22968,7 @@ class Bank {
                 data: body,
                 responseType: "json",
                 headers: {
-                    "X-Taler-Bank-Username": bankUser.username,
-                    "X-Taler-Bank-Password": bankUser.password,
+                    "Authorization": makeAuth(bankUser.username, bankUser.password),
                 },
             });
             if (resp.status != 200) {
@@ -22793,7 +23028,6 @@ var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-
 const Amounts = __importStar(amounts);
 const timer$1 = __importStar(timer);
 
@@ -23021,66 +23255,27 @@ class CryptoImplementation {
      * Generate updated coins (to store in the database)
      * and deposit permissions for each given coin.
      */
-    signDeposit(contractTermsRaw, contractData, cds, totalAmount) {
-        const ret = {
-            coinInfo: [],
+    signDepositPermission(depositInfo) {
+        const d = buildSigPS(SignaturePurpose.WALLET_COIN_DEPOSIT)
+            .put(talerCrypto.decodeCrock(depositInfo.contractTermsHash))
+            .put(talerCrypto.decodeCrock(depositInfo.wireInfoHash))
+            .put(timestampToBuffer(depositInfo.timestamp))
+            .put(timestampToBuffer(depositInfo.refundDeadline))
+            .put(amountToBuffer(depositInfo.spendAmount))
+            .put(amountToBuffer(depositInfo.feeDeposit))
+            .put(talerCrypto.decodeCrock(depositInfo.merchantPub))
+            .put(talerCrypto.decodeCrock(depositInfo.coinPub))
+            .build();
+        const coinSig = talerCrypto.eddsaSign(d, talerCrypto.decodeCrock(depositInfo.coinPriv));
+        const s = {
+            coin_pub: depositInfo.coinPub,
+            coin_sig: talerCrypto.encodeCrock(coinSig),
+            contribution: Amounts.toString(depositInfo.spendAmount),
+            denom_pub: depositInfo.denomPub,
+            exchange_url: depositInfo.exchangeBaseUrl,
+            ub_sig: depositInfo.denomSig,
         };
-        const contractTermsHash = this.hashString(helpers.canonicalJson(JSON.parse(contractTermsRaw)));
-        const feeList = cds.map(x => x.denom.feeDeposit);
-        let fees = Amounts.add(Amounts.getZero(feeList[0].currency), ...feeList)
-            .amount;
-        // okay if saturates
-        fees = Amounts.sub(fees, contractData.maxDepositFee).amount;
-        const total = Amounts.add(fees, totalAmount).amount;
-        let amountSpent = Amounts.getZero(cds[0].coin.currentAmount.currency);
-        let amountRemaining = total;
-        for (const cd of cds) {
-            if (amountRemaining.value === 0 && amountRemaining.fraction === 0) {
-                break;
-            }
-            let coinSpend;
-            if (Amounts.cmp(amountRemaining, cd.coin.currentAmount) < 0) {
-                coinSpend = amountRemaining;
-            }
-            else {
-                coinSpend = cd.coin.currentAmount;
-            }
-            amountSpent = Amounts.add(amountSpent, coinSpend).amount;
-            const feeDeposit = cd.denom.feeDeposit;
-            // Give the merchant at least the deposit fee, otherwise it'll reject
-            // the coin.
-            if (Amounts.cmp(coinSpend, feeDeposit) < 0) {
-                coinSpend = feeDeposit;
-            }
-            const newAmount = Amounts.sub(cd.coin.currentAmount, coinSpend).amount;
-            cd.coin.currentAmount = newAmount;
-            const d = buildSigPS(SignaturePurpose.WALLET_COIN_DEPOSIT)
-                .put(talerCrypto.decodeCrock(contractTermsHash))
-                .put(talerCrypto.decodeCrock(contractData.wireInfoHash))
-                .put(timestampToBuffer(contractData.timestamp))
-                .put(timestampToBuffer(contractData.refundDeadline))
-                .put(amountToBuffer(coinSpend))
-                .put(amountToBuffer(cd.denom.feeDeposit))
-                .put(talerCrypto.decodeCrock(contractData.merchantPub))
-                .put(talerCrypto.decodeCrock(cd.coin.coinPub))
-                .build();
-            const coinSig = talerCrypto.eddsaSign(d, talerCrypto.decodeCrock(cd.coin.coinPriv));
-            const s = {
-                coin_pub: cd.coin.coinPub,
-                coin_sig: talerCrypto.encodeCrock(coinSig),
-                contribution: Amounts.toString(coinSpend),
-                denom_pub: cd.coin.denomPub,
-                exchange_url: cd.denom.exchangeBaseUrl,
-                ub_sig: cd.coin.denomSig,
-            };
-            const coinInfo = {
-                sig: s,
-                coinPub: cd.coin.coinPub,
-                subtractedAmount: coinSpend,
-            };
-            ret.coinInfo.push(coinInfo);
-        }
-        return ret;
+        return s;
     }
     /**
      * Create a new refresh session.
@@ -23925,7 +24120,7 @@ class AndroidWalletMessageHandler {
                     if (typeof args.proposalId !== "string") {
                         throw Error("propsalId must be a string");
                     }
-                    return yield wallet.abortProposal(args.proposalId);
+                    return yield wallet.refuseProposal(args.proposalId);
                 }
                 case "getBalances": {
                     const wallet = yield this.wp.promise;
@@ -23956,7 +24151,7 @@ class AndroidWalletMessageHandler {
                 }
                 case "preparePay": {
                     const wallet = yield this.wp.promise;
-                    return yield wallet.preparePay(args.url);
+                    return yield wallet.preparePayForUri(args.url);
                 }
                 case "confirmPay": {
                     const wallet = yield this.wp.promise;
