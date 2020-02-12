@@ -1,122 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:layout_margin="15dp"
-             tools:context=".PromptPayment">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".payment.PromptPaymentFragment">
 
     <TextView
-            android:text="Error: (placeholder)"
+            android:id="@+id/error_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:layout_gravity="center"
-            android:id="@+id/pay_error_text" android:textColor="@android:color/holo_red_dark"/>
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="22sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/order_summary_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="@string/payment_balance_insufficient"
+            tools:visibility="visible" />
 
+    <TextView
+            android:id="@+id/order_summary_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:text="@string/payment_label_order_summary"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/order_summary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/error_text"
+            tools:visibility="visible" />
 
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/prompt_payment_details">
+    <TextView
+            android:id="@+id/order_summary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textSize="25sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/order_amount_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/order_summary_label"
+            tools:text="2 x Cappuccino, 1 x Hot Meals, 1 x Dessert"
+            tools:visibility="visible" />
 
-        <Space android:layout_width="match_parent"
-               android:layout_height="15dp"
-               android:layout_weight="1"/>
+    <TextView
+            android:id="@+id/order_amount_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:text="@string/payment_label_amount"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/order_amount"
+            app:layout_constraintEnd_toEndOf="@+id/order_summary"
+            app:layout_constraintStart_toStartOf="@+id/order_summary"
+            app:layout_constraintTop_toBottomOf="@+id/order_summary"
+            tools:visibility="visible" />
 
-        <TextView
-                android:text="Order Summary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/textView2"/>
+    <TextView
+            android:id="@+id/order_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/order_fees_amount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/order_amount_label"
+            tools:text="10 TESTKUDOS"
+            tools:visibility="visible" />
 
-        <TextView
-                android:text="One Cappuccino"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:layout_gravity="center"
-                android:id="@+id/order_summary"/>
+    <TextView
+            android:id="@+id/order_fees_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/button_abort_payment"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/order_amount"
+            tools:text="@string/payment_fee"
+            tools:visibility="visible" />
 
-        <Space android:layout_width="match_parent"
-               android:layout_height="25dp"/>
+    <Button
+            android:id="@+id/button_abort_payment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:text="@string/payment_button_abort"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_confirm_payment"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent" />
 
+    <Button
+            android:id="@+id/button_confirm_payment"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:enabled="false"
+            android:text="@string/payment_button_confirm"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button_abort_payment"
+            tools:enabled="true" />
 
-        <TextView
-                android:text="Amount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/textView3"/>
-        <TextView
-                android:text="10 TESTKUDOS"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:layout_gravity="center"
-                android:id="@+id/order_amount"/>
-
-        <LinearLayout android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal"
-                      android:layout_gravity="center"
-                      android:id="@+id/order_fees_box">
-
-            <TextView
-                    android:text="(plus additional "
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"/>
-
-            <TextView
-                    android:text="0.5 TESTKUDOS"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:id="@+id/order_fees_amount"/>
-
-            <TextView
-                    android:text=" payment fees)"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    />
-
-        </LinearLayout>
-
-        <Space android:layout_width="match_parent"
-               android:layout_height="15dp"
-               android:layout_weight="1"/>
-
-        <TextView
-                android:text="Balance Insufficient!"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:layout_gravity="center"
-                android:id="@+id/balance_insufficient_warning" android:textColor="@android:color/holo_red_dark"/>
-
-
-        <Space android:layout_width="match_parent"
-               android:layout_height="15dp"
-               android:layout_weight="1"/>
-
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal">
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Abort Payment"
-                    android:id="@+id/button_abort_payment"/>
-
-            <Space android:layout_width="15dp" android:layout_height="match_parent"
-                   android:layout_weight="1"/>
-
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:id="@+id/button_confirm_payment"
-                    android:text="Confirm Payment"/>
-        </LinearLayout>
-
-    </LinearLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

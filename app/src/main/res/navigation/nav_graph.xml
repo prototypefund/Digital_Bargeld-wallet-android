@@ -19,7 +19,7 @@
     </fragment>
     <fragment
             android:id="@+id/promptPayment"
-            android:name="net.taler.wallet.PromptPayment"
+            android:name="net.taler.wallet.payment.PromptPaymentFragment"
             android:label="Review Payment"
             tools:layout="@layout/fragment_prompt_payment">
         <action
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
             android:id="@+id/paymentSuccessful"
-            android:name="net.taler.wallet.PaymentSuccessful"
+            android:name="net.taler.wallet.payment.PaymentSuccessfulFragment"
             android:label="Payment Successful"
             tools:layout="@layout/fragment_payment_successful" />
     <fragment
@@ -48,7 +48,7 @@
             tools:layout="@layout/fragment_show_history" />
     <fragment
             android:id="@+id/alreadyPaid"
-            android:name="net.taler.wallet.AlreadyPaid"
+            android:name="net.taler.wallet.payment.AlreadyPaidFragment"
             android:label="Already Paid"
             tools:layout="@layout/fragment_already_paid" />
     <fragment

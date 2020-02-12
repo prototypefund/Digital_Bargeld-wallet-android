@@ -14,33 +14,34 @@
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet
+package net.taler.wallet.payment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import androidx.navigation.findNavController
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import kotlinx.android.synthetic.main.fragment_already_paid.*
+import net.taler.wallet.R
 
 /**
  * Display the message that the user already paid for the order
  * that the merchant is proposing.
  */
-class AlreadyPaid : Fragment() {
+class AlreadyPaidFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_already_paid, container, false)
-        view.findViewById<Button>(R.id.button_success_back).setOnClickListener {
-            activity!!.findNavController(R.id.nav_host_fragment).navigateUp()
-        }
-        return view
+        return inflater.inflate(R.layout.fragment_already_paid, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        button_success_back.setOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
 
 }

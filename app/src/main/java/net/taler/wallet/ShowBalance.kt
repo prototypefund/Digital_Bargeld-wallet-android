@@ -19,7 +19,12 @@ package net.taler.wallet
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -320,7 +325,7 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
                 if (proposalId == "") {
                     return
                 }
-                model.abortProposal(proposalId)
+                model.paymentManager.abortProposal(proposalId)
             }
         }
     }

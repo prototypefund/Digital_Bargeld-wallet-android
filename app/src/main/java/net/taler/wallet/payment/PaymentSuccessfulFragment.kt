@@ -14,33 +14,33 @@
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
-package net.taler.wallet
+package net.taler.wallet.payment
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-
+import androidx.navigation.fragment.findNavController
+import kotlinx.android.synthetic.main.fragment_payment_successful.*
+import net.taler.wallet.R
 
 /**
  * Fragment that shows the success message for a payment.
- *
  */
-class PaymentSuccessful : Fragment() {
+class PaymentSuccessfulFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_payment_successful, container, false)
-        view.findViewById<Button>(R.id.button_success_back).setOnClickListener {
-            activity!!.findNavController(R.id.nav_host_fragment).navigateUp()
-        }
-        return view
+        return inflater.inflate(R.layout.fragment_payment_successful, container, false)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        button_success_back.setOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
 }

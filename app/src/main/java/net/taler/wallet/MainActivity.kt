@@ -14,9 +14,7 @@
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 package net.taler.wallet
-
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -26,41 +24,37 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.NavController
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.navigation.NavigationView
+import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
-import me.zhanghai.android.materialprogressbar.MaterialProgressBar
-import java.util.*
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
+import java.util.Locale.ROOT
 
+class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
+    ResetDialogEventListener {
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ResetDialogEventListener {
-
-    lateinit var model: WalletViewModel
+    private val model: WalletViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
 
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
+        nav_view.menu.getItem(0).isChecked = true
+        nav_view.setNavigationItemSelectedListener(this)
 
-        navView.menu.getItem(0).isChecked = true
-
-        val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
             val integrator = IntentIntegrator(this)
             integrator.setPrompt("Place merchant's QR Code inside the viewfinder rectangle to initiate payment.")
@@ -68,23 +62,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         fab.hide()
 
-        navView.setNavigationItemSelectedListener(this)
-
+        setSupportActionBar(toolbar)
         val navController = findNavController(R.id.nav_host_fragment)
-
-        val appBarConfiguration =
-            AppBarConfiguration(setOf(R.id.showBalance, R.id.settings, R.id.walletHistory), drawerLayout)
-
-        findViewById<Toolbar>(R.id.toolbar)
-            .setupWithNavController(navController, appBarConfiguration)
-
-        model = ViewModelProviders.of(this)[WalletViewModel::class.java]
-
-        val progressBar = findViewById<MaterialProgressBar>(R.id.progress_bar)
-        progressBar.visibility = View.INVISIBLE
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.showBalance, R.id.settings, R.id.walletHistory),
+            drawer_layout
+        )
+        toolbar.setupWithNavController(navController, appBarConfiguration)
 
         model.init()
         model.getBalances()
+
+        model.showProgressBar.observe(this, Observer { show ->
+            progress_bar.visibility = if (show) VISIBLE else INVISIBLE
+        })
 
         val triggerPaymentFilter = IntentFilter(HostCardEmulatorService.TRIGGER_PAYMENT_ACTION)
         registerReceiver(object : BroadcastReceiver() {
@@ -97,7 +88,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val url = p1!!.extras!!.get("contractUrl") as String
 
                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_global_promptPayment)
-                model.preparePay(url)
+                model.paymentManager.preparePay(url)
 
             }
         }, triggerPaymentFilter)
@@ -188,12 +179,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val scanResult: IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
 
         if (scanResult == null || scanResult.contents == null) {
-            val bar: Snackbar = Snackbar.make(
-                findViewById(R.id.nav_host_fragment),
-                "QR Code scan canceled.",
-                Snackbar.LENGTH_SHORT
-            )
-            bar.show()
+            Snackbar.make(nav_view, "QR Code scan canceled.", LENGTH_SHORT).show()
             return
         }
 
@@ -203,35 +189,37 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun handleTalerUri(url: String, from: String) {
         when {
-            url.toLowerCase(Locale.ROOT).startsWith("taler://pay/") -> {
+            url.toLowerCase(ROOT).startsWith("taler://pay/") -> {
                 Log.v(TAG, "navigating!")
                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptPayment)
-                model.preparePay(url)
+                model.paymentManager.preparePay(url)
             }
-            url.toLowerCase(Locale.ROOT).startsWith("taler://withdraw/") -> {
+            url.toLowerCase(ROOT).startsWith("taler://withdraw/") -> {
                 Log.v(TAG, "navigating!")
                 findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptWithdraw)
                 model.getWithdrawalInfo(url)
             }
+            url.toLowerCase(ROOT).startsWith("taler://refund/") -> {
+                // TODO implement refunds
+                Snackbar.make(nav_view, "Refunds are not yet implemented", LENGTH_SHORT).show()
+            }
             else -> {
-                val bar: Snackbar = Snackbar.make(
-                    findViewById(R.id.nav_host_fragment),
-                    "URL from $from doesn't contain Taler payment.",
-                    Snackbar.LENGTH_SHORT
-                )
-                bar.show()
+                Snackbar.make(
+                    nav_view,
+                    "URL from $from doesn't contain a supported Taler Uri.",
+                    LENGTH_SHORT
+                ).show()
             }
         }
     }
 
     override fun onResetConfirmed() {
         model.dangerouslyReset()
-        val snackbar = Snackbar.make(findViewById(R.id.nav_host_fragment), "Wallet has been reset", Snackbar.LENGTH_SHORT)
-        snackbar.show()
+        Snackbar.make(nav_view, "Wallet has been reset", LENGTH_SHORT).show()
     }
 
     override fun onResetCancelled() {
-        val snackbar = Snackbar.make(findViewById(R.id.nav_host_fragment), "Reset cancelled", Snackbar.LENGTH_SHORT)
-        snackbar.show()
+        Snackbar.make(nav_view, "Reset cancelled", LENGTH_SHORT).show()
     }
+
 }

@@ -18,7 +18,11 @@ package net.taler.wallet
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.switchMap
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -31,6 +35,7 @@ import kotlinx.coroutines.flow.onStart
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.history.History
 import net.taler.wallet.history.HistoryEvent
+import net.taler.wallet.payment.PaymentManager
 import org.json.JSONObject
 
 const val TAG = "taler-wallet"
@@ -40,23 +45,6 @@ data class BalanceEntry(val available: Amount, val pendingIncoming: Amount)
 
 
 data class WalletBalances(val initialized: Boolean, val byCurrency: List<BalanceEntry>)
-
-data class ContractTerms(val summary: String, val amount: Amount)
-
-open class PayStatus {
-    class None : PayStatus()
-    class Loading : PayStatus()
-    data class Prepared(
-        val contractTerms: ContractTerms,
-        val proposalId: String,
-        val totalFees: Amount
-    ) : PayStatus()
-
-    data class InsufficientBalance(val contractTerms: ContractTerms) : PayStatus()
-    data class AlreadyPaid(val contractTerms: ContractTerms) : PayStatus()
-    data class Error(val error: String) : PayStatus()
-    class Success : PayStatus()
-}
 
 open class WithdrawStatus {
     class None : WithdrawStatus()
@@ -100,10 +88,6 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         value = WalletBalances(false, listOf())
     }
 
-    val payStatus = MutableLiveData<PayStatus>().apply {
-        value = PayStatus.None()
-    }
-
     val withdrawStatus = MutableLiveData<WithdrawStatus>().apply {
         value = WithdrawStatus.None()
     }
@@ -124,13 +108,16 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             .asLiveData(Dispatchers.IO)
     }
 
+    val showProgressBar = MutableLiveData<Boolean>()
+
     private var activeGetBalance = 0
     private var activeGetPending = 0
 
-    private var currentPayRequestId = 0
     private var currentWithdrawRequestId = 0
 
     private val walletBackendApi = WalletBackendApi(app)
+    val paymentManager = PaymentManager(walletBackendApi)
+
     private val mapper = ObjectMapper()
         .registerModule(KotlinModule())
         .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -238,83 +225,6 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
         walletBackendApi.sendRequest("withdrawTestkudos", null) { _, _ ->
             testWithdrawalInProgress.postValue(false)
-        }
-    }
-
-
-    fun preparePay(url: String) {
-        val args = JSONObject()
-        args.put("url", url)
-
-        this.currentPayRequestId += 1
-        val myPayRequestId = this.currentPayRequestId
-        this.payStatus.value = PayStatus.Loading()
-
-        walletBackendApi.sendRequest("preparePay", args) { isError, result ->
-            if (isError) {
-                Log.v(TAG, "got preparePay error result")
-                payStatus.value = PayStatus.Error(result.toString(0))
-                return@sendRequest
-            }
-            Log.v(TAG, "got preparePay result")
-            if (myPayRequestId != this.currentPayRequestId) {
-                Log.v(TAG, "preparePay result was for old request")
-                return@sendRequest
-            }
-            val status = result.getString("status")
-            var contractTerms: ContractTerms? = null
-            var proposalId: String? = null
-            var totalFees: Amount? = null
-            if (result.has("proposalId")) {
-                proposalId = result.getString("proposalId")
-            }
-            if (result.has("contractTermsRaw")) {
-                val ctJson = JSONObject(result.getString("contractTermsRaw"))
-                val amount = Amount.fromString(ctJson.getString("amount"))
-                val summary = ctJson.getString("summary")
-                contractTerms = ContractTerms(summary, amount)
-            }
-            if (result.has("totalFees")) {
-                totalFees = Amount.fromJson(result.getJSONObject("totalFees"))
-            }
-            val res = when (status) {
-                "payment-possible" -> PayStatus.Prepared(
-                    contractTerms!!,
-                    proposalId!!,
-                    totalFees!!
-                )
-                "paid" -> PayStatus.AlreadyPaid(contractTerms!!)
-                "insufficient-balance" -> PayStatus.InsufficientBalance(
-                    contractTerms!!
-                )
-                "error" -> PayStatus.Error("got some error")
-                else -> PayStatus.Error("unknown status")
-            }
-            payStatus.postValue(res)
-        }
-    }
-
-    fun abortProposal(proposalId: String) {
-        val args = JSONObject()
-        args.put("proposalId", proposalId)
-
-        Log.i(TAG, "aborting proposal")
-
-        walletBackendApi.sendRequest("abortProposal", args) { isError, _ ->
-            if (isError) {
-                Log.e(TAG, "received error response to abortProposal")
-                return@sendRequest
-            }
-            payStatus.postValue(PayStatus.None())
-        }
-    }
-
-    fun confirmPay(proposalId: String) {
-        val args = JSONObject()
-        args.put("proposalId", proposalId)
-
-        walletBackendApi.sendRequest("confirmPay", args) { isError, result ->
-            payStatus.postValue(PayStatus.Success())
         }
     }
 
