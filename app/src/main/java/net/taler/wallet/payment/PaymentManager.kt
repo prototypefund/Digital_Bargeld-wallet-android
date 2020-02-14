@@ -4,21 +4,30 @@ import android.util.Log
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.taler.wallet.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
 
-class PaymentManager(private val walletBackendApi: WalletBackendApi) {
+class PaymentManager(
+    private val walletBackendApi: WalletBackendApi,
+    private val mapper: ObjectMapper
+) {
 
     private val mPayStatus = MutableLiveData<PayStatus>(PayStatus.None)
     internal val payStatus: LiveData<PayStatus> = mPayStatus
+
+    private val mDetailsShown = MutableLiveData<Boolean>()
+    internal val detailsShown: LiveData<Boolean> = mDetailsShown
 
     private var currentPayRequestId = 0
 
     @UiThread
     fun preparePay(url: String) {
         mPayStatus.value = PayStatus.Loading
+        mDetailsShown.value = false
 
         val args = JSONObject(mapOf("url" to url))
 
@@ -55,10 +64,13 @@ class PaymentManager(private val walletBackendApi: WalletBackendApi) {
     }
 
     private fun getContractTerms(json: JSONObject): ContractTerms {
-        val ctJson = JSONObject(json.getString("contractTermsRaw"))
-        val amount = Amount.fromString(ctJson.getString("amount"))
-        val summary = ctJson.getString("summary")
-        return ContractTerms(summary, amount)
+        return mapper.readValue(json.getString("contractTermsRaw"))
+    }
+
+    @UiThread
+    fun toggleDetailsShown() {
+        val oldValue = mDetailsShown.value ?: false
+        mDetailsShown.value = !oldValue
     }
 
     fun confirmPay(proposalId: String) {
@@ -104,5 +116,3 @@ sealed class PayStatus {
     data class Error(val error: String) : PayStatus()
     object Success : PayStatus()
 }
-
-data class ContractTerms(val summary: String, val amount: Amount)

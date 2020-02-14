@@ -20,13 +20,17 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.TransitionManager.beginDelayedTransition
 import kotlinx.android.synthetic.main.fragment_prompt_payment.*
 import net.taler.wallet.Amount
 import net.taler.wallet.R
@@ -39,6 +43,7 @@ class PromptPaymentFragment : Fragment() {
 
     private val model: WalletViewModel by activityViewModels()
     private val paymentManager by lazy { model.paymentManager }
+    private val adapter = ProductAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +54,20 @@ class PromptPaymentFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         paymentManager.payStatus.observe(viewLifecycleOwner, this::onPaymentStatusChanged)
+        paymentManager.detailsShown.observe(viewLifecycleOwner, Observer { shown ->
+            beginDelayedTransition(view as ViewGroup)
+            val res = if (shown) R.string.payment_hide_details else R.string.payment_show_details
+            detailsButton.setText(res)
+            productsList.visibility = if (shown) VISIBLE else GONE
+        })
+
+        detailsButton.setOnClickListener {
+            paymentManager.toggleDetailsShown()
+        }
+        productsList.apply {
+            adapter = this@PromptPaymentFragment.adapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
 
         button_abort_payment.setOnClickListener {
             when (val ps = paymentManager.payStatus.value) {
@@ -111,6 +130,7 @@ class PromptPaymentFragment : Fragment() {
 
     private fun showOrder(contractTerms: ContractTerms, totalFees: Amount?) {
         order_summary.text = contractTerms.summary
+        adapter.setItems(contractTerms.products)
         val amount = contractTerms.amount
         @SuppressLint("SetTextI18n")
         order_amount.text = "${amount.amount} ${amount.currency}"
@@ -123,6 +143,7 @@ class PromptPaymentFragment : Fragment() {
         }
         fadeInView(order_summary_label)
         fadeInView(order_summary)
+        if (contractTerms.products.isNotEmpty()) fadeInView(detailsButton)
         fadeInView(order_amount_label)
         fadeInView(order_amount)
     }

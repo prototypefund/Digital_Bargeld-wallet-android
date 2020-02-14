@@ -18,11 +18,16 @@
 
 package net.taler.wallet
 
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import org.json.JSONObject
 import kotlin.math.round
 
 private const val FRACTIONAL_BASE = 1e8
 
+@JsonDeserialize(using = AmountDeserializer::class)
 data class Amount(val currency: String, val amount: String) {
     fun isZero(): Boolean {
         return amount.toDouble() == 0.0
@@ -45,6 +50,17 @@ data class Amount(val currency: String, val amount: String) {
             val components = strAmount.split(":")
             return Amount(components[0], components[1])
         }
+    }
+
+    override fun toString(): String {
+        return String.format("%.2f $currency", amount.toDouble())
+    }
+}
+
+class AmountDeserializer : StdDeserializer<Amount>(Amount::class.java) {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Amount {
+        val node = p.codec.readValue(p, String::class.java)
+        return Amount.fromString(node)
     }
 }
 

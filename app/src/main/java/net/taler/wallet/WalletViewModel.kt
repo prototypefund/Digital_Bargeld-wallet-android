@@ -116,11 +116,12 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     private var currentWithdrawRequestId = 0
 
     private val walletBackendApi = WalletBackendApi(app)
-    val paymentManager = PaymentManager(walletBackendApi)
 
     private val mapper = ObjectMapper()
         .registerModule(KotlinModule())
         .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+    val paymentManager = PaymentManager(walletBackendApi, mapper)
 
     fun init() {
         if (initialized) {

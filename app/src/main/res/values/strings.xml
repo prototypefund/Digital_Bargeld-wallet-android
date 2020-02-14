@@ -43,5 +43,7 @@
     <string name="payment_label_order_summary">Order Summary</string>
     <string name="payment_error">Error: %s</string>
     <string name="payment_balance_insufficient">Balance Insufficient!</string>
+    <string name="payment_show_details">Show Details</string>
+    <string name="payment_hide_details">Hide Details</string>
 
 </resources>
