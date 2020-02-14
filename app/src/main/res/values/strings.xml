@@ -39,11 +39,12 @@
     <string name="payment_fee">(plus an additional %s payment fee)</string>
     <string name="payment_button_confirm">Confirm Payment</string>
     <string name="payment_button_abort">Abort Payment</string>
-    <string name="payment_label_amount">Amount</string>
+    <string name="payment_label_amount_total">Total Amount</string>
     <string name="payment_label_order_summary">Order Summary</string>
     <string name="payment_error">Error: %s</string>
     <string name="payment_balance_insufficient">Balance Insufficient!</string>
     <string name="payment_show_details">Show Details</string>
     <string name="payment_hide_details">Hide Details</string>
+    <string name="payment_successful">Payment was successful</string>
 
 </resources>

@@ -81,7 +81,16 @@ class PaymentManager(
         }
     }
 
-    fun abortProposal(proposalId: String) {
+    @UiThread
+    fun abortPay() {
+        val ps = payStatus.value
+        if (ps is PayStatus.Prepared) {
+            abortProposal(ps.proposalId)
+        }
+        resetPayStatus()
+    }
+
+    private fun abortProposal(proposalId: String) {
         val args = JSONObject(mapOf("proposalId" to proposalId))
 
         Log.i(TAG, "aborting proposal")

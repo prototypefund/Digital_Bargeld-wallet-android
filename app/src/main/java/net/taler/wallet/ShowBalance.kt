@@ -321,11 +321,8 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
         when (type) {
             "proposal-choice" -> {
                 Log.v(TAG, "got action click on proposal-choice")
-                val proposalId = detail.optString("proposalId", "")
-                if (proposalId == "") {
-                    return
-                }
-                model.paymentManager.abortProposal(proposalId)
+                val json = detail.toString(4)
+                throw IllegalStateException("proposal-choice wasn't aborted automatically: $json")
             }
         }
     }

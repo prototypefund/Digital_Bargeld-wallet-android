@@ -70,13 +70,15 @@ class PromptPaymentFragment : Fragment() {
         }
 
         button_abort_payment.setOnClickListener {
-            when (val ps = paymentManager.payStatus.value) {
-                is PayStatus.Prepared -> {
-                    paymentManager.abortProposal(ps.proposalId)
-                }
-            }
-            paymentManager.resetPayStatus()
+            paymentManager.abortPay()
             findNavController().navigateUp()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (!requireActivity().isChangingConfigurations) {
+            paymentManager.abortPay()
         }
     }
 
