@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
+import com.google.zxing.integration.android.IntentIntegrator.QR_CODE_TYPES
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 import org.json.JSONObject
 
@@ -244,9 +245,10 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
         val view = inflater.inflate(R.layout.fragment_show_balance, container, false)
         val payQrButton = view.findViewById<Button>(R.id.button_pay_qr)
         payQrButton.setOnClickListener {
-            val integrator = IntentIntegrator(activity)
-            integrator.setPrompt("Place merchant's QR Code inside the viewfinder rectangle to initiate payment.")
-            integrator.initiateScan(listOf("QR_CODE"))
+            IntentIntegrator(activity).apply {
+                setBeepEnabled(true)
+                setOrientationLocked(false)
+            }.initiateScan(QR_CODE_TYPES)
         }
 
         this.balancesView = view.findViewById(R.id.list_balances)
@@ -321,8 +323,11 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
         when (type) {
             "proposal-choice" -> {
                 Log.v(TAG, "got action click on proposal-choice")
-                val json = detail.toString(4)
-                throw IllegalStateException("proposal-choice wasn't aborted automatically: $json")
+                val proposalId = detail.optString("proposalId", "")
+                if (proposalId == "") {
+                    return
+                }
+                model.paymentManager.abortProposal(proposalId)
             }
         }
     }

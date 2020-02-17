@@ -39,7 +39,7 @@ class AlreadyPaidFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        button_success_back.setOnClickListener {
+        backButton.setOnClickListener {
             findNavController().navigateUp()
         }
     }

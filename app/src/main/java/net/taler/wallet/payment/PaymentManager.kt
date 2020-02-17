@@ -106,7 +106,7 @@ class PaymentManager(
         resetPayStatus()
     }
 
-    private fun abortProposal(proposalId: String) {
+    internal fun abortProposal(proposalId: String) {
         val args = JSONObject(mapOf("proposalId" to proposalId))
 
         Log.i(TAG, "aborting proposal")

@@ -16,27 +16,20 @@
 
 package net.taler.wallet
 
-
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import androidx.navigation.findNavController
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 
-/**
- * A simple [Fragment] subclass.
- */
-class WithdrawSuccessful : Fragment() {
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_withdraw_successful, container, false)
-        view.findViewById<Button>(R.id.backButton).setOnClickListener {
-            activity!!.findNavController(R.id.nav_host_fragment).navigateUp()
-        }
-        return view
-    }
+fun View.fadeIn() {
+    alpha = 0f
+    visibility = VISIBLE
+    animate().alpha(1f).start()
+}
+
+fun View.fadeOut() {
+    if (visibility == INVISIBLE) return
+    animate().alpha(0f).withEndAction {
+        visibility = INVISIBLE
+        alpha = 1f
+    }.start()
 }

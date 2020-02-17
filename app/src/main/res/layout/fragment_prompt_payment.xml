@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of GNU Taler
   ~ (C) 2020 Taler Systems S.A.
   ~
@@ -22,159 +21,24 @@
         android:layout_height="match_parent"
         tools:context=".payment.PromptPaymentFragment">
 
-    <ScrollView
+    <include
+            android:id="@+id/scrollView"
+            layout="@layout/payment_details"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="16dp"
-            android:fillViewport="true"
-            app:layout_constraintBottom_toTopOf="@+id/button_abort_payment"
+            app:layout_constraintBottom_toTopOf="@+id/bottomView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                    android:id="@+id/error_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:textColor="@android:color/holo_red_dark"
-                    android:textSize="22sp"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toTopOf="@+id/order_summary_label"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="packed"
-                    tools:text="@string/payment_balance_insufficient"
-                    tools:visibility="visible" />
-
-            <TextView
-                    android:id="@+id/order_summary_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:text="@string/payment_label_order_summary"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toTopOf="@+id/order_summary"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/error_text"
-                    tools:visibility="visible" />
-
-            <TextView
-                    android:id="@+id/order_summary"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center_horizontal"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                    android:textSize="25sp"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toTopOf="@+id/detailsButton"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/order_summary_label"
-                    tools:text="2 x Cappuccino, 1 x Hot Meals, 1 x Dessert"
-                    tools:visibility="visible" />
-
-            <Button
-                    android:id="@+id/detailsButton"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/colorPrimary"
-                    android:text="@string/payment_show_details"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toTopOf="@+id/productsList"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/order_summary"
-                    tools:visibility="visible" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/productsList"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toTopOf="@+id/order_amount_label"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/detailsButton"
-                    tools:listitem="@layout/list_item_product"
-                    tools:visibility="visible" />
-
-            <TextView
-                    android:id="@+id/order_amount_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:text="@string/payment_label_amount_total"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toTopOf="@+id/order_amount"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/productsList"
-                    tools:visibility="visible" />
-
-            <TextView
-                    android:id="@+id/order_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toTopOf="@+id/order_fees_amount"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/order_amount_label"
-                    tools:text="10 TESTKUDOS"
-                    tools:visibility="visible" />
-
-            <TextView
-                    android:id="@+id/order_fees_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/order_amount"
-                    tools:text="@string/payment_fee"
-                    tools:visibility="visible" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </ScrollView>
-
-    <Button
-            android:id="@+id/button_abort_payment"
-            android:layout_width="wrap_content"
+    <include
+            android:id="@+id/bottomView"
+            layout="@layout/payment_bottom_bar"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:text="@string/payment_button_abort"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_confirm_payment"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-            android:id="@+id/button_confirm_payment"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            android:enabled="false"
-            android:text="@string/payment_button_confirm"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/button_abort_payment"
-            tools:enabled="true" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scrollView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

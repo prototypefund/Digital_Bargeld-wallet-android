@@ -21,7 +21,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
-import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -31,10 +30,13 @@ import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager.beginDelayedTransition
-import kotlinx.android.synthetic.main.fragment_prompt_payment.*
+import kotlinx.android.synthetic.main.payment_bottom_bar.*
+import kotlinx.android.synthetic.main.payment_details.*
 import net.taler.wallet.Amount
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
+import net.taler.wallet.fadeIn
+import net.taler.wallet.fadeOut
 
 /**
  * Show a payment and ask the user to accept/decline.
@@ -69,7 +71,7 @@ class PromptPaymentFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-        button_abort_payment.setOnClickListener {
+        abortButton.setOnClickListener {
             paymentManager.abortPay()
             findNavController().navigateUp()
         }
@@ -84,6 +86,11 @@ class PromptPaymentFragment : Fragment() {
 
     private fun showLoading(show: Boolean) {
         model.showProgressBar.value = show
+        if (show) {
+            progressBar.fadeIn()
+        } else {
+            progressBar.fadeOut()
+        }
     }
 
     private fun onPaymentStatusChanged(payStatus: PayStatus) {
@@ -91,18 +98,19 @@ class PromptPaymentFragment : Fragment() {
             is PayStatus.Prepared -> {
                 showLoading(false)
                 showOrder(payStatus.contractTerms, payStatus.totalFees)
-                button_confirm_payment.isEnabled = true
-                button_confirm_payment.setOnClickListener {
-                    showLoading(true)
+                confirmButton.isEnabled = true
+                confirmButton.setOnClickListener {
+                    model.showProgressBar.value = true
                     paymentManager.confirmPay(payStatus.proposalId)
-                    button_confirm_payment.isEnabled = false
+                    confirmButton.fadeOut()
+                    confirmProgressBar.fadeIn()
                 }
             }
             is PayStatus.InsufficientBalance -> {
                 showLoading(false)
                 showOrder(payStatus.contractTerms, null)
-                error_text.setText(R.string.payment_balance_insufficient)
-                fadeInView(error_text)
+                errorView.setText(R.string.payment_balance_insufficient)
+                errorView.fadeIn()
             }
             is PayStatus.Success -> {
                 showLoading(false)
@@ -116,8 +124,8 @@ class PromptPaymentFragment : Fragment() {
             }
             is PayStatus.Error -> {
                 showLoading(false)
-                error_text.text = getString(R.string.payment_error, payStatus.error)
-                fadeInView(error_text)
+                errorView.text = getString(R.string.payment_error, payStatus.error)
+                errorView.fadeIn()
             }
             is PayStatus.None -> {
                 // No payment active.
@@ -131,29 +139,23 @@ class PromptPaymentFragment : Fragment() {
     }
 
     private fun showOrder(contractTerms: ContractTerms, totalFees: Amount?) {
-        order_summary.text = contractTerms.summary
+        orderView.text = contractTerms.summary
         adapter.setItems(contractTerms.products)
         val amount = contractTerms.amount
         @SuppressLint("SetTextI18n")
-        order_amount.text = "${amount.amount} ${amount.currency}"
+        totalView.text = "${amount.amount} ${amount.currency}"
         if (totalFees != null && !totalFees.isZero()) {
             val fee = "${totalFees.amount} ${totalFees.currency}"
-            order_fees_amount.text = getString(R.string.payment_fee, fee)
-            fadeInView(order_fees_amount)
+            feeView.text = getString(R.string.payment_fee, fee)
+            feeView.fadeIn()
         } else {
-            order_fees_amount.visibility = INVISIBLE
+            feeView.visibility = GONE
         }
-        fadeInView(order_summary_label)
-        fadeInView(order_summary)
-        if (contractTerms.products.isNotEmpty()) fadeInView(detailsButton)
-        fadeInView(order_amount_label)
-        fadeInView(order_amount)
-    }
-
-    private fun fadeInView(v: View) {
-        v.alpha = 0f
-        v.visibility = VISIBLE
-        v.animate().alpha(1f).start()
+        orderLabelView.fadeIn()
+        orderView.fadeIn()
+        if (contractTerms.products.isNotEmpty()) detailsButton.fadeIn()
+        totalLabelView.fadeIn()
+        totalView.fadeIn()
     }
 
 }

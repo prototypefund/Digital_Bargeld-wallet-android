@@ -31,7 +31,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
@@ -48,12 +49,11 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
     private val model: WalletViewModel by viewModels()
 
+    private lateinit var nav: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        nav_view.menu.getItem(0).isChecked = true
-        nav_view.setNavigationItemSelectedListener(this)
 
         fab.setOnClickListener {
             val integrator = IntentIntegrator(this)
@@ -62,13 +62,17 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         }
         fab.hide()
 
-        setSupportActionBar(toolbar)
-        val navController = findNavController(R.id.nav_host_fragment)
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.showBalance, R.id.settings, R.id.walletHistory),
-            drawer_layout
-        )
-        toolbar.setupWithNavController(navController, appBarConfiguration)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        nav = navHostFragment.navController
+        nav_view.setupWithNavController(nav)
+        nav_view.setNavigationItemSelectedListener(this)
+        if (savedInstanceState == null) {
+            nav_view.menu.getItem(0).isChecked = true
+        }
+
+        val appBarConfiguration = AppBarConfiguration(nav.graph, drawer_layout)
+        toolbar.setupWithNavController(nav, appBarConfiguration)
 
         model.init()
         model.getBalances()
@@ -81,13 +85,13 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(p0: Context?, p1: Intent?) {
 
-                if (navController.currentDestination?.id == R.id.promptPayment) {
+                if (nav.currentDestination?.id == R.id.promptPayment) {
                     return
                 }
 
                 val url = p1!!.extras!!.get("contractUrl") as String
 
-                findNavController(R.id.nav_host_fragment).navigate(R.id.action_global_promptPayment)
+                nav.navigate(R.id.action_global_promptPayment)
                 model.paymentManager.preparePay(url)
 
             }
@@ -156,13 +160,13 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
-                findNavController(R.id.nav_host_fragment).navigate(R.id.showBalance)
+                nav.navigate(R.id.showBalance)
             }
             R.id.nav_settings -> {
-                findNavController(R.id.nav_host_fragment).navigate(R.id.settings)
+                nav.navigate(R.id.settings)
             }
             R.id.nav_history -> {
-                findNavController(R.id.nav_host_fragment).navigate(R.id.walletHistory)
+                nav.navigate(R.id.walletHistory)
             }
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -176,7 +180,8 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             return
         }
 
-        val scanResult: IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        val scanResult: IntentResult? =
+            IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
 
         if (scanResult == null || scanResult.contents == null) {
             Snackbar.make(nav_view, "QR Code scan canceled.", LENGTH_SHORT).show()
@@ -191,12 +196,12 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         when {
             url.toLowerCase(ROOT).startsWith("taler://pay/") -> {
                 Log.v(TAG, "navigating!")
-                findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptPayment)
+                nav.navigate(R.id.action_showBalance_to_promptPayment)
                 model.paymentManager.preparePay(url)
             }
             url.toLowerCase(ROOT).startsWith("taler://withdraw/") -> {
                 Log.v(TAG, "navigating!")
-                findNavController(R.id.nav_host_fragment).navigate(R.id.action_showBalance_to_promptWithdraw)
+                nav.navigate(R.id.action_showBalance_to_promptWithdraw)
                 model.getWithdrawalInfo(url)
             }
             url.toLowerCase(ROOT).startsWith("taler://refund/") -> {

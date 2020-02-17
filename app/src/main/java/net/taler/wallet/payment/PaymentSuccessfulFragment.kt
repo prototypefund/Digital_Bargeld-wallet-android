@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_payment_successful.*
 import net.taler.wallet.R
+import net.taler.wallet.fadeIn
 
 /**
  * Fragment that shows the success message for a payment.
@@ -38,7 +39,9 @@ class PaymentSuccessfulFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        button_success_back.setOnClickListener {
+        successImageView.fadeIn()
+        successTextView.fadeIn()
+        backButton.setOnClickListener {
             findNavController().navigateUp()
         }
     }
