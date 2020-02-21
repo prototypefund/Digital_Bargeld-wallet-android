@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of GNU Taler
   ~ (C) 2020 Taler Systems S.A.
   ~
@@ -79,24 +78,26 @@
         <action
                 android:id="@+id/action_promptWithdraw_to_reviewExchangeTOS"
                 app:destination="@id/reviewExchangeTOS"
-                app:popUpTo="@id/showBalance"/>
+                app:popUpTo="@id/showBalance" />
     </fragment>
     <fragment
             android:id="@+id/withdrawSuccessful"
             android:name="net.taler.wallet.WithdrawSuccessful"
             android:label="Withdrawal Confirmed"
             tools:layout="@layout/fragment_withdraw_successful" />
-    <action
-            android:id="@+id/action_global_promptPayment"
-            app:destination="@id/promptPayment" />
     <fragment
             android:id="@+id/reviewExchangeTOS"
             android:name="net.taler.wallet.ReviewExchangeTOS"
             android:label="Exchange's Terms of Service"
-            tools:layout="@layout/fragment_review_exchange_tos" >
+            tools:layout="@layout/fragment_review_exchange_tos">
         <action
                 android:id="@+id/action_reviewExchangeTOS_to_promptWithdraw"
-                app:popUpTo="@id/showBalance"
-                app:destination="@id/promptWithdraw" />
+                app:destination="@id/promptWithdraw"
+                app:popUpTo="@id/showBalance" />
     </fragment>
+
+    <action
+            android:id="@+id/action_global_promptPayment"
+            app:destination="@id/promptPayment" />
+
 </navigation>

@@ -259,9 +259,12 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
         walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
             if (isError) {
+                Log.e(TAG, "Error getWithdrawDetailsForUri ${result.toString(4)}")
                 return@sendRequest
             }
             if (myWithdrawRequestId != this.currentWithdrawRequestId) {
+                val mismatch = "$myWithdrawRequestId != ${this.currentWithdrawRequestId}"
+                Log.w(TAG, "Got withdraw result for different request id $mismatch")
                 return@sendRequest
             }
             Log.v(TAG, "got getWithdrawDetailsForUri result")
@@ -288,9 +291,12 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
         walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
             if (isError) {
+                Log.e(TAG, "Error getWithdrawDetailsForUri ${result.toString(4)}")
                 return@sendRequest
             }
             if (myWithdrawRequestId != this.currentWithdrawRequestId) {
+                val mismatch = "$myWithdrawRequestId != ${this.currentWithdrawRequestId}"
+                Log.w(TAG, "Got withdraw result for different request id $mismatch")
                 return@sendRequest
             }
             Log.v(TAG, "got getWithdrawDetailsForUri result (with exchange details)")
