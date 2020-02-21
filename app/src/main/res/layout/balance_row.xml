@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of GNU Taler
   ~ (C) 2020 Taler Systems S.A.
   ~
@@ -16,72 +15,76 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <LinearLayout android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="horizontal">
-
-        <TextView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/balance_amount"
-                  android:textSize="40sp" tools:text="100.50">
-        </TextView>
-
-        <Space android:layout_width="10sp"
-               android:layout_height="match_parent"/>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
         <TextView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/balance_currency"
-                  android:textSize="20sp" tools:text="TESTKUDOS">
-        </TextView>
+                android:id="@+id/balance_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="40sp"
+                tools:text="100.50" />
+
+        <Space
+                android:layout_width="10sp"
+                android:layout_height="match_parent" />
+
+        <TextView
+                android:id="@+id/balance_currency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                tools:text="TESTKUDOS" />
 
     </LinearLayout>
 
-    <LinearLayout android:layout_width="match_parent"
+    <LinearLayout
+            android:id="@+id/balance_row_pending"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/balance_row_pending">
+            android:orientation="horizontal">
 
-        <Space android:layout_width="5sp"
-                android:layout_height="match_parent"/>
+        <Space
+                android:layout_width="5sp"
+                android:layout_height="match_parent" />
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+"
-                android:textColor="#006600">
-        </TextView>
-
-        <Space android:layout_width="5sp"
-                android:layout_height="match_parent"/>
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/balance_pending"
                 android:textColor="#006600"
-                android:textSize="20sp" tools:text="10 TESTKUDOS">
-        </TextView>
+                tools:ignore="HardcodedText" />
 
-        <Space android:layout_width="5sp"
-                android:layout_height="match_parent"/>
+        <Space
+                android:layout_width="5sp"
+                android:layout_height="match_parent" />
+
+        <TextView
+                android:id="@+id/balance_pending"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#006600"
+                android:textSize="20sp"
+                tools:text="10 TESTKUDOS" />
+
+        <Space
+                android:layout_width="5sp"
+                android:layout_height="match_parent" />
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="inbound"
-                android:textColor="#006600">
-        </TextView>
+                android:text="@string/balance_inbound"
+                android:textColor="#006600" />
 
     </LinearLayout>
-
 
 
 </LinearLayout>

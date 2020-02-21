@@ -70,6 +70,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             nav_view.menu.getItem(0).isChecked = true
         }
 
+        setSupportActionBar(toolbar)
         val appBarConfiguration = AppBarConfiguration(
             setOf(R.id.showBalance, R.id.settings, R.id.walletHistory), drawer_layout
         )

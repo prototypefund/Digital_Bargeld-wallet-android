@@ -18,14 +18,13 @@ package net.taler.wallet
 
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.CompoundButton
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
@@ -61,7 +60,7 @@ class ReviewExchangeTOS : Fragment() {
             model.cancelCurrentWithdraw()
             navController.navigateUp()
         }
-        acceptButton = view.findViewById<Button>(R.id.button_tos_accept)
+        acceptButton = view.findViewById(R.id.button_tos_accept)
         acceptButton.setOnClickListener {
             model.acceptCurrentTermsOfService()
         }

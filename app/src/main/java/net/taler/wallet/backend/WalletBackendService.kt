@@ -20,7 +20,11 @@ package net.taler.wallet.backend
 import akono.AkonoJni
 import android.app.Service
 import android.content.Intent
-import android.os.*
+import android.os.Handler
+import android.os.IBinder
+import android.os.Message
+import android.os.Messenger
+import android.os.RemoteException
 import android.util.Log
 import net.taler.wallet.HostCardEmulatorService
 import org.json.JSONObject
@@ -96,7 +100,7 @@ class WalletBackendService : Service() {
             val svc = serviceWeakRef.get() ?: return
             when (msg.what) {
                 MSG_COMMAND -> {
-                    val data = msg.getData()
+                    val data = msg.data
                     val serviceRequestID = svc.nextRequestID++
                     val clientRequestID = data.getInt("requestID", 0)
                     if (clientRequestID == 0) {
@@ -124,10 +128,7 @@ class WalletBackendService : Service() {
                         TAG,
                         "mapping service request ID $serviceRequestID to client request ID $clientRequestID"
                     )
-                    svc.requests.put(
-                        serviceRequestID,
-                        RequestData(clientRequestID, msg.replyTo)
-                    )
+                    svc.requests[serviceRequestID] = RequestData(clientRequestID, msg.replyTo)
                 }
                 MSG_SUBSCRIBE_NOTIFY -> {
                     Log.i(TAG, "subscribing client")
@@ -165,7 +166,7 @@ class WalletBackendService : Service() {
                 s.send(m)
             } catch (e: RemoteException) {
                 if (rm == null) {
-                    rm = LinkedList<Messenger>()
+                    rm = LinkedList()
                 }
                 rm.add(s)
                 subscribers.remove(s)
@@ -179,10 +180,9 @@ class WalletBackendService : Service() {
     }
 
     private fun handleAkonoMessage(messageStr: String) {
-        Log.v(TAG, "got back message: ${messageStr}")
+        Log.v(TAG, "got back message: $messageStr")
         val message = JSONObject(messageStr)
-        val type = message.getString("type")
-        when (type) {
+        when (message.getString("type")) {
             "notification" -> {
                 sendNotify()
             }
@@ -195,8 +195,7 @@ class WalletBackendService : Service() {
                 }
             }
             "response" -> {
-                val operation = message.getString("operation")
-                when (operation) {
+                when (val operation = message.getString("operation")) {
                     "init" -> {
                         Log.v(TAG, "got response for init operation")
                         sendNotify()
@@ -207,7 +206,7 @@ class WalletBackendService : Service() {
                     else -> {
                         val id = message.getInt("id")
                         Log.v(TAG, "got response for operation $operation")
-                        val rd = requests.get(id)
+                        val rd = requests[id]
                         if (rd == null) {
                             Log.e(TAG, "wallet returned unknown request ID ($id)")
                             return

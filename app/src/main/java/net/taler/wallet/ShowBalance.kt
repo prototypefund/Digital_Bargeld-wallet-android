@@ -17,6 +17,7 @@
 package net.taler.wallet
 
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -30,7 +31,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,7 +41,7 @@ import com.google.zxing.integration.android.IntentIntegrator.QR_CODE_TYPES
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 import org.json.JSONObject
 
-class WalletBalanceAdapter(private var myDataset: WalletBalances, private var model: WalletViewModel) :
+class WalletBalanceAdapter(private var myDataset: WalletBalances) :
     RecyclerView.Adapter<WalletBalanceAdapter.MyViewHolder>() {
 
     init {
@@ -72,6 +73,7 @@ class WalletBalanceAdapter(private var myDataset: WalletBalances, private var mo
             amountIncomingRow.visibility = View.GONE
         } else {
             amountIncomingRow.visibility = View.VISIBLE
+            @SuppressLint("SetTextI18n")
             amountIncomingView.text = "${amountIncoming.amount} ${amountIncoming.currency}"
         }
     }
@@ -117,7 +119,7 @@ class PendingOperationsAdapter(private var myDataset: PendingOperations) :
         when (p.type) {
             "proposal-choice" -> {
                 val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
-                btn1.text = "Refuse Proposal"
+                btn1.text = btn1.context.getString(R.string.pending_operations_refuse)
                 btn1.visibility = View.VISIBLE
                 btn1.setOnClickListener {
                     this.listener?.onPendingOperationActionClick(p.type, p.detail)
@@ -125,7 +127,7 @@ class PendingOperationsAdapter(private var myDataset: PendingOperations) :
             }
             else -> {
                 val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
-                btn1.text = "(no action)"
+                btn1.text = btn1.context.getString(R.string.pending_operations_no_action)
                 btn1.visibility = View.GONE
                 btn1.setOnClickListener {}
             }
@@ -156,12 +158,12 @@ interface PendingOperationClickListener {
 class ShowBalance : Fragment(), PendingOperationClickListener {
 
     private lateinit var pendingOperationsLabel: View
-    lateinit var balancesView: RecyclerView
-    lateinit var balancesPlaceholderView: TextView
-    lateinit var model: WalletViewModel
-    lateinit var balancesAdapter: WalletBalanceAdapter
+    private lateinit var balancesView: RecyclerView
+    private lateinit var balancesPlaceholderView: TextView
+    private lateinit var model: WalletViewModel
+    private lateinit var balancesAdapter: WalletBalanceAdapter
 
-    lateinit var pendingAdapter: PendingOperationsAdapter
+    private lateinit var pendingAdapter: PendingOperationsAdapter
 
     private fun triggerLoading() {
         val loading: Boolean =
@@ -199,7 +201,9 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        activity?.menuInflater?.inflate(R.menu.balance, menu)
+        inflater.inflate(R.menu.balance, menu)
+        Log.e("TEST", "MENU INFLATED!!! ${menu.size()}")
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -207,7 +211,7 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
         setHasOptionsMenu(true)
 
         model = activity?.run {
-            ViewModelProviders.of(this)[WalletViewModel::class.java]
+            ViewModelProvider(this)[WalletViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
 
     }
@@ -224,12 +228,12 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
             balancesPlaceholderView.visibility = View.GONE
             balancesView.visibility = View.VISIBLE
         }
-        Log.v(TAG, "updating balances ${balances}")
+        Log.v(TAG, "updating balances $balances")
         balancesAdapter.update(balances)
     }
 
     private fun updatePending(pendingOperations: PendingOperations) {
-        if (pendingOperations.pending.size == 0) {
+        if (pendingOperations.pending.isEmpty()) {
             pendingOperationsLabel.visibility = View.GONE
         } else {
             pendingOperationsLabel.visibility = View.VISIBLE
@@ -256,7 +260,7 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
 
         val balances = model.balances.value!!
 
-        balancesAdapter = WalletBalanceAdapter(balances, model)
+        balancesAdapter = WalletBalanceAdapter(balances)
 
         view.findViewById<RecyclerView>(R.id.list_balances).apply {
             val myLayoutManager = LinearLayoutManager(context)
@@ -280,7 +284,7 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
         }
 
         model.testWithdrawalInProgress.observe(viewLifecycleOwner, Observer { loading ->
-            Log.v("taler-wallet", "observing balance loading ${loading} in show balance")
+            Log.v("taler-wallet", "observing balance loading $loading in show balance")
             withdrawTestkudosButton.isEnabled = !loading
             triggerLoading()
         })
@@ -307,11 +311,11 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
 
     override fun onPendingOperationClick(type: String, detail: JSONObject) {
         val v = view ?: return
-        when (type) {
+        when {
             else -> {
                 val bar = Snackbar.make(
                     v,
-                    "No detail view for ${type} implemented yet.",
+                    "No detail view for $type implemented yet.",
                     Snackbar.LENGTH_SHORT
                 )
                 bar.show()

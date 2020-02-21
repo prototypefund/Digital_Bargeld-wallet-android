@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of GNU Taler
   ~ (C) 2020 Taler Systems S.A.
   ~
@@ -15,95 +14,90 @@
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:layout_margin="10dp"
-             tools:context=".Settings">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        tools:context=".Settings">
+
+
+    <TextView
+            android:id="@+id/editText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/settings_version"
+            android:textSize="18sp" />
+
 
     <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-        <TextView
-                android:id="@+id/editText2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Version Information"
-                android:textSize="18sp" />
-
-
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-            <TextView
-                    android:id="@+id/textView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Android Wallet" />
-
-            <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="0.6.0pre8 (Wed 25 Dec 2019" />
-
-        </LinearLayout>
-
-        <Space
-                android:layout_width="0dp"
-                android:layout_height="15dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
         <TextView
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:text="Backups"
-                android:textSize="18sp" />
-
-        <Button
-                android:visibility="gone"
-                android:text="Export wallet to file"
+                android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/button_backup_export"/>
-
-        <Button
-                android:visibility="gone"
-                android:text="Import from file"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/button_backup_import"/>
-
+                android:layout_weight="1"
+                android:text="@string/app_name" />
 
         <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:text="Developer Settings (use with caution!)"
-                android:textSize="18sp" />
-
-        <!--
-        <Button
-                android:text="Withdraw TESTKUDOS"
+                android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/button_withdraw_testkudos"/>-->
-
-        <Button
-                android:text="Reset Wallet (dangerous!)"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/button_reset_wallet_dangerously"/>
+                android:layout_weight="1"
+                tools:text="0.6.0pre8" />
 
     </LinearLayout>
-</FrameLayout>
+
+    <Space
+            android:layout_width="0dp"
+            android:layout_height="15dp" />
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/settings_backups"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+    <Button
+            android:id="@+id/button_backup_export"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_export_to_file"
+            android:visibility="gone" />
+
+    <Button
+            android:id="@+id/button_backup_import"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_import_from_file"
+            android:visibility="gone" />
+
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/settings_developer"
+            android:textSize="18sp" />
+
+    <!--
+    <Button
+            android:text="Withdraw TESTKUDOS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_withdraw_testkudos"/>-->
+
+    <Button
+            android:id="@+id/button_reset_wallet_dangerously"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_reset" />
+
+</LinearLayout>

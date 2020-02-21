@@ -16,8 +16,17 @@
 
 package net.taler.wallet.history
 
+import android.annotation.SuppressLint
 import android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
-import android.text.format.DateUtils.*
+import android.text.format.DateUtils.DAY_IN_MILLIS
+import android.text.format.DateUtils.FORMAT_ABBREV_MONTH
+import android.text.format.DateUtils.FORMAT_ABBREV_RELATIVE
+import android.text.format.DateUtils.FORMAT_NO_YEAR
+import android.text.format.DateUtils.FORMAT_SHOW_DATE
+import android.text.format.DateUtils.FORMAT_SHOW_TIME
+import android.text.format.DateUtils.MINUTE_IN_MILLIS
+import android.text.format.DateUtils.formatDateTime
+import android.text.format.DateUtils.getRelativeTimeSpanString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -172,12 +181,14 @@ internal class WalletHistoryAdapter(
         }
 
         private fun showAmounts(effective: ParsedAmount, raw: ParsedAmount) {
+            @SuppressLint("SetTextI18n")
             amountWithdrawn.text = "+$raw"
             val calculatedFee = raw - effective
             if (calculatedFee.isZero()) {
                 fee.visibility = GONE
                 feeLabel.visibility = GONE
             } else {
+                @SuppressLint("SetTextI18n")
                 fee.text = "-$calculatedFee"
                 fee.visibility = VISIBLE
                 feeLabel.visibility = VISIBLE
@@ -208,11 +219,13 @@ internal class WalletHistoryAdapter(
 
         private fun bind(event: HistoryPaymentSentEvent) {
             title.text = event.orderShortInfo.summary
+            @SuppressLint("SetTextI18n")
             amountPaidWithFees.text = "-${parseAmount(event.amountPaidWithFees)}"
         }
 
         private fun bind(event: HistoryPaymentAbortedEvent) {
             title.text = event.orderShortInfo.summary
+            @SuppressLint("SetTextI18n")
             amountPaidWithFees.text = "-${parseAmount(event.amountLost)}"
         }
 
@@ -220,6 +233,7 @@ internal class WalletHistoryAdapter(
             title.text = ""
             val fee =
                 parseAmount(event.amountRefreshedRaw) - parseAmount(event.amountRefreshedEffective)
+            @SuppressLint("SetTextI18n")
             if (fee.isZero()) amountPaidWithFees.text = null
             else amountPaidWithFees.text = "-$fee"
         }

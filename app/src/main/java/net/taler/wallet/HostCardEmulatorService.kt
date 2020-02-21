@@ -16,14 +16,16 @@
 
 package net.taler.wallet
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
 import android.util.Log
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.net.URI
 import java.util.concurrent.ConcurrentLinkedDeque
 
 fun makeApduSuccessResponse(payload: ByteArray): ByteArray {
@@ -46,7 +48,7 @@ fun makeApduFailureResponse(): ByteArray {
 fun readApduBodySize(stream: ByteArrayInputStream): Int {
     val b0 = stream.read()
     if (b0 == -1) {
-        return 0;
+        return 0
     }
     if (b0 != 0) {
         return b0
@@ -61,7 +63,7 @@ fun readApduBodySize(stream: ByteArrayInputStream): Int {
 class HostCardEmulatorService: HostApduService() {
 
     val queuedRequests: ConcurrentLinkedDeque<String> = ConcurrentLinkedDeque()
-    lateinit var receiver: BroadcastReceiver
+    private lateinit var receiver: BroadcastReceiver
 
     override fun onCreate() {
         super.onCreate()

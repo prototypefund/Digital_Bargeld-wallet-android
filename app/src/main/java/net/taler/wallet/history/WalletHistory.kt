@@ -18,9 +18,14 @@ package net.taler.wallet.history
 
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -40,7 +45,7 @@ interface OnEventClickListener {
  */
 class WalletHistory : Fragment(), OnEventClickListener {
 
-    lateinit var model: WalletViewModel
+    private lateinit var model: WalletViewModel
     private lateinit var showAllItem: MenuItem
     private val historyAdapter = WalletHistoryAdapter(this)
 
@@ -107,7 +112,4 @@ class WalletHistory : Fragment(), OnEventClickListener {
             .show(parentFragmentManager, null)
     }
 
-    companion object {
-        const val TAG = "taler-wallet"
-    }
 }

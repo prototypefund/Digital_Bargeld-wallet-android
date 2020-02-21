@@ -19,11 +19,16 @@ package net.taler.wallet.history
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import com.fasterxml.jackson.annotation.*
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
+import com.fasterxml.jackson.annotation.JsonTypeName
 import net.taler.wallet.ParsedAmount.Companion.parseAmount
 import net.taler.wallet.R
 import org.json.JSONObject
@@ -38,6 +43,7 @@ enum class ReserveType {
      * Withdrawn from a bank that has "tight" Taler integration
      */
     @JsonProperty("taler-bank-withdraw")
+    @Suppress("unused")
     TALER_BANK_WITHDRAW,
 }
 
@@ -46,16 +52,21 @@ class ReserveCreationDetail(val type: ReserveType, val bankUrl: String?)
 
 enum class RefreshReason {
     @JsonProperty("manual")
+    @Suppress("unused")
     MANUAL,
     @JsonProperty("pay")
     PAY,
     @JsonProperty("refund")
+    @Suppress("unused")
     REFUND,
     @JsonProperty("abort-pay")
+    @Suppress("unused")
     ABORT_PAY,
     @JsonProperty("recoup")
+    @Suppress("unused")
     RECOUP,
     @JsonProperty("backup-restored")
+    @Suppress("unused")
     BACKUP_RESTORED
 }
 
@@ -406,6 +417,7 @@ class HistoryRefundedEvent(
 )
 abstract class WithdrawalSource
 
+@Suppress("unused")
 @JsonTypeName("tip")
 class WithdrawalSourceTip(
     val tipId: String

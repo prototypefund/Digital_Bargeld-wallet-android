@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of GNU Taler
   ~ (C) 2020 Taler Systems S.A.
   ~
@@ -15,87 +14,93 @@
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/prompt_withdraw"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="15dp"
+        android:orientation="vertical"
         tools:context=".PromptWithdraw">
 
-    <LinearLayout
-            android:orientation="vertical"
+    <Space
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/prompt_withdraw">
+            android:layout_height="15dp"
+            android:layout_weight="1" />
 
-        <Space android:layout_width="match_parent"
-                android:layout_height="15dp"
-                android:layout_weight="1"/>
+    <TextView
+            android:id="@+id/order_summary_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/withdraw_do_you_want" />
 
-        <TextView
-                android:text="Do you want to withdraw"
+    <TextView
+            android:id="@+id/withdraw_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="25sp"
+            tools:text="10.00 KUDOS" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/withdraw_fees" />
+
+    <Space
+            android:layout_width="match_parent"
+            android:layout_height="25dp" />
+
+
+    <TextView
+            android:id="@+id/order_amount_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/withdraw_exchange" />
+
+    <TextView
+            android:id="@+id/withdraw_exchange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="25sp"
+            tools:text="(exchange base url)" />
+
+    <Space
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:layout_weight="1" />
+
+
+    <Space
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:layout_weight="1" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/button_cancel_withdraw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/order_summary_label"/>
+                android:text="@string/button_cancel" />
 
-        <TextView
-                android:text="(amount)"
-                tools:text="10.00 KUDOS"
+        <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+        <Button
+                android:id="@+id/button_confirm_withdraw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:layout_gravity="center"
-                android:id="@+id/withdraw_amount"/>
-
-        <TextView
-                android:text="(minus exchange fees not shown in this prototype)"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
-
-        <Space android:layout_width="match_parent"
-                android:layout_height="25dp"/>
-
-
-        <TextView
-                android:text="Using the exchange provider"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/order_amount_label"/>
-        <TextView
-                android:text="(exchange base url)"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="25sp"
-                android:layout_gravity="center"
-                android:id="@+id/withdraw_exchange"/>
-
-        <Space android:layout_width="match_parent"
-                android:layout_height="15dp"
-                android:layout_weight="1"/>
-
-
-        <Space android:layout_width="match_parent"
-                android:layout_height="15dp"
-                android:layout_weight="1"/>
-
-        <LinearLayout android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Cancel"
-                    android:id="@+id/button_cancel_withdraw"/>
-
-            <Space android:layout_width="15dp" android:layout_height="match_parent"
-                    android:layout_weight="1"/>
-
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:id="@+id/button_confirm_withdraw"
-                    android:text="Confirm Withdraw"/>
-        </LinearLayout>
-
+                android:text="@string/withdraw_button_confirm" />
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

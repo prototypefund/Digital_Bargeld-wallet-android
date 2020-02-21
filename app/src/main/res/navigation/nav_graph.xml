@@ -18,7 +18,8 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/nav_graph"
-        app:startDestination="@id/showBalance">
+        app:startDestination="@id/showBalance"
+        tools:ignore="UnusedNavigation">
 
     <fragment
             android:id="@+id/showBalance"

@@ -51,7 +51,7 @@ object Base32Crockford {
             sb.append(encTable[v])
             numBits -= 5
         }
-        return sb.toString();
+        return sb.toString()
     }
 
     fun decode(encoded: String, out: ByteArrayOutputStream) {
@@ -114,6 +114,7 @@ object Base32Crockford {
      * @param dataSize size of the data to encode in bytes
      * @return size of the string that would result from encoding
      */
+    @Suppress("unused")
     fun calculateEncodedStringLength(dataSize: Int): Int {
         return (dataSize * 8 + 4) / 5
     }
@@ -125,6 +126,7 @@ object Base32Crockford {
      * @param stringSize size of the string to decode
      * @return size of the resulting data in bytes
      */
+    @Suppress("unused")
     fun calculateDecodedDataLength(stringSize: Int): Int {
         return stringSize * 5 / 8
     }

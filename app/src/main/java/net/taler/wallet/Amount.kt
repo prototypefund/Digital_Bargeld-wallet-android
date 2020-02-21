@@ -125,6 +125,7 @@ class ParsedAmount(
         return value == 0u && fraction == 0.0
     }
 
+    @Suppress("unused")
     fun toJSONString(): String {
         return "$currency:${getValueString()}"
     }

@@ -18,19 +18,17 @@ package net.taler.wallet
 
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.fragment_settings.*
 
 
 interface ResetDialogEventListener {
@@ -40,7 +38,6 @@ interface ResetDialogEventListener {
 
 
 class ResetDialogFragment : DialogFragment() {
-    private lateinit var model: WalletViewModel
     private lateinit var listener: ResetDialogEventListener
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -132,6 +129,10 @@ class Settings : Fragment() {
             startActivityForResult(intent, PICK_FILE)
         }
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        textView4.text = BuildConfig.VERSION_NAME
     }
 
     companion object {
