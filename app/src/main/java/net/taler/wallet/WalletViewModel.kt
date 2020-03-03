@@ -78,7 +78,6 @@ open class PendingOperations(
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 class WalletViewModel(val app: Application) : AndroidViewModel(app) {
-    private var initialized = false
 
     val testWithdrawalInProgress = MutableLiveData<Boolean>().apply {
         value = false
@@ -123,14 +122,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
     val paymentManager = PaymentManager(walletBackendApi, mapper)
 
-    fun init() {
-        if (initialized) {
-            Log.e(TAG, "WalletViewModel already initialized")
-            return
-        }
-
-        this.initialized = true
-
+    init {
         getBalances()
         getPending()
 
@@ -146,7 +138,6 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             getPending()
         }
     }
-
 
     fun getBalances() {
         if (activeGetBalance > 0) {

@@ -1,7 +1,7 @@
 <component name="CopyrightManager">
   <settings default="Taler">
     <module2copyright>
-      <element module="Project Files" copyright="Taler" />
+      <element module="Copyright Files" copyright="Taler" />
     </module2copyright>
   </settings>
 </component>

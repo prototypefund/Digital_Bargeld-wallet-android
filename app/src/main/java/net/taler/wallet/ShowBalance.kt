@@ -202,7 +202,6 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.balance, menu)
-        Log.e("TEST", "MENU INFLATED!!! ${menu.size()}")
         super.onCreateOptionsMenu(menu, inflater)
     }
 

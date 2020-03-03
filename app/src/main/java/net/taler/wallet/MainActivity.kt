@@ -19,6 +19,7 @@ package net.taler.wallet
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.ACTION_VIEW
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
@@ -27,8 +28,7 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
+import androidx.core.view.GravityCompat.START
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -38,9 +38,13 @@ import com.google.android.material.navigation.NavigationView.OnNavigationItemSel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import com.google.zxing.integration.android.IntentIntegrator
-import com.google.zxing.integration.android.IntentResult
+import com.google.zxing.integration.android.IntentIntegrator.parseActivityResult
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import net.taler.wallet.HostCardEmulatorService.Companion.HTTP_TUNNEL_RESPONSE
+import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_CONNECTED
+import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_DISCONNECTED
+import net.taler.wallet.HostCardEmulatorService.Companion.TRIGGER_PAYMENT_ACTION
 import java.util.Locale.ROOT
 
 class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
@@ -53,13 +57,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        fab.setOnClickListener {
-            val integrator = IntentIntegrator(this)
-            integrator.setPrompt("Place merchant's QR Code inside the viewfinder rectangle to initiate payment.")
-            integrator.initiateScan(listOf("QR_CODE"))
-        }
-        fab.hide()
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -76,106 +73,52 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         )
         toolbar.setupWithNavController(nav, appBarConfiguration)
 
-        model.init()
-        model.getBalances()
-
         model.showProgressBar.observe(this, Observer { show ->
             progress_bar.visibility = if (show) VISIBLE else INVISIBLE
         })
 
-        val triggerPaymentFilter = IntentFilter(HostCardEmulatorService.TRIGGER_PAYMENT_ACTION)
-        registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(p0: Context?, p1: Intent?) {
-
-                if (nav.currentDestination?.id == R.id.promptPayment) {
-                    return
-                }
-
-                val url = p1!!.extras!!.get("contractUrl") as String
-
-                nav.navigate(R.id.action_global_promptPayment)
-                model.paymentManager.preparePay(url)
-
-            }
-        }, triggerPaymentFilter)
-
-        val nfcConnectedFilter = IntentFilter(HostCardEmulatorService.MERCHANT_NFC_CONNECTED)
-        registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(p0: Context?, p1: Intent?) {
-                Log.v(TAG, "got MERCHANT_NFC_CONNECTED")
-                //model.startTunnel()
-            }
-        }, nfcConnectedFilter)
-
-        val nfcDisconnectedFilter = IntentFilter(HostCardEmulatorService.MERCHANT_NFC_DISCONNECTED)
-        registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(p0: Context?, p1: Intent?) {
-                Log.v(TAG, "got MERCHANT_NFC_DISCONNECTED")
-                //model.stopTunnel()
-            }
-        }, nfcDisconnectedFilter)
-
-        IntentFilter(HostCardEmulatorService.HTTP_TUNNEL_RESPONSE).also { filter ->
-            registerReceiver(object : BroadcastReceiver() {
-                override fun onReceive(p0: Context?, p1: Intent?) {
-                    Log.v("taler-tunnel", "got HTTP_TUNNEL_RESPONSE")
-                    model.tunnelResponse(p1!!.getStringExtra("response"))
-                }
-            }, filter)
-        }
-
-        if (intent.action == Intent.ACTION_VIEW) {
-            val uri = intent.dataString
-            if (uri != null)
-                handleTalerUri(uri, "intent")
+        if (intent.action == ACTION_VIEW) intent.dataString?.let { uri ->
+            handleTalerUri(uri, "intent")
         }
 
         //model.startTunnel()
+
+        registerReceiver(triggerPaymentReceiver, IntentFilter(TRIGGER_PAYMENT_ACTION))
+        registerReceiver(nfcConnectedReceiver, IntentFilter(MERCHANT_NFC_CONNECTED))
+        registerReceiver(nfcDisconnectedReceiver, IntentFilter(MERCHANT_NFC_DISCONNECTED))
+        registerReceiver(tunnelResponseReceiver, IntentFilter(HTTP_TUNNEL_RESPONSE))
     }
 
     override fun onBackPressed() {
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
+        if (drawer_layout.isDrawerOpen(START)) drawer_layout.closeDrawer(START)
+        else super.onBackPressed()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.nav_home -> {
-                nav.navigate(R.id.showBalance)
-            }
-            R.id.nav_settings -> {
-                nav.navigate(R.id.settings)
-            }
-            R.id.nav_history -> {
-                nav.navigate(R.id.walletHistory)
-            }
+            R.id.nav_home -> nav.navigate(R.id.showBalance)
+            R.id.nav_settings -> nav.navigate(R.id.settings)
+            R.id.nav_history -> nav.navigate(R.id.walletHistory)
         }
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        drawerLayout.closeDrawer(GravityCompat.START)
+        drawer_layout.closeDrawer(START)
         return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode != IntentIntegrator.REQUEST_CODE) {
-            return
+        if (requestCode == IntentIntegrator.REQUEST_CODE) {
+            parseActivityResult(requestCode, resultCode, data)?.contents?.let { contents ->
+                handleTalerUri(contents, "QR code")
+            }
         }
+    }
 
-        val scanResult: IntentResult? =
-            IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-
-        if (scanResult == null || scanResult.contents == null) {
-            Snackbar.make(nav_view, "QR Code scan canceled.", LENGTH_SHORT).show()
-            return
-        }
-
-        val url = scanResult.contents!!
-        handleTalerUri(url, "QR code")
+    override fun onDestroy() {
+        unregisterReceiver(triggerPaymentReceiver)
+        unregisterReceiver(nfcConnectedReceiver)
+        unregisterReceiver(nfcDisconnectedReceiver)
+        unregisterReceiver(tunnelResponseReceiver)
+        super.onDestroy()
     }
 
     private fun handleTalerUri(url: String, from: String) {
@@ -200,6 +143,39 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                     "URL from $from doesn't contain a supported Taler Uri.",
                     LENGTH_SHORT
                 ).show()
+            }
+        }
+    }
+
+    private val triggerPaymentReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (nav.currentDestination?.id == R.id.promptPayment) return
+            intent.extras?.getString("contractUrl")?.let { url ->
+                nav.navigate(R.id.action_global_promptPayment)
+                model.paymentManager.preparePay(url)
+            }
+        }
+    }
+
+    private val nfcConnectedReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.v(TAG, "got MERCHANT_NFC_CONNECTED")
+            //model.startTunnel()
+        }
+    }
+
+    private val nfcDisconnectedReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.v(TAG, "got MERCHANT_NFC_DISCONNECTED")
+            //model.stopTunnel()
+        }
+    }
+
+    private val tunnelResponseReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.v("taler-tunnel", "got HTTP_TUNNEL_RESPONSE")
+            intent.getStringExtra("response")?.let {
+                model.tunnelResponse(it)
             }
         }
     }
