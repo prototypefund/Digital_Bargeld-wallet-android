@@ -67,10 +67,11 @@
             android:name="net.taler.wallet.payment.AlreadyPaidFragment"
             android:label="Already Paid"
             tools:layout="@layout/fragment_already_paid" />
+
     <fragment
             android:id="@+id/promptWithdraw"
-            android:name="net.taler.wallet.PromptWithdraw"
-            android:label="Withdraw Digital Cash"
+            android:name="net.taler.wallet.withdraw.PromptWithdrawFragment"
+            android:label="@string/nav_prompt_withdraw"
             tools:layout="@layout/fragment_prompt_withdraw">
         <action
                 android:id="@+id/action_promptWithdraw_to_withdrawSuccessful"
@@ -81,15 +82,16 @@
                 app:destination="@id/reviewExchangeTOS"
                 app:popUpTo="@id/showBalance" />
     </fragment>
+
     <fragment
             android:id="@+id/withdrawSuccessful"
-            android:name="net.taler.wallet.WithdrawSuccessful"
+            android:name="net.taler.wallet.withdraw.WithdrawSuccessfulFragment"
             android:label="Withdrawal Confirmed"
             tools:layout="@layout/fragment_withdraw_successful" />
     <fragment
             android:id="@+id/reviewExchangeTOS"
-            android:name="net.taler.wallet.ReviewExchangeTOS"
-            android:label="Exchange's Terms of Service"
+            android:name="net.taler.wallet.withdraw.ReviewExchangeTosFragment"
+            android:label="@string/nav_exchange_tos"
             tools:layout="@layout/fragment_review_exchange_tos">
         <action
                 android:id="@+id/action_reviewExchangeTOS_to_promptWithdraw"

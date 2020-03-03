@@ -20,16 +20,21 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 
-fun View.fadeIn() {
+fun View.fadeIn(endAction: () -> Unit = {}) {
+    if (visibility == VISIBLE) return
     alpha = 0f
     visibility = VISIBLE
-    animate().alpha(1f).start()
+    animate().alpha(1f).withEndAction {
+        if (context != null) endAction.invoke()
+    }.start()
 }
 
-fun View.fadeOut() {
+fun View.fadeOut(endAction: () -> Unit = {}) {
     if (visibility == INVISIBLE) return
     animate().alpha(0f).withEndAction {
+        if (context == null) return@withEndAction
         visibility = INVISIBLE
         alpha = 1f
+        endAction.invoke()
     }.start()
 }

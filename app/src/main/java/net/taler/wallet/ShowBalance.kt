@@ -16,7 +16,6 @@
 
 package net.taler.wallet
 
-
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
@@ -25,20 +24,21 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.QR_CODE_TYPES
-import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 import org.json.JSONObject
 
 class WalletBalanceAdapter(private var myDataset: WalletBalances) :
@@ -70,9 +70,9 @@ class WalletBalanceAdapter(private var myDataset: WalletBalances) :
 
         val amountIncomingView = holder.rowView.findViewById<TextView>(R.id.balance_pending)
         if (amountIncoming.isZero()) {
-            amountIncomingRow.visibility = View.GONE
+            amountIncomingRow.visibility = GONE
         } else {
-            amountIncomingRow.visibility = View.VISIBLE
+            amountIncomingRow.visibility = VISIBLE
             @SuppressLint("SetTextI18n")
             amountIncomingView.text = "${amountIncoming.amount} ${amountIncoming.currency}"
         }
@@ -120,7 +120,7 @@ class PendingOperationsAdapter(private var myDataset: PendingOperations) :
             "proposal-choice" -> {
                 val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
                 btn1.text = btn1.context.getString(R.string.pending_operations_refuse)
-                btn1.visibility = View.VISIBLE
+                btn1.visibility = VISIBLE
                 btn1.setOnClickListener {
                     this.listener?.onPendingOperationActionClick(p.type, p.detail)
                 }
@@ -128,7 +128,7 @@ class PendingOperationsAdapter(private var myDataset: PendingOperations) :
             else -> {
                 val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
                 btn1.text = btn1.context.getString(R.string.pending_operations_no_action)
-                btn1.visibility = View.GONE
+                btn1.visibility = GONE
                 btn1.setOnClickListener {}
             }
         }
@@ -151,93 +151,21 @@ interface PendingOperationClickListener {
     fun onPendingOperationActionClick(type: String, detail: JSONObject)
 }
 
-/**
- * A simple [Fragment] subclass.
- *
- */
 class ShowBalance : Fragment(), PendingOperationClickListener {
+
+    private val model: WalletViewModel by activityViewModels()
+    private val withdrawManager by lazy { model.withdrawManager }
 
     private lateinit var pendingOperationsLabel: View
     private lateinit var balancesView: RecyclerView
     private lateinit var balancesPlaceholderView: TextView
-    private lateinit var model: WalletViewModel
     private lateinit var balancesAdapter: WalletBalanceAdapter
 
     private lateinit var pendingAdapter: PendingOperationsAdapter
 
-    private fun triggerLoading() {
-        val loading: Boolean =
-            (model.testWithdrawalInProgress.value == true) || (model.balances.value == null) || !model.balances.value!!.initialized
-
-        val myActivity = activity!!
-        val progressBar = myActivity.findViewById<MaterialProgressBar>(R.id.progress_bar)
-        if (loading) {
-            progressBar.visibility = View.VISIBLE
-        } else {
-            progressBar.visibility = View.INVISIBLE
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        triggerLoading()
-        Log.v("taler-wallet", "called onResume on ShowBalance")
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.retry_pending -> {
-                model.retryPendingNow()
-                true
-            }
-            R.id.reload_balance -> {
-                triggerLoading()
-                model.balances.value = WalletBalances(false, listOf())
-                model.getBalances()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.balance, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
-        model = activity?.run {
-            ViewModelProvider(this)[WalletViewModel::class.java]
-        } ?: throw Exception("Invalid Activity")
-
-    }
-
-
-    private fun updateBalances(balances: WalletBalances) {
-        if (!balances.initialized) {
-            balancesPlaceholderView.visibility = View.GONE
-            balancesView.visibility = View.GONE
-        } else if (balances.byCurrency.isEmpty()) {
-            balancesPlaceholderView.visibility = View.VISIBLE
-            balancesView.visibility = View.GONE
-        } else {
-            balancesPlaceholderView.visibility = View.GONE
-            balancesView.visibility = View.VISIBLE
-        }
-        Log.v(TAG, "updating balances $balances")
-        balancesAdapter.update(balances)
-    }
-
-    private fun updatePending(pendingOperations: PendingOperations) {
-        if (pendingOperations.pending.isEmpty()) {
-            pendingOperationsLabel.visibility = View.GONE
-        } else {
-            pendingOperationsLabel.visibility = View.VISIBLE
-        }
-        pendingAdapter.update(pendingOperations)
     }
 
     override fun onCreateView(
@@ -279,10 +207,10 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
 
         val withdrawTestkudosButton = view.findViewById<Button>(R.id.button_withdraw_testkudos)
         withdrawTestkudosButton.setOnClickListener {
-            model.withdrawTestkudos()
+            withdrawManager.withdrawTestkudos()
         }
 
-        model.testWithdrawalInProgress.observe(viewLifecycleOwner, Observer { loading ->
+        withdrawManager.testWithdrawalInProgress.observe(viewLifecycleOwner, Observer { loading ->
             Log.v("taler-wallet", "observing balance loading $loading in show balance")
             withdrawTestkudosButton.isEnabled = !loading
             triggerLoading()
@@ -306,6 +234,64 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
         })
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        triggerLoading()
+        Log.v("taler-wallet", "called onResume on ShowBalance")
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.retry_pending -> {
+                model.retryPendingNow()
+                true
+            }
+            R.id.reload_balance -> {
+                triggerLoading()
+                model.balances.value = WalletBalances(false, listOf())
+                model.getBalances()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.balance, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun triggerLoading() {
+        val withdrawInProgress = withdrawManager.testWithdrawalInProgress.value == true
+        val balances = model.balances.value
+        val loading: Boolean = (withdrawInProgress) || (balances == null) || !balances.initialized
+        model.showProgressBar.value = loading
+    }
+
+    private fun updateBalances(balances: WalletBalances) {
+        if (!balances.initialized) {
+            balancesPlaceholderView.visibility = GONE
+            balancesView.visibility = GONE
+        } else if (balances.byCurrency.isEmpty()) {
+            balancesPlaceholderView.visibility = VISIBLE
+            balancesView.visibility = GONE
+        } else {
+            balancesPlaceholderView.visibility = GONE
+            balancesView.visibility = VISIBLE
+        }
+        Log.v(TAG, "updating balances $balances")
+        balancesAdapter.update(balances)
+    }
+
+    private fun updatePending(pendingOperations: PendingOperations) {
+        if (pendingOperations.pending.isEmpty()) {
+            pendingOperationsLabel.visibility = GONE
+        } else {
+            pendingOperationsLabel.visibility = VISIBLE
+        }
+        pendingAdapter.update(pendingOperations)
     }
 
     override fun onPendingOperationClick(type: String, detail: JSONObject) {

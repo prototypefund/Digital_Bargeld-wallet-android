@@ -18,6 +18,7 @@ package net.taler.wallet
 
 import android.app.Application
 import android.util.Log
+import androidx.annotation.UiThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -36,6 +37,7 @@ import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.history.History
 import net.taler.wallet.history.HistoryEvent
 import net.taler.wallet.payment.PaymentManager
+import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
 
 const val TAG = "taler-wallet"
@@ -45,26 +47,6 @@ data class BalanceEntry(val available: Amount, val pendingIncoming: Amount)
 
 
 data class WalletBalances(val initialized: Boolean, val byCurrency: List<BalanceEntry>)
-
-open class WithdrawStatus {
-    class None : WithdrawStatus()
-    data class Loading(val talerWithdrawUri: String) : WithdrawStatus()
-    data class TermsOfServiceReviewRequired(
-        val talerWithdrawUri: String,
-        val exchangeBaseUrl: String,
-        val tosText: String,
-        val tosEtag: String
-    ) : WithdrawStatus()
-
-    class Success : WithdrawStatus()
-    data class ReceivedDetails(
-        val talerWithdrawUri: String,
-        val amount: Amount,
-        val suggestedExchange: String
-    ) : WithdrawStatus()
-
-    data class Withdrawing(val talerWithdrawUri: String) : WithdrawStatus()
-}
 
 open class PendingOperationInfo(
     val type: String,
@@ -79,16 +61,8 @@ open class PendingOperations(
 @Suppress("EXPERIMENTAL_API_USAGE")
 class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
-    val testWithdrawalInProgress = MutableLiveData<Boolean>().apply {
-        value = false
-    }
-
     val balances = MutableLiveData<WalletBalances>().apply {
         value = WalletBalances(false, listOf())
-    }
-
-    val withdrawStatus = MutableLiveData<WithdrawStatus>().apply {
-        value = WithdrawStatus.None()
     }
 
     val pendingOperations = MutableLiveData<PendingOperations>().apply {
@@ -112,14 +86,13 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     private var activeGetBalance = 0
     private var activeGetPending = 0
 
-    private var currentWithdrawRequestId = 0
-
     private val walletBackendApi = WalletBackendApi(app)
 
     private val mapper = ObjectMapper()
         .registerModule(KotlinModule())
         .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
 
+    val withdrawManager = WithdrawManager(walletBackendApi)
     val paymentManager = PaymentManager(walletBackendApi, mapper)
 
     init {
@@ -212,17 +185,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         awaitClose()
     }
 
-    fun withdrawTestkudos() {
-        testWithdrawalInProgress.value = true
-
-        walletBackendApi.sendRequest("withdrawTestkudos", null) { _, _ ->
-            testWithdrawalInProgress.postValue(false)
-        }
-    }
-
+    @UiThread
     fun dangerouslyReset() {
         walletBackendApi.sendRequest("reset", null)
-        testWithdrawalInProgress.value = false
+        withdrawManager.testWithdrawalInProgress.value = false
         balances.value = WalletBalances(false, listOf())
     }
 
@@ -239,113 +205,6 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         walletBackendApi.sendRequest("tunnelResponse", respJson)
     }
 
-    fun getWithdrawalInfo(talerWithdrawUri: String) {
-        val args = JSONObject()
-        args.put("talerWithdrawUri", talerWithdrawUri)
-
-        withdrawStatus.value = WithdrawStatus.Loading(talerWithdrawUri)
-
-        this.currentWithdrawRequestId++
-        val myWithdrawRequestId = this.currentWithdrawRequestId
-
-        walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
-            if (isError) {
-                Log.e(TAG, "Error getWithdrawDetailsForUri ${result.toString(4)}")
-                return@sendRequest
-            }
-            if (myWithdrawRequestId != this.currentWithdrawRequestId) {
-                val mismatch = "$myWithdrawRequestId != ${this.currentWithdrawRequestId}"
-                Log.w(TAG, "Got withdraw result for different request id $mismatch")
-                return@sendRequest
-            }
-            Log.v(TAG, "got getWithdrawDetailsForUri result")
-            val status = withdrawStatus.value
-            if (status !is WithdrawStatus.Loading) {
-                Log.v(TAG, "ignoring withdrawal info result, not loading.")
-                return@sendRequest
-            }
-            val wi = result.getJSONObject("bankWithdrawDetails")
-            val suggestedExchange = wi.getString("suggestedExchange")
-            // We just use the suggested exchange, in the future there will be
-            // a selection dialog.
-            getWithdrawalInfoWithExchange(talerWithdrawUri, suggestedExchange)
-        }
-    }
-
-    private fun getWithdrawalInfoWithExchange(talerWithdrawUri: String, selectedExchange: String) {
-        val args = JSONObject()
-        args.put("talerWithdrawUri", talerWithdrawUri)
-        args.put("selectedExchange", selectedExchange)
-
-        this.currentWithdrawRequestId++
-        val myWithdrawRequestId = this.currentWithdrawRequestId
-
-        walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
-            if (isError) {
-                Log.e(TAG, "Error getWithdrawDetailsForUri ${result.toString(4)}")
-                return@sendRequest
-            }
-            if (myWithdrawRequestId != this.currentWithdrawRequestId) {
-                val mismatch = "$myWithdrawRequestId != ${this.currentWithdrawRequestId}"
-                Log.w(TAG, "Got withdraw result for different request id $mismatch")
-                return@sendRequest
-            }
-            Log.v(TAG, "got getWithdrawDetailsForUri result (with exchange details)")
-            val status = withdrawStatus.value
-            if (status !is WithdrawStatus.Loading) {
-                Log.v(TAG, "ignoring withdrawal info result, not loading.")
-                return@sendRequest
-            }
-            val ei = result.getJSONObject("exchangeWithdrawDetails")
-            val termsOfServiceAccepted = ei.getBoolean("termsOfServiceAccepted")
-            if (!termsOfServiceAccepted) {
-                val exchange = ei.getJSONObject("exchangeInfo")
-                val tosText = exchange.getString("termsOfServiceText")
-                val tosEtag = exchange.optString("termsOfServiceLastEtag", "undefined")
-                withdrawStatus.postValue(
-                    WithdrawStatus.TermsOfServiceReviewRequired(
-                        status.talerWithdrawUri,
-                        selectedExchange,
-                        tosText,
-                        tosEtag
-                    )
-                )
-            } else {
-                val wi = result.getJSONObject("bankWithdrawDetails")
-                val suggestedExchange = wi.getString("suggestedExchange")
-                val amount = Amount.fromJson(wi.getJSONObject("amount"))
-                withdrawStatus.postValue(
-                    WithdrawStatus.ReceivedDetails(
-                        status.talerWithdrawUri,
-                        amount,
-                        suggestedExchange
-                    )
-                )
-            }
-        }
-    }
-
-    fun acceptWithdrawal(talerWithdrawUri: String, selectedExchange: String) {
-        val args = JSONObject()
-        args.put("talerWithdrawUri", talerWithdrawUri)
-        args.put("selectedExchange", selectedExchange)
-
-        withdrawStatus.value = WithdrawStatus.Withdrawing(talerWithdrawUri)
-
-        walletBackendApi.sendRequest("acceptWithdrawal", args) { isError, _ ->
-            if (isError) {
-                Log.v(TAG, "got acceptWithdrawal error result")
-                return@sendRequest
-            }
-            Log.v(TAG, "got acceptWithdrawal result")
-            val status = withdrawStatus.value
-            if (status !is WithdrawStatus.Withdrawing) {
-                Log.v(TAG, "ignoring acceptWithdrawal result, invalid state")
-            }
-            withdrawStatus.postValue(WithdrawStatus.Success())
-        }
-    }
-
     fun retryPendingNow() {
         walletBackendApi.sendRequest("retryPendingNow", null)
     }
@@ -353,30 +212,5 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     override fun onCleared() {
         walletBackendApi.destroy()
         super.onCleared()
-    }
-
-    /**
-     * Accept the currently displayed terms of service.
-     */
-    fun acceptCurrentTermsOfService() {
-        when (val s = withdrawStatus.value) {
-            is WithdrawStatus.TermsOfServiceReviewRequired -> {
-                val args = JSONObject()
-                args.put("exchangeBaseUrl", s.exchangeBaseUrl)
-                args.put("etag", s.tosEtag)
-                walletBackendApi.sendRequest("acceptExchangeTermsOfService", args) { isError, _ ->
-                    if (isError) {
-                        return@sendRequest
-                    }
-                    // Try withdrawing again with accepted ToS
-                    getWithdrawalInfo(s.talerWithdrawUri)
-                }
-            }
-        }
-    }
-
-    fun cancelCurrentWithdraw() {
-        currentWithdrawRequestId++
-        withdrawStatus.value = WithdrawStatus.None()
     }
 }

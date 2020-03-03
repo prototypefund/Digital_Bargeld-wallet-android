@@ -14,93 +14,158 @@
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/prompt_withdraw"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="15dp"
-        android:orientation="vertical"
-        tools:context=".PromptWithdraw">
-
-    <Space
-            android:layout_width="match_parent"
-            android:layout_height="15dp"
-            android:layout_weight="1" />
+        tools:context=".withdraw.PromptWithdrawFragment">
 
     <TextView
-            android:id="@+id/order_summary_label"
-            android:layout_width="wrap_content"
+            android:id="@+id/introView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/withdraw_do_you_want" />
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="@string/withdraw_do_you_want"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/withdrawAmountView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:visibility="visible" />
 
     <TextView
-            android:id="@+id/withdraw_amount"
-            android:layout_width="wrap_content"
+            android:id="@+id/withdrawAmountView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/feeView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/introView"
+            tools:text="10.00 TESTKUDOS"
+            tools:visibility="visible" />
+
+    <TextView
+            android:id="@+id/feeView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:text="@string/withdraw_fees"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/exchangeIntroView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/withdrawAmountView"
+            tools:visibility="visible" />
+
+    <TextView
+            android:id="@+id/exchangeIntroView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="@string/withdraw_exchange"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/withdrawExchangeUrl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/feeView"
+            tools:visibility="visible" />
+
+    <TextView
+            android:id="@+id/withdrawExchangeUrl"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
             android:textSize="25sp"
-            tools:text="10.00 KUDOS" />
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/withdrawCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/exchangeIntroView"
+            tools:text="(exchange base url)"
+            tools:visibility="visible" />
 
-    <TextView
+    <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/withdraw_fees" />
+            app:layout_constraintBottom_toTopOf="@+id/withdrawCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <Space
-            android:layout_width="match_parent"
-            android:layout_height="25dp" />
-
-
-    <TextView
-            android:id="@+id/order_amount_label"
-            android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+            android:id="@+id/withdrawCard"
+            style="@style/BottomCard"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/withdraw_exchange" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-    <TextView
-            android:id="@+id/withdraw_exchange"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="25sp"
-            tools:text="(exchange base url)" />
-
-    <Space
-            android:layout_width="match_parent"
-            android:layout_height="15dp"
-            android:layout_weight="1" />
-
-
-    <Space
-            android:layout_width="match_parent"
-            android:layout_height="15dp"
-            android:layout_weight="1" />
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-        <Button
-                android:id="@+id/button_cancel_withdraw"
-                android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/button_cancel" />
+                android:padding="8dp">
 
-        <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
+            <Button
+                    android:id="@+id/button_cancel_withdraw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/red"
+                    android:text="@string/button_cancel"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/button_confirm_withdraw"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-                android:id="@+id/button_confirm_withdraw"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/withdraw_button_confirm" />
-    </LinearLayout>
+            <Button
+                    android:id="@+id/button_confirm_withdraw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/green"
+                    android:enabled="false"
+                    android:text="@string/withdraw_button_confirm"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/button_cancel_withdraw" />
 
-</LinearLayout>
+            <ProgressBar
+                    android:id="@+id/confirmProgressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/button_confirm_withdraw"
+                    app:layout_constraintEnd_toEndOf="@+id/button_confirm_withdraw"
+                    app:layout_constraintStart_toStartOf="@+id/button_confirm_withdraw"
+                    app:layout_constraintTop_toTopOf="@+id/button_confirm_withdraw"
+                    tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

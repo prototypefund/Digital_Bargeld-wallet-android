@@ -21,6 +21,9 @@
     <string name="nav_header_subtitle">Wallet</string>
     <string name="nav_header_desc">Navigation header</string>
 
+    <string name="nav_prompt_withdraw">Withdraw Digital Cash</string>
+    <string name="nav_exchange_tos">Exchange\'s Terms of Service</string>
+
     <string name="button_back">Go Back</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_scan_qr_code">Scan Taler QR Code</string>
