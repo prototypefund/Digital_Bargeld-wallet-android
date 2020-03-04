@@ -22,21 +22,26 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.*
+import android.os.Handler
+import android.os.IBinder
+import android.os.Message
+import android.os.Messenger
 import android.util.Log
 import android.util.SparseArray
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.util.*
 
-class WalletBackendApi(private val app: Application) {
+class WalletBackendApi(
+    private val app: Application,
+    private val onConnected: (() -> Unit),
+    private val notificationHandler: (() -> Unit)
+) {
 
     private var walletBackendMessenger: Messenger? = null
     private val queuedMessages = LinkedList<Message>()
     private val handlers = SparseArray<(isError: Boolean, message: JSONObject) -> Unit>()
     private var nextRequestID = 1
-    var notificationHandler: (() -> Unit)? = null
-    var connectedHandler: (() -> Unit)? = null
 
     private val walletBackendConn = object : ServiceConnection {
         override fun onServiceDisconnected(p0: ComponentName?) {
@@ -52,15 +57,12 @@ class WalletBackendApi(private val app: Application) {
             val msg = Message.obtain(null, WalletBackendService.MSG_SUBSCRIBE_NOTIFY)
             msg.replyTo = incomingMessenger
             bm.send(msg)
-            val ch = connectedHandler
-            if (ch != null) {
-                ch()
-            }
+            onConnected.invoke()
         }
     }
 
     private class IncomingHandler(strongApi: WalletBackendApi) : Handler() {
-        private val weakApi = WeakReference<WalletBackendApi>(strongApi)
+        private val weakApi = WeakReference(strongApi)
         override fun handleMessage(msg: Message) {
             val api = weakApi.get() ?: return
             when (msg.what) {
@@ -83,10 +85,7 @@ class WalletBackendApi(private val app: Application) {
                     h(isError, json)
                 }
                 WalletBackendService.MSG_NOTIFY -> {
-                    val nh = api.notificationHandler
-                    if (nh != null) {
-                        nh()
-                    }
+                    api.notificationHandler.invoke()
                 }
             }
         }

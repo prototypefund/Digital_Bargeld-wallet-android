@@ -28,7 +28,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -36,132 +35,17 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.QR_CODE_TYPES
-import org.json.JSONObject
 
-class WalletBalanceAdapter(private var myDataset: WalletBalances) :
-    RecyclerView.Adapter<WalletBalanceAdapter.MyViewHolder>() {
-
-    init {
-        setHasStableIds(false)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val rowView =
-            LayoutInflater.from(parent.context).inflate(R.layout.balance_row, parent, false)
-        return MyViewHolder(rowView)
-    }
-
-    override fun getItemCount(): Int {
-        return myDataset.byCurrency.size
-    }
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val amount = myDataset.byCurrency[position].available
-        val amountIncoming = myDataset.byCurrency[position].pendingIncoming
-        val currencyView = holder.rowView.findViewById<TextView>(R.id.balance_currency)
-        currencyView.text = amount.currency
-        val amountView = holder.rowView.findViewById<TextView>(R.id.balance_amount)
-        amountView.text = amount.amount
-
-        val amountIncomingRow = holder.rowView.findViewById<View>(R.id.balance_row_pending)
-
-        val amountIncomingView = holder.rowView.findViewById<TextView>(R.id.balance_pending)
-        if (amountIncoming.isZero()) {
-            amountIncomingRow.visibility = GONE
-        } else {
-            amountIncomingRow.visibility = VISIBLE
-            @SuppressLint("SetTextI18n")
-            amountIncomingView.text = "${amountIncoming.amount} ${amountIncoming.currency}"
-        }
-    }
-
-    fun update(updatedBalances: WalletBalances) {
-        this.myDataset = updatedBalances
-        this.notifyDataSetChanged()
-    }
-
-    class MyViewHolder(val rowView: View) : RecyclerView.ViewHolder(rowView)
-}
-
-class PendingOperationsAdapter(private var myDataset: PendingOperations) :
-    RecyclerView.Adapter<PendingOperationsAdapter.MyViewHolder>() {
-
-    private var listener: PendingOperationClickListener? = null
-
-
-    init {
-        setHasStableIds(false)
-    }
-
-    fun setPendingOperationClickListener(listener: PendingOperationClickListener) {
-        this.listener = listener
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val rowView =
-            LayoutInflater.from(parent.context).inflate(R.layout.pending_row, parent, false)
-        return MyViewHolder(rowView)
-    }
-
-    override fun getItemCount(): Int {
-        return myDataset.pending.size
-    }
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val p = myDataset.pending[position]
-        val pendingContainer = holder.rowView.findViewById<LinearLayout>(R.id.pending_container)
-        pendingContainer.setOnClickListener {
-            this.listener?.onPendingOperationClick(p.type, p.detail)
-        }
-        when (p.type) {
-            "proposal-choice" -> {
-                val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
-                btn1.text = btn1.context.getString(R.string.pending_operations_refuse)
-                btn1.visibility = VISIBLE
-                btn1.setOnClickListener {
-                    this.listener?.onPendingOperationActionClick(p.type, p.detail)
-                }
-            }
-            else -> {
-                val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
-                btn1.text = btn1.context.getString(R.string.pending_operations_no_action)
-                btn1.visibility = GONE
-                btn1.setOnClickListener {}
-            }
-        }
-        val textView = holder.rowView.findViewById<TextView>(R.id.pending_text)
-        val subTextView = holder.rowView.findViewById<TextView>(R.id.pending_subtext)
-        subTextView.text = p.detail.toString(1)
-        textView.text = p.type
-    }
-
-    fun update(updatedDataset: PendingOperations) {
-        this.myDataset = updatedDataset
-        this.notifyDataSetChanged()
-    }
-
-    class MyViewHolder(val rowView: View) : RecyclerView.ViewHolder(rowView)
-}
-
-interface PendingOperationClickListener {
-    fun onPendingOperationClick(type: String, detail: JSONObject)
-    fun onPendingOperationActionClick(type: String, detail: JSONObject)
-}
-
-class ShowBalance : Fragment(), PendingOperationClickListener {
+class ShowBalance : Fragment() {
 
     private val model: WalletViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
-    private lateinit var pendingOperationsLabel: View
     private lateinit var balancesView: RecyclerView
     private lateinit var balancesPlaceholderView: TextView
-    private lateinit var balancesAdapter: WalletBalanceAdapter
-
-    private lateinit var pendingAdapter: PendingOperationsAdapter
+    private lateinit var balancesAdapter: BalanceAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -187,7 +71,7 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
 
         val balances = model.balances.value!!
 
-        balancesAdapter = WalletBalanceAdapter(balances)
+        balancesAdapter = BalanceAdapter(balances)
 
         view.findViewById<RecyclerView>(R.id.list_balances).apply {
             val myLayoutManager = LinearLayoutManager(context)
@@ -216,23 +100,6 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
             triggerLoading()
         })
 
-        pendingAdapter = PendingOperationsAdapter(PendingOperations(listOf()))
-        pendingAdapter.setPendingOperationClickListener(this)
-
-        this.pendingOperationsLabel = view.findViewById<View>(R.id.pending_operations_label)
-
-        view.findViewById<RecyclerView>(R.id.list_pending).apply {
-            val myLayoutManager = LinearLayoutManager(context)
-            val myItemDecoration = DividerItemDecoration(context, myLayoutManager.orientation)
-            layoutManager = myLayoutManager
-            adapter = pendingAdapter
-            addItemDecoration(myItemDecoration)
-        }
-
-        model.pendingOperations.observe(viewLifecycleOwner, Observer {
-            updatePending(it)
-        })
-
         return view
     }
 
@@ -244,10 +111,6 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.retry_pending -> {
-                model.retryPendingNow()
-                true
-            }
             R.id.reload_balance -> {
                 triggerLoading()
                 model.balances.value = WalletBalances(false, listOf())
@@ -285,39 +148,50 @@ class ShowBalance : Fragment(), PendingOperationClickListener {
         balancesAdapter.update(balances)
     }
 
-    private fun updatePending(pendingOperations: PendingOperations) {
-        if (pendingOperations.pending.isEmpty()) {
-            pendingOperationsLabel.visibility = GONE
+}
+
+class BalanceAdapter(private var myDataset: WalletBalances) :
+    RecyclerView.Adapter<BalanceAdapter.BalanceViewHolder>() {
+
+    init {
+        setHasStableIds(false)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BalanceViewHolder {
+        val rowView =
+            LayoutInflater.from(parent.context).inflate(R.layout.balance_row, parent, false)
+        return BalanceViewHolder(rowView)
+    }
+
+    override fun getItemCount(): Int {
+        return myDataset.byCurrency.size
+    }
+
+    override fun onBindViewHolder(holder: BalanceViewHolder, position: Int) {
+        val amount = myDataset.byCurrency[position].available
+        val amountIncoming = myDataset.byCurrency[position].pendingIncoming
+        val currencyView = holder.rowView.findViewById<TextView>(R.id.balance_currency)
+        currencyView.text = amount.currency
+        val amountView = holder.rowView.findViewById<TextView>(R.id.balance_amount)
+        amountView.text = amount.amount
+
+        val amountIncomingRow = holder.rowView.findViewById<View>(R.id.balance_row_pending)
+
+        val amountIncomingView = holder.rowView.findViewById<TextView>(R.id.balance_pending)
+        if (amountIncoming.isZero()) {
+            amountIncomingRow.visibility = GONE
         } else {
-            pendingOperationsLabel.visibility = VISIBLE
-        }
-        pendingAdapter.update(pendingOperations)
-    }
-
-    override fun onPendingOperationClick(type: String, detail: JSONObject) {
-        val v = view ?: return
-        when {
-            else -> {
-                val bar = Snackbar.make(
-                    v,
-                    "No detail view for $type implemented yet.",
-                    Snackbar.LENGTH_SHORT
-                )
-                bar.show()
-            }
+            amountIncomingRow.visibility = VISIBLE
+            @SuppressLint("SetTextI18n")
+            amountIncomingView.text = "${amountIncoming.amount} ${amountIncoming.currency}"
         }
     }
 
-    override fun onPendingOperationActionClick(type: String, detail: JSONObject) {
-        when (type) {
-            "proposal-choice" -> {
-                Log.v(TAG, "got action click on proposal-choice")
-                val proposalId = detail.optString("proposalId", "")
-                if (proposalId == "") {
-                    return
-                }
-                model.paymentManager.abortProposal(proposalId)
-            }
-        }
+    fun update(updatedBalances: WalletBalances) {
+        this.myDataset = updatedBalances
+        this.notifyDataSetChanged()
     }
+
+    class BalanceViewHolder(val rowView: View) : RecyclerView.ViewHolder(rowView)
+
 }

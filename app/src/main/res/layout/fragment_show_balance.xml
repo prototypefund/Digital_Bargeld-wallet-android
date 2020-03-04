@@ -34,7 +34,8 @@
                 android:id="@+id/list_balances"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="vertical" />
+                android:scrollbars="vertical"
+                tools:listitem="@layout/balance_row" />
 
         <TextView
                 android:id="@+id/list_balances_placeholder"
@@ -60,17 +61,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/button_scan_qr_code" />
 
-        <TextView
-                android:id="@+id/pending_operations_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/pending_operations_label" />
-
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/list_pending"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="vertical" />
-
     </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>

@@ -71,7 +71,7 @@
     <string name="payment_already_paid">You\'ve already paid for this order.</string>
 
     <string name="withdraw_accepted">Withdrawal accepted</string>
-    <string name="withdraw_success_info">Your bank will now ask you to approve a transfer to the selected change. After you\'ve confirmed the transfer with your bank, the digital cash will show in this wallet.</string>
+    <string name="withdraw_success_info">The wire transfer now needs to be confirmed with the bank. Once the wire transfer is complete, the digital cash will automatically show in this wallet.</string>
     <string name="withdraw_do_you_want">Do you want to withdraw</string>
     <string name="withdraw_fees">(minus exchange fees not shown in this prototype)</string>
     <string name="withdraw_exchange">Using the exchange provider</string>

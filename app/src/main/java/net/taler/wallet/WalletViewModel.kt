@@ -37,6 +37,7 @@ import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.history.History
 import net.taler.wallet.history.HistoryEvent
 import net.taler.wallet.payment.PaymentManager
+import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
 
@@ -48,25 +49,12 @@ data class BalanceEntry(val available: Amount, val pendingIncoming: Amount)
 
 data class WalletBalances(val initialized: Boolean, val byCurrency: List<BalanceEntry>)
 
-open class PendingOperationInfo(
-    val type: String,
-    val detail: JSONObject
-)
-
-open class PendingOperations(
-    val pending: List<PendingOperationInfo>
-)
-
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
     val balances = MutableLiveData<WalletBalances>().apply {
         value = WalletBalances(false, listOf())
-    }
-
-    val pendingOperations = MutableLiveData<PendingOperations>().apply {
-        value = PendingOperations(listOf())
     }
 
     private val mHistoryProgress = MutableLiveData<Boolean>()
@@ -84,9 +72,16 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     val showProgressBar = MutableLiveData<Boolean>()
 
     private var activeGetBalance = 0
-    private var activeGetPending = 0
 
-    private val walletBackendApi = WalletBackendApi(app)
+    private val walletBackendApi = WalletBackendApi(app, {
+        activeGetBalance = 0
+        getBalances()
+        pendingOperationsManager.getPending()
+    }) {
+        Log.i(TAG, "Received notification from wallet-core")
+        getBalances()
+        pendingOperationsManager.getPending()
+    }
 
     private val mapper = ObjectMapper()
         .registerModule(KotlinModule())
@@ -94,23 +89,8 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
     val withdrawManager = WithdrawManager(walletBackendApi)
     val paymentManager = PaymentManager(walletBackendApi, mapper)
-
-    init {
-        getBalances()
-        getPending()
-
-        walletBackendApi.notificationHandler = {
-            Log.i(TAG, "got notification from wallet")
-            getBalances()
-            getPending()
-        }
-        walletBackendApi.connectedHandler = {
-            activeGetBalance = 0
-            activeGetPending = 0
-            getBalances()
-            getPending()
-        }
-    }
+    val pendingOperationsManager: PendingOperationsManager =
+        PendingOperationsManager(walletBackendApi)
 
     fun getBalances() {
         if (activeGetBalance > 0) {
@@ -135,30 +115,6 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
                 balanceList.add(BalanceEntry(amount, amountIncoming))
             }
             balances.postValue(WalletBalances(true, balanceList))
-        }
-    }
-
-    private fun getPending() {
-        if (activeGetPending > 0) {
-            return
-        }
-        activeGetPending++
-        walletBackendApi.sendRequest("getPendingOperations", null) { isError, result ->
-            activeGetPending--
-            if (isError) {
-                Log.i(TAG, "got getPending error result")
-                return@sendRequest
-            }
-            Log.i(TAG, "got getPending result")
-            val pendingList = mutableListOf<PendingOperationInfo>()
-            val pendingJson = result.getJSONArray("pendingOperations")
-            for (i in 0 until pendingJson.length()) {
-                val p = pendingJson.getJSONObject(i)
-                val type = p.getString("type")
-                pendingList.add(PendingOperationInfo(type, p))
-            }
-            Log.i(TAG, "Got ${pendingList.size} pending operations")
-            pendingOperations.postValue(PendingOperations((pendingList)))
         }
     }
 

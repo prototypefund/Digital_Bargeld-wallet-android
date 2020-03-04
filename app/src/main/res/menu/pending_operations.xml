@@ -17,8 +17,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:id="@+id/reload_balance"
+            android:id="@+id/retry_pending"
             android:orderInCategory="100"
-            android:title="@string/menu_balance_reload"
+            android:title="@string/menu_retry_pending_operations"
             app:showAsAction="never" />
 </menu>

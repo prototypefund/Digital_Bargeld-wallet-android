@@ -99,8 +99,18 @@
                 app:popUpTo="@id/showBalance" />
     </fragment>
 
+    <fragment
+            android:id="@+id/nav_pending_operations"
+            android:name="net.taler.wallet.pending.PendingOperationsFragment"
+            android:label="Pending Operations"
+            tools:layout="@layout/fragment_pending_operations" />
+
     <action
             android:id="@+id/action_global_promptPayment"
             app:destination="@id/promptPayment" />
+
+    <action
+            android:id="@+id/action_global_pending_operations"
+            app:destination="@id/nav_pending_operations" />
 
 </navigation>

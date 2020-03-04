@@ -99,6 +99,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             R.id.nav_home -> nav.navigate(R.id.showBalance)
             R.id.nav_settings -> nav.navigate(R.id.settings)
             R.id.nav_history -> nav.navigate(R.id.walletHistory)
+            R.id.nav_pending_operations -> nav.navigate(R.id.nav_pending_operations)
         }
         drawer_layout.closeDrawer(START)
         return true
