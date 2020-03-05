@@ -30,7 +30,9 @@ sealed class WithdrawStatus {
         val talerWithdrawUri: String,
         val exchangeBaseUrl: String,
         val tosText: String,
-        val tosEtag: String
+        val tosEtag: String,
+        val amount: Amount,
+        val suggestedExchange: String
     ) : WithdrawStatus()
 
     object Success : WithdrawStatus()
@@ -115,8 +117,13 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
                 Log.v(TAG, "ignoring withdrawal info result, not loading.")
                 return@sendRequest
             }
+            val wi = result.getJSONObject("bankWithdrawDetails")
+            val suggestedExchange = wi.getString("suggestedExchange")
+            val amount = Amount.fromJson(wi.getJSONObject("amount"))
+
             val ei = result.getJSONObject("exchangeWithdrawDetails")
             val termsOfServiceAccepted = ei.getBoolean("termsOfServiceAccepted")
+
             if (!termsOfServiceAccepted) {
                 val exchange = ei.getJSONObject("exchangeInfo")
                 val tosText = exchange.getString("termsOfServiceText")
@@ -126,13 +133,12 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
                         status.talerWithdrawUri,
                         selectedExchange,
                         tosText,
-                        tosEtag
+                        tosEtag,
+                        amount,
+                        suggestedExchange
                     )
                 )
             } else {
-                val wi = result.getJSONObject("bankWithdrawDetails")
-                val suggestedExchange = wi.getString("suggestedExchange")
-                val amount = Amount.fromJson(wi.getJSONObject("amount"))
                 withdrawStatus.postValue(
                     WithdrawStatus.ReceivedDetails(
                         status.talerWithdrawUri,
@@ -178,8 +184,13 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
                     if (isError) {
                         return@sendRequest
                     }
-                    // Try withdrawing again with accepted ToS
-                    getWithdrawalInfo(s.talerWithdrawUri)
+                    withdrawStatus.postValue(
+                        WithdrawStatus.ReceivedDetails(
+                            s.talerWithdrawUri,
+                            s.amount,
+                            s.suggestedExchange
+                        )
+                    )
                 }
             }
         }
