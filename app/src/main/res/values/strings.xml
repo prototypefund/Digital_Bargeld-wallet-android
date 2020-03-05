@@ -28,7 +28,6 @@
     <string name="button_cancel">Cancel</string>
     <string name="button_scan_qr_code">Scan Taler QR Code</string>
 
-    <string name="menu_home">Home</string>
     <string name="menu_history">History</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_balance_reload">Reload balances</string>
@@ -86,7 +85,7 @@
     <string name="withdraw_button_testkudos">Withdraw TESTKUDOS</string>
     <string name="withdraw_button_confirm">Confirm Withdraw</string>
 
-    <string name="pending_operations_label">Pending Operations:</string>
+    <string name="pending_operations_title">Pending Operations</string>
     <string name="pending_operations_refuse">Refuse Proposal</string>
     <string name="pending_operations_no_action">(no action)</string>
 
