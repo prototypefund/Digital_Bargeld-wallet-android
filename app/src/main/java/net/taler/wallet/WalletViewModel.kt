@@ -52,7 +52,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     private val mBalances = MutableLiveData<List<BalanceItem>>()
     val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()
 
-    val devMode = MutableLiveData(false)
+    val devMode = MutableLiveData(BuildConfig.DEBUG)
 
     private val mHistoryProgress = MutableLiveData<Boolean>()
     val historyProgress: LiveData<Boolean> = mHistoryProgress
