@@ -1,0 +1,46 @@
+image: registry.gitlab.com/fdroid/ci-images-client:latest
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  script: ./gradlew lint assembleRelease
+
+deploy_nightly:
+  stage: deploy
+  only:
+    - master
+  script:
+    # Ensure that key exists
+    - test -z "$DEBUG_KEYSTORE" && exit 0
+    # Rename nightly app
+    - sed -i
+      's,<string name="app_name">.*</string>,<string name="app_name">Taler Wallet Nightly</string>,'
+      app/src/main/res/values*/strings.xml
+    # Set time-based version code
+    - export versionCode=$(date '+%s')
+    - sed -i "s,^\(\s*versionCode\) *[0-9].*,\1 $versionCode," app/build.gradle
+    # Add commit to version name
+    - export versionName=$(git rev-parse --short=7 HEAD)
+    - sed -i "s,^\(\s*versionName\ *\"[0-9].*\)\",\1 ($versionName)\"," app/build.gradle
+    # Set nightly application ID
+    - sed -i "s,^\(\s*applicationId\) \"*[a-z\.].*\",\1 \"net.taler.wallet.nightly\"," app/build.gradle
+    # Build the APK
+    - ./gradlew assembleDebug
+    # START only needed while patch not accepted/released upstream
+    - apt update && apt install patch
+    - patch /usr/lib/python3/dist-packages/fdroidserver/nightly.py nightly-stats.patch
+    # END
+    - CI_PROJECT_URL="https://gitlab.com/gnu-taler/fdroid-repo" CI_PROJECT_PATH="gnu-taler/fdroid-repo" fdroid nightly -v
+
+after_script:
+  # this file changes every time but should not be cached
+  - rm -f $GRADLE_USER_HOME/caches/modules-2/modules-2.lock
+  - rm -fr $GRADLE_USER_HOME/caches/*/plugin-resolution/
