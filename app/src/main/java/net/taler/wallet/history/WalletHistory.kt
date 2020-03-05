@@ -95,10 +95,10 @@ class WalletHistory : Fragment(), OnEventClickListener {
             addItemDecoration(myItemDecoration)
         }
 
-        model.historyProgress.observe(this, Observer { show ->
+        model.historyProgress.observe(viewLifecycleOwner, Observer { show ->
             historyProgressBar.visibility = if (show) VISIBLE else INVISIBLE
         })
-        model.history.observe(this, Observer { history ->
+        model.history.observe(viewLifecycleOwner, Observer { history ->
             historyEmptyState.visibility = if (history.isEmpty()) VISIBLE else INVISIBLE
             historyAdapter.update(history)
         })
