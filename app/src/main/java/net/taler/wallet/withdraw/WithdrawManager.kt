@@ -46,7 +46,7 @@ sealed class WithdrawStatus {
 class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
 
     val withdrawStatus = MutableLiveData<WithdrawStatus>(WithdrawStatus.None)
-    val testWithdrawalInProgress = MutableLiveData<Boolean>(false)
+    val testWithdrawalInProgress = MutableLiveData(false)
 
     private var currentWithdrawRequestId = 0
 

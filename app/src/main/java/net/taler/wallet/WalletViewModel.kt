@@ -23,6 +23,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.switchMap
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -43,19 +44,13 @@ import org.json.JSONObject
 
 const val TAG = "taler-wallet"
 
-
-data class BalanceEntry(val available: Amount, val pendingIncoming: Amount)
-
-
-data class WalletBalances(val initialized: Boolean, val byCurrency: List<BalanceEntry>)
-
+data class BalanceItem(val available: Amount, val pendingIncoming: Amount)
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
-    val balances = MutableLiveData<WalletBalances>().apply {
-        value = WalletBalances(false, listOf())
-    }
+    private val mBalances = MutableLiveData<List<BalanceItem>>()
+    val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()
 
     private val mHistoryProgress = MutableLiveData<Boolean>()
     val historyProgress: LiveData<Boolean> = mHistoryProgress
@@ -75,11 +70,11 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val walletBackendApi = WalletBackendApi(app, {
         activeGetBalance = 0
-        getBalances()
+        loadBalances()
         pendingOperationsManager.getPending()
     }) {
         Log.i(TAG, "Received notification from wallet-core")
-        getBalances()
+        loadBalances()
         pendingOperationsManager.getPending()
     }
 
@@ -92,17 +87,19 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     val pendingOperationsManager: PendingOperationsManager =
         PendingOperationsManager(walletBackendApi)
 
-    fun getBalances() {
+    @UiThread
+    fun loadBalances() {
         if (activeGetBalance > 0) {
             return
         }
         activeGetBalance++
+        showProgressBar.value = true
         walletBackendApi.sendRequest("getBalances", null) { isError, result ->
             activeGetBalance--
             if (isError) {
                 return@sendRequest
             }
-            val balanceList = mutableListOf<BalanceEntry>()
+            val balanceList = mutableListOf<BalanceItem>()
             val byCurrency = result.getJSONObject("byCurrency")
             val currencyList = byCurrency.keys().asSequence().toList().sorted()
             for (currency in currencyList) {
@@ -112,9 +109,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
                 val jsonAmountIncoming = byCurrency.getJSONObject(currency)
                     .getJSONObject("pendingIncoming")
                 val amountIncoming = Amount.fromJson(jsonAmountIncoming)
-                balanceList.add(BalanceEntry(amount, amountIncoming))
+                balanceList.add(BalanceItem(amount, amountIncoming))
             }
-            balances.postValue(WalletBalances(true, balanceList))
+            mBalances.postValue(balanceList)
+            showProgressBar.postValue(false)
         }
     }
 
@@ -145,7 +143,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     fun dangerouslyReset() {
         walletBackendApi.sendRequest("reset", null)
         withdrawManager.testWithdrawalInProgress.value = false
-        balances.value = WalletBalances(false, listOf())
+        mBalances.value = emptyList()
     }
 
     fun startTunnel() {

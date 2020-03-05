@@ -79,7 +79,7 @@
     <string name="withdraw_button_confirm">Confirm Withdraw</string>
 
     <string name="balance_inbound">inbound</string>
-    <string name="balance_no_cash">There is no digital cash in your wallet.</string>
+    <string name="balance_no_cash">There is no digital cash in your wallet.\n\nYou can get test money from the demo bank:\n\nhttps://bank.demo.taler.net</string>
 
     <string name="pending_operations_label">Pending Operations:</string>
     <string name="pending_operations_refuse">Refuse Proposal</string>

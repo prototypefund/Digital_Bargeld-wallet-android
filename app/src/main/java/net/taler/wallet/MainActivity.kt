@@ -24,7 +24,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         toolbar.setupWithNavController(nav, appBarConfiguration)
 
         model.showProgressBar.observe(this, Observer { show ->
-            progress_bar.visibility = if (show) VISIBLE else GONE
+            progress_bar.visibility = if (show) VISIBLE else INVISIBLE
         })
 
         if (intent.action == ACTION_VIEW) intent.dataString?.let { uri ->

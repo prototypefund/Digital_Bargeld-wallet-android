@@ -18,6 +18,7 @@ package net.taler.wallet
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.transition.TransitionManager.beginDelayedTransition
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -27,25 +28,26 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
+import androidx.recyclerview.widget.RecyclerView.Adapter
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.QR_CODE_TYPES
+import kotlinx.android.synthetic.main.fragment_show_balance.*
+import net.taler.wallet.BalanceAdapter.BalanceViewHolder
 
 class ShowBalance : Fragment() {
 
     private val model: WalletViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
-    private lateinit var balancesView: RecyclerView
-    private lateinit var balancesPlaceholderView: TextView
-    private lateinit var balancesAdapter: BalanceAdapter
+    private val balancesAdapter = BalanceAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,68 +55,52 @@ class ShowBalance : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_show_balance, container, false)
-        val payQrButton = view.findViewById<Button>(R.id.button_pay_qr)
-        payQrButton.setOnClickListener {
-            IntentIntegrator(activity).apply {
-                setBeepEnabled(true)
-                setOrientationLocked(false)
-            }.initiateScan(QR_CODE_TYPES)
-        }
+        return inflater.inflate(R.layout.fragment_show_balance, container, false)
+    }
 
-        this.balancesView = view.findViewById(R.id.list_balances)
-        this.balancesPlaceholderView = view.findViewById(R.id.list_balances_placeholder)
-
-        val balances = model.balances.value!!
-
-        balancesAdapter = BalanceAdapter(balances)
-
-        view.findViewById<RecyclerView>(R.id.list_balances).apply {
-            val myLayoutManager = LinearLayoutManager(context)
-            val myItemDecoration = DividerItemDecoration(context, myLayoutManager.orientation)
-            layoutManager = myLayoutManager
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        balancesList.apply {
+            layoutManager = LinearLayoutManager(context)
             adapter = balancesAdapter
-            addItemDecoration(myItemDecoration)
+            addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
-
-        updateBalances(balances)
 
         model.balances.observe(viewLifecycleOwner, Observer {
-            triggerLoading()
-            updateBalances(it)
+            onBalancesChanged(it)
         })
 
-
-        val withdrawTestkudosButton = view.findViewById<Button>(R.id.button_withdraw_testkudos)
-        withdrawTestkudosButton.setOnClickListener {
+        testWithdrawButton.setOnClickListener {
             withdrawManager.withdrawTestkudos()
         }
 
         withdrawManager.testWithdrawalInProgress.observe(viewLifecycleOwner, Observer { loading ->
             Log.v("taler-wallet", "observing balance loading $loading in show balance")
-            withdrawTestkudosButton.isEnabled = !loading
-            triggerLoading()
+            testWithdrawButton.isEnabled = !loading
+            model.showProgressBar.value = loading
         })
 
-        return view
+        scanButton.setOnClickListener {
+            IntentIntegrator(activity).apply {
+                setPrompt("")
+                setBeepEnabled(true)
+                setOrientationLocked(false)
+            }.initiateScan(QR_CODE_TYPES)
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-        triggerLoading()
-        Log.v("taler-wallet", "called onResume on ShowBalance")
+    override fun onStart() {
+        super.onStart()
+        model.loadBalances()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.reload_balance -> {
-                triggerLoading()
-                model.balances.value = WalletBalances(false, listOf())
-                model.getBalances()
+                model.loadBalances()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -126,72 +112,64 @@ class ShowBalance : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    private fun triggerLoading() {
-        val withdrawInProgress = withdrawManager.testWithdrawalInProgress.value == true
-        val balances = model.balances.value
-        val loading: Boolean = (withdrawInProgress) || (balances == null) || !balances.initialized
-        model.showProgressBar.value = loading
-    }
-
-    private fun updateBalances(balances: WalletBalances) {
-        if (!balances.initialized) {
-            balancesPlaceholderView.visibility = GONE
-            balancesView.visibility = GONE
-        } else if (balances.byCurrency.isEmpty()) {
-            balancesPlaceholderView.visibility = VISIBLE
-            balancesView.visibility = GONE
+    private fun onBalancesChanged(balances: List<BalanceItem>) {
+        beginDelayedTransition(view as ViewGroup)
+        if (balances.isEmpty()) {
+            balancesEmptyState.visibility = VISIBLE
+            balancesList.visibility = GONE
         } else {
-            balancesPlaceholderView.visibility = GONE
-            balancesView.visibility = VISIBLE
+            balancesAdapter.setItems(balances)
+            balancesEmptyState.visibility = GONE
+            balancesList.visibility = VISIBLE
         }
-        Log.v(TAG, "updating balances $balances")
-        balancesAdapter.update(balances)
     }
 
 }
 
-class BalanceAdapter(private var myDataset: WalletBalances) :
-    RecyclerView.Adapter<BalanceAdapter.BalanceViewHolder>() {
+class BalanceAdapter : Adapter<BalanceViewHolder>() {
+
+    private var items = emptyList<BalanceItem>()
 
     init {
         setHasStableIds(false)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BalanceViewHolder {
-        val rowView =
-            LayoutInflater.from(parent.context).inflate(R.layout.balance_row, parent, false)
-        return BalanceViewHolder(rowView)
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.balance_row, parent, false)
+        return BalanceViewHolder(v)
     }
 
-    override fun getItemCount(): Int {
-        return myDataset.byCurrency.size
-    }
+    override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: BalanceViewHolder, position: Int) {
-        val amount = myDataset.byCurrency[position].available
-        val amountIncoming = myDataset.byCurrency[position].pendingIncoming
-        val currencyView = holder.rowView.findViewById<TextView>(R.id.balance_currency)
-        currencyView.text = amount.currency
-        val amountView = holder.rowView.findViewById<TextView>(R.id.balance_amount)
-        amountView.text = amount.amount
-
-        val amountIncomingRow = holder.rowView.findViewById<View>(R.id.balance_row_pending)
-
-        val amountIncomingView = holder.rowView.findViewById<TextView>(R.id.balance_pending)
-        if (amountIncoming.isZero()) {
-            amountIncomingRow.visibility = GONE
-        } else {
-            amountIncomingRow.visibility = VISIBLE
-            @SuppressLint("SetTextI18n")
-            amountIncomingView.text = "${amountIncoming.amount} ${amountIncoming.currency}"
-        }
+        val item = items[position]
+        holder.bind(item)
     }
 
-    fun update(updatedBalances: WalletBalances) {
-        this.myDataset = updatedBalances
+    fun setItems(items: List<BalanceItem>) {
+        this.items = items
         this.notifyDataSetChanged()
     }
 
-    class BalanceViewHolder(val rowView: View) : RecyclerView.ViewHolder(rowView)
+    class BalanceViewHolder(v: View) : ViewHolder(v) {
+        private val currencyView: TextView = v.findViewById(R.id.balance_currency)
+        private val amountView: TextView = v.findViewById(R.id.balance_amount)
+        private val amountIncomingRow: View = v.findViewById(R.id.balance_row_pending)
+        private val amountIncomingView: TextView = v.findViewById(R.id.balance_pending)
+
+        fun bind(item: BalanceItem) {
+            currencyView.text = item.available.currency
+            amountView.text = item.available.amount
+
+            val amountIncoming = item.pendingIncoming
+            if (amountIncoming.isZero()) {
+                amountIncomingRow.visibility = GONE
+            } else {
+                amountIncomingRow.visibility = VISIBLE
+                @SuppressLint("SetTextI18n")
+                amountIncomingView.text = "${amountIncoming.amount} ${amountIncoming.currency}"
+            }
+        }
+    }
 
 }
