@@ -16,7 +16,6 @@
 
 package net.taler.wallet
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.transition.TransitionManager.beginDelayedTransition
 import android.util.Log
@@ -42,7 +41,7 @@ import com.google.zxing.integration.android.IntentIntegrator.QR_CODE_TYPES
 import kotlinx.android.synthetic.main.fragment_show_balance.*
 import net.taler.wallet.BalanceAdapter.BalanceViewHolder
 
-class ShowBalance : Fragment() {
+class BalanceFragment : Fragment() {
 
     private val model: WalletViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
@@ -148,7 +147,8 @@ class BalanceAdapter : Adapter<BalanceViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BalanceViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.balance_row, parent, false)
+        val v =
+            LayoutInflater.from(parent.context).inflate(R.layout.list_item_balance, parent, false)
         return BalanceViewHolder(v)
     }
 
@@ -164,11 +164,11 @@ class BalanceAdapter : Adapter<BalanceViewHolder>() {
         this.notifyDataSetChanged()
     }
 
-    class BalanceViewHolder(v: View) : ViewHolder(v) {
+    class BalanceViewHolder(private val v: View) : ViewHolder(v) {
         private val currencyView: TextView = v.findViewById(R.id.balance_currency)
         private val amountView: TextView = v.findViewById(R.id.balance_amount)
-        private val amountIncomingRow: View = v.findViewById(R.id.balance_row_pending)
-        private val amountIncomingView: TextView = v.findViewById(R.id.balance_pending)
+        private val balanceInboundAmount: TextView = v.findViewById(R.id.balanceInboundAmount)
+        private val balanceInboundLabel: TextView = v.findViewById(R.id.balanceInboundLabel)
 
         fun bind(item: BalanceItem) {
             currencyView.text = item.available.currency
@@ -176,11 +176,16 @@ class BalanceAdapter : Adapter<BalanceViewHolder>() {
 
             val amountIncoming = item.pendingIncoming
             if (amountIncoming.isZero()) {
-                amountIncomingRow.visibility = GONE
+                balanceInboundAmount.visibility = GONE
+                balanceInboundLabel.visibility = GONE
             } else {
-                amountIncomingRow.visibility = VISIBLE
-                @SuppressLint("SetTextI18n")
-                amountIncomingView.text = "${amountIncoming.amount} ${amountIncoming.currency}"
+                balanceInboundAmount.visibility = VISIBLE
+                balanceInboundLabel.visibility = VISIBLE
+                balanceInboundAmount.text = v.context.getString(
+                    R.string.balances_inbound_amount,
+                    amountIncoming.amount,
+                    amountIncoming.currency
+                )
             }
         }
     }

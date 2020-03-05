@@ -23,7 +23,7 @@
 
     <fragment
             android:id="@+id/showBalance"
-            android:name="net.taler.wallet.ShowBalance"
+            android:name="net.taler.wallet.BalanceFragment"
             android:label="@string/balances_title"
             tools:layout="@layout/fragment_show_balance">
         <action

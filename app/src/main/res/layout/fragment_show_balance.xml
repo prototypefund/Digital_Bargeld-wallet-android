@@ -23,7 +23,6 @@
             android:id="@+id/balancesList"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/scanButton"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,7 +31,7 @@
             app:layout_constraintVertical_bias="0.0"
             app:layout_constraintVertical_chainStyle="packed"
             tools:layout_height="200dp"
-            tools:listitem="@layout/balance_row"
+            tools:listitem="@layout/list_item_balance"
             tools:visibility="visible" />
 
     <TextView
@@ -49,7 +48,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
     <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier"
