@@ -11720,6 +11720,7 @@ function getOrderShortInfo(proposal) {
     }
     return {
         amount: Amounts.toString(download.contractData.amount),
+        fulfillmentUrl: download.contractData.fulfillmentUrl,
         orderId: download.contractData.orderId,
         merchantBaseUrl: download.contractData.merchantBaseUrl,
         proposalId: proposal.proposalId,
@@ -23453,7 +23454,6 @@ var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisAr
 Object.defineProperty(exports, "__esModule", { value: true });
 
 
-
 const f = __filename;
 const workerCode = `
   // Try loading the glue library for Android
@@ -23510,8 +23510,9 @@ function handleWorkerMessage(msg) {
         }
         try {
             const result = impl[operation](...args);
-            const p = worker_threads.parentPort;
-            (_a = worker_threads.parentPort) === null || _a === void 0 ? void 0 : _a.postMessage;
+            const worker_threads$1 = worker_threads;
+            const p = worker_threads$1.parentPort;
+            (_a = worker_threads$1.parentPort) === null || _a === void 0 ? void 0 : _a.postMessage;
             if (p) {
                 p.postMessage({ data: { result, id } });
             }
@@ -23550,7 +23551,8 @@ exports.NodeThreadCryptoWorkerFactory = NodeThreadCryptoWorkerFactory;
  */
 class NodeThreadCryptoWorker {
     constructor() {
-        this.nodeWorker = new worker_threads.Worker(workerCode, { eval: true });
+        const worker_threads$1 = worker_threads;
+        this.nodeWorker = new worker_threads$1.Worker(workerCode, { eval: true });
         this.nodeWorker.on("error", (err) => {
             console.error("error in node worker:", err);
             if (this.onerror) {
@@ -23835,6 +23837,137 @@ exports.NodeHttpLib = NodeHttpLib;
 unwrapExports(NodeHttpLib_1);
 var NodeHttpLib_2 = NodeHttpLib_1.NodeHttpLib;
 
+var synchronousWorker = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2019 GNUnet e.V.
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+
+/**
+ * The synchronous crypto worker produced by this factory doesn't run in the
+ * background, but actually blocks the caller until the operation is done.
+ */
+class SynchronousCryptoWorkerFactory {
+    startWorker() {
+        if (typeof require === "undefined") {
+            throw Error("cannot make worker, require(...) not defined");
+        }
+        const workerCtor = synchronousWorker.SynchronousCryptoWorker;
+        return new workerCtor();
+    }
+    getConcurrency() {
+        return 1;
+    }
+}
+exports.SynchronousCryptoWorkerFactory = SynchronousCryptoWorkerFactory;
+/**
+ * Worker implementation that uses node subprocesses.
+ */
+class SynchronousCryptoWorker {
+    constructor() {
+        this.onerror = undefined;
+        this.onmessage = undefined;
+    }
+    /**
+     * Add an event listener for either an "error" or "message" event.
+     */
+    addEventListener(event, fn) {
+        switch (event) {
+            case "message":
+                this.onmessage = fn;
+                break;
+            case "error":
+                this.onerror = fn;
+                break;
+        }
+    }
+    dispatchMessage(msg) {
+        if (this.onmessage) {
+            this.onmessage({ data: msg });
+        }
+    }
+    handleRequest(operation, id, args) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const impl = new cryptoImplementation.CryptoImplementation();
+            if (!(operation in impl)) {
+                console.error(`crypto operation '${operation}' not found`);
+                return;
+            }
+            let result;
+            try {
+                result = impl[operation](...args);
+            }
+            catch (e) {
+                console.log("error during operation", e);
+                return;
+            }
+            try {
+                setImmediate(() => this.dispatchMessage({ result, id }));
+            }
+            catch (e) {
+                console.log("got error during dispatch", e);
+            }
+        });
+    }
+    /**
+     * Send a message to the worker thread.
+     */
+    postMessage(msg) {
+        const args = msg.args;
+        if (!Array.isArray(args)) {
+            console.error("args must be array");
+            return;
+        }
+        const id = msg.id;
+        if (typeof id !== "number") {
+            console.error("RPC id must be number");
+            return;
+        }
+        const operation = msg.operation;
+        if (typeof operation !== "string") {
+            console.error("RPC operation must be string");
+            return;
+        }
+        this.handleRequest(operation, id, args).catch(e => {
+            console.error("Error while handling crypto request:", e);
+        });
+    }
+    /**
+     * Forcibly terminate the worker thread.
+     */
+    terminate() {
+        // This is a no-op.
+    }
+}
+exports.SynchronousCryptoWorker = SynchronousCryptoWorker;
+
+});
+
+unwrapExports(synchronousWorker);
+var synchronousWorker_1 = synchronousWorker.SynchronousCryptoWorkerFactory;
+var synchronousWorker_2 = synchronousWorker.SynchronousCryptoWorker;
+
 var helpers$1 = createCommonjsModule(function (module, exports) {
 /*
  This file is part of GNU Taler
@@ -23879,6 +24012,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 
 const amounts$1 = __importStar(amounts);
+
 
 
 
@@ -23933,11 +24067,18 @@ function getDefaultNodeWallet(args = {}) {
         };
         build.shimIndexedDB(myBridgeIdbFactory);
         const myDb = yield db.openTalerDatabase(myIdbFactory, myVersionChange);
-        //const worker = new SynchronousCryptoWorkerFactory();
-        //const worker = new NodeCryptoWorkerFactory();
-        const worker = new nodeThreadWorker.NodeThreadCryptoWorkerFactory();
+        let workerFactory;
+        try {
+            // Try if we have worker threads available, fails in older node versions.
+            
+            workerFactory = new nodeThreadWorker.NodeThreadCryptoWorkerFactory();
+        }
+        catch (e) {
+            console.log("worker threads not available, falling back to synchronous workers");
+            workerFactory = new synchronousWorker.SynchronousCryptoWorkerFactory();
+        }
         const dbWrap = new query.Database(myDb);
-        const w = new wallet.Wallet(dbWrap, myHttpLib, worker);
+        const w = new wallet.Wallet(dbWrap, myHttpLib, workerFactory);
         if (args.notifyHandler) {
             w.addNotificationListener(args.notifyHandler);
         }
