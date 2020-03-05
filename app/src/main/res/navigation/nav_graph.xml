@@ -59,8 +59,8 @@
             tools:layout="@layout/fragment_settings" />
     <fragment
             android:id="@+id/walletHistory"
-            android:name="net.taler.wallet.history.WalletHistory"
-            android:label="History"
+            android:name="net.taler.wallet.history.WalletHistoryFragment"
+            android:label="@string/history_title"
             tools:layout="@layout/fragment_show_history" />
     <fragment
             android:id="@+id/alreadyPaid"

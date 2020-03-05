@@ -16,7 +16,6 @@
 
 package net.taler.wallet.history
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -27,10 +26,11 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.fragment_show_history.*
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
@@ -39,44 +39,16 @@ interface OnEventClickListener {
     fun onEventClicked(event: HistoryEvent)
 }
 
-/**
- * Wallet history.
- *
- */
-class WalletHistory : Fragment(), OnEventClickListener {
+class WalletHistoryFragment : Fragment(), OnEventClickListener {
 
-    private lateinit var model: WalletViewModel
+    private val model: WalletViewModel by activityViewModels()
+    private val historyManager by lazy { model.historyManager }
     private lateinit var showAllItem: MenuItem
     private val historyAdapter = WalletHistoryAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
-        model = activity?.run {
-            ViewModelProvider(this)[WalletViewModel::class.java]
-        } ?: throw Exception("Invalid Activity")
-
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.history, menu)
-        showAllItem = menu.findItem(R.id.show_all_history)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.show_all_history -> {
-                item.isChecked = !item.isChecked
-                model.historyShowAll.value = item.isChecked
-                true
-            }
-            R.id.reload_history -> {
-                model.historyShowAll.value = showAllItem.isChecked
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onCreateView(
@@ -88,26 +60,46 @@ class WalletHistory : Fragment(), OnEventClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         historyList.apply {
-            val myLayoutManager = LinearLayoutManager(context)
-            val myItemDecoration = DividerItemDecoration(context, myLayoutManager.orientation)
-            layoutManager = myLayoutManager
+            layoutManager = LinearLayoutManager(context)
             adapter = historyAdapter
-            addItemDecoration(myItemDecoration)
+            addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
 
-        model.historyProgress.observe(viewLifecycleOwner, Observer { show ->
+        historyManager.progress.observe(viewLifecycleOwner, Observer { show ->
             historyProgressBar.visibility = if (show) VISIBLE else INVISIBLE
         })
-        model.history.observe(viewLifecycleOwner, Observer { history ->
+        historyManager.history.observe(viewLifecycleOwner, Observer { history ->
             historyEmptyState.visibility = if (history.isEmpty()) VISIBLE else INVISIBLE
             historyAdapter.update(history)
         })
 
         // kicks off initial load, needs to be adapted if showAll state is ever saved
-        if (savedInstanceState == null) model.historyShowAll.value = false
+        if (savedInstanceState == null) historyManager.showAll.value = model.devMode.value
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.history, menu)
+        showAllItem = menu.findItem(R.id.show_all_history)
+        showAllItem.isChecked = historyManager.showAll.value == true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.show_all_history -> {
+                item.isChecked = !item.isChecked
+                historyManager.showAll.value = item.isChecked
+                true
+            }
+            R.id.reload_history -> {
+                historyManager.showAll.value = showAllItem.isChecked
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onEventClicked(event: HistoryEvent) {
+        if (model.devMode.value != true) return
         JsonDialogFragment.new(event.json.toString(4))
             .show(parentFragmentManager, null)
     }

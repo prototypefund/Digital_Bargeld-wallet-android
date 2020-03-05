@@ -22,21 +22,12 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.switchMap
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.history.History
-import net.taler.wallet.history.HistoryEvent
+import net.taler.wallet.history.HistoryManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.withdraw.WithdrawManager
@@ -46,26 +37,12 @@ const val TAG = "taler-wallet"
 
 data class BalanceItem(val available: Amount, val pendingIncoming: Amount)
 
-@Suppress("EXPERIMENTAL_API_USAGE")
 class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val mBalances = MutableLiveData<List<BalanceItem>>()
     val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()
 
     val devMode = MutableLiveData(BuildConfig.DEBUG)
-
-    private val mHistoryProgress = MutableLiveData<Boolean>()
-    val historyProgress: LiveData<Boolean> = mHistoryProgress
-
-    val historyShowAll = MutableLiveData<Boolean>()
-
-    val history: LiveData<History> = historyShowAll.switchMap { showAll ->
-        loadHistory(showAll)
-            .onStart { mHistoryProgress.postValue(true) }
-            .onCompletion { mHistoryProgress.postValue(false) }
-            .asLiveData(Dispatchers.IO)
-    }
-
     val showProgressBar = MutableLiveData<Boolean>()
 
     private var activeGetBalance = 0
@@ -88,6 +65,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     val paymentManager = PaymentManager(walletBackendApi, mapper)
     val pendingOperationsManager: PendingOperationsManager =
         PendingOperationsManager(walletBackendApi)
+    val historyManager = HistoryManager(walletBackendApi, mapper)
 
     override fun onCleared() {
         walletBackendApi.destroy()
@@ -121,29 +99,6 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             mBalances.postValue(balanceList)
             showProgressBar.postValue(false)
         }
-    }
-
-    private fun loadHistory(showAll: Boolean) = callbackFlow {
-        mHistoryProgress.postValue(true)
-        walletBackendApi.sendRequest("getHistory", null) { isError, result ->
-            if (isError) {
-                // TODO show error message in [WalletHistory] fragment
-                close()
-                return@sendRequest
-            }
-            val history = History()
-            val json = result.getJSONArray("history")
-            for (i in 0 until json.length()) {
-                val event: HistoryEvent = mapper.readValue(json.getString(i))
-                event.json = json.getJSONObject(i)
-                history.add(event)
-            }
-            history.reverse()  // show latest first
-            mHistoryProgress.postValue(false)
-            offer(if (showAll) history else history.filter { it.showToUser } as History)
-            close()
-        }
-        awaitClose()
     }
 
     @UiThread
