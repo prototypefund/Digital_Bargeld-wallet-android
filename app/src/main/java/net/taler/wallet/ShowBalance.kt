@@ -73,10 +73,13 @@ class ShowBalance : Fragment() {
             onBalancesChanged(it)
         })
 
+        model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
+            delayedTransition()
+            testWithdrawButton.visibility = if (enabled) VISIBLE else GONE
+        })
         testWithdrawButton.setOnClickListener {
             withdrawManager.withdrawTestkudos()
         }
-
         withdrawManager.testWithdrawalInProgress.observe(viewLifecycleOwner, Observer { loading ->
             Log.v("taler-wallet", "observing balance loading $loading in show balance")
             testWithdrawButton.isEnabled = !loading
@@ -103,17 +106,23 @@ class ShowBalance : Fragment() {
                 model.loadBalances()
                 true
             }
+            R.id.developer_mode -> {
+                item.isChecked = !item.isChecked
+                model.devMode.value = item.isChecked
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.balance, menu)
+        menu.findItem(R.id.developer_mode).isChecked = model.devMode.value!!
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     private fun onBalancesChanged(balances: List<BalanceItem>) {
-        beginDelayedTransition(view as ViewGroup)
+        delayedTransition()
         if (balances.isEmpty()) {
             balancesEmptyState.visibility = VISIBLE
             balancesList.visibility = GONE
@@ -122,6 +131,10 @@ class ShowBalance : Fragment() {
             balancesEmptyState.visibility = GONE
             balancesList.visibility = VISIBLE
         }
+    }
+
+    private fun delayedTransition() {
+        beginDelayedTransition(view as ViewGroup)
     }
 
 }

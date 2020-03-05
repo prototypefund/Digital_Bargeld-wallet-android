@@ -87,7 +87,7 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.retry_pending -> {
-                model.retryPendingNow()
+                pendingOperationsManager.retryPendingNow()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -42,7 +42,7 @@
             android:autoLink="web"
             android:gravity="center"
             android:padding="16dp"
-            android:text="@string/balance_no_cash"
+            android:text="@string/balances_empty_state"
             android:textSize="18sp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/scanButton"

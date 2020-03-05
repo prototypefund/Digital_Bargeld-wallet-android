@@ -69,12 +69,16 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
         setSupportActionBar(toolbar)
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.showBalance, R.id.settings, R.id.walletHistory), drawer_layout
+            setOf(R.id.showBalance, R.id.settings, R.id.walletHistory, R.id.nav_pending_operations), drawer_layout
         )
         toolbar.setupWithNavController(nav, appBarConfiguration)
 
         model.showProgressBar.observe(this, Observer { show ->
             progress_bar.visibility = if (show) VISIBLE else INVISIBLE
+        })
+
+        model.devMode.observe(this, Observer { enabled ->
+            nav_view.menu.findItem(R.id.nav_pending_operations).isVisible = enabled
         })
 
         if (intent.action == ACTION_VIEW) intent.dataString?.let { uri ->

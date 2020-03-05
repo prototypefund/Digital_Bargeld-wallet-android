@@ -81,7 +81,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/balance_inbound"
+                android:text="@string/balances_inbound"
                 android:textColor="#006600" />
 
     </LinearLayout>

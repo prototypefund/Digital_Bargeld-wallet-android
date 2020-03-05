@@ -57,4 +57,8 @@ class PendingOperationsManager(private val walletBackendApi: WalletBackendApi) {
         }
     }
 
+    fun retryPendingNow() {
+        walletBackendApi.sendRequest("retryPendingNow", null)
+    }
+
 }

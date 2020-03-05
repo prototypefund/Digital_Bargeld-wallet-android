@@ -52,6 +52,8 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     private val mBalances = MutableLiveData<List<BalanceItem>>()
     val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()
 
+    val devMode = MutableLiveData(false)
+
     private val mHistoryProgress = MutableLiveData<Boolean>()
     val historyProgress: LiveData<Boolean> = mHistoryProgress
 
@@ -86,6 +88,11 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     val paymentManager = PaymentManager(walletBackendApi, mapper)
     val pendingOperationsManager: PendingOperationsManager =
         PendingOperationsManager(walletBackendApi)
+
+    override fun onCleared() {
+        walletBackendApi.destroy()
+        super.onCleared()
+    }
 
     @UiThread
     fun loadBalances() {
@@ -159,12 +166,4 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
         walletBackendApi.sendRequest("tunnelResponse", respJson)
     }
 
-    fun retryPendingNow() {
-        walletBackendApi.sendRequest("retryPendingNow", null)
-    }
-
-    override fun onCleared() {
-        walletBackendApi.destroy()
-        super.onCleared()
-    }
 }
