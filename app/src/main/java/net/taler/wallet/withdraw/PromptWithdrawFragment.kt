@@ -67,7 +67,7 @@ class PromptWithdrawFragment : Fragment() {
         })
     }
 
-    private fun showWithdrawStatus(status: WithdrawStatus) = when (status) {
+    private fun showWithdrawStatus(status: WithdrawStatus?) = when (status) {
         is WithdrawStatus.ReceivedDetails -> {
             model.showProgressBar.value = false
             progressBar.fadeOut()
@@ -86,7 +86,7 @@ class PromptWithdrawFragment : Fragment() {
         }
         is WithdrawStatus.Success -> {
             model.showProgressBar.value = false
-            withdrawManager.withdrawStatus.value = WithdrawStatus.None
+            withdrawManager.withdrawStatus.value = null
             findNavController().navigate(R.id.action_promptWithdraw_to_withdrawSuccessful)
         }
         is Loading -> {
@@ -99,9 +99,11 @@ class PromptWithdrawFragment : Fragment() {
             model.showProgressBar.value = false
             findNavController().navigate(R.id.action_promptWithdraw_to_reviewExchangeTOS)
         }
-        is WithdrawStatus.None -> {
+        is WithdrawStatus.Error -> {
             model.showProgressBar.value = false
+            findNavController().navigate(R.id.action_promptWithdraw_to_errorFragment)
         }
+        null -> model.showProgressBar.value = false
     }
 
 }

@@ -81,6 +81,10 @@
                 android:id="@+id/action_promptWithdraw_to_reviewExchangeTOS"
                 app:destination="@id/reviewExchangeTOS"
                 app:popUpTo="@id/showBalance" />
+        <action
+                android:id="@+id/action_promptWithdraw_to_errorFragment"
+                app:destination="@id/errorFragment"
+                app:popUpTo="@id/showBalance" />
     </fragment>
 
     <fragment
@@ -104,6 +108,11 @@
             android:name="net.taler.wallet.pending.PendingOperationsFragment"
             android:label="Pending Operations"
             tools:layout="@layout/fragment_pending_operations" />
+    <fragment
+            android:id="@+id/errorFragment"
+            android:name="net.taler.wallet.withdraw.ErrorFragment"
+            android:label="@string/nav_error"
+            tools:layout="@layout/fragment_error" />
 
     <action
             android:id="@+id/action_global_promptPayment"

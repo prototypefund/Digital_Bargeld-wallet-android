@@ -24,7 +24,6 @@ import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
 
 sealed class WithdrawStatus {
-    object None : WithdrawStatus()
     data class Loading(val talerWithdrawUri: String) : WithdrawStatus()
     data class TermsOfServiceReviewRequired(
         val talerWithdrawUri: String,
@@ -35,7 +34,6 @@ sealed class WithdrawStatus {
         val suggestedExchange: String
     ) : WithdrawStatus()
 
-    object Success : WithdrawStatus()
     data class ReceivedDetails(
         val talerWithdrawUri: String,
         val amount: Amount,
@@ -43,11 +41,14 @@ sealed class WithdrawStatus {
     ) : WithdrawStatus()
 
     data class Withdrawing(val talerWithdrawUri: String) : WithdrawStatus()
+
+    object Success : WithdrawStatus()
+    data class Error(val message: String?) : WithdrawStatus()
 }
 
 class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
 
-    val withdrawStatus = MutableLiveData<WithdrawStatus>(WithdrawStatus.None)
+    val withdrawStatus = MutableLiveData<WithdrawStatus>()
     val testWithdrawalInProgress = MutableLiveData(false)
 
     private var currentWithdrawRequestId = 0
@@ -72,6 +73,8 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
         walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
             if (isError) {
                 Log.e(TAG, "Error getWithdrawDetailsForUri ${result.toString(4)}")
+                val message = if (result.has("message")) result.getString("message") else null
+                withdrawStatus.postValue(WithdrawStatus.Error(message))
                 return@sendRequest
             }
             if (myWithdrawRequestId != this.currentWithdrawRequestId) {
@@ -104,6 +107,8 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
         walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
             if (isError) {
                 Log.e(TAG, "Error getWithdrawDetailsForUri ${result.toString(4)}")
+                val message = if (result.has("message")) result.getString("message") else null
+                withdrawStatus.postValue(WithdrawStatus.Error(message))
                 return@sendRequest
             }
             if (myWithdrawRequestId != this.currentWithdrawRequestId) {
@@ -198,7 +203,7 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
 
     fun cancelCurrentWithdraw() {
         currentWithdrawRequestId++
-        withdrawStatus.value = WithdrawStatus.None
+        withdrawStatus.value = null
     }
 
 }
