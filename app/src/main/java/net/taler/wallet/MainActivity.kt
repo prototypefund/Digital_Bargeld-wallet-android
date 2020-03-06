@@ -16,6 +16,7 @@
 
 package net.taler.wallet
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -24,8 +25,10 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View.GONE
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat.START
@@ -41,6 +44,8 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.parseActivityResult
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import net.taler.wallet.BuildConfig.VERSION_CODE
+import net.taler.wallet.BuildConfig.VERSION_NAME
 import net.taler.wallet.HostCardEmulatorService.Companion.HTTP_TUNNEL_RESPONSE
 import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_CONNECTED
 import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_DISCONNECTED
@@ -54,6 +59,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
     private lateinit var nav: NavController
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -77,8 +83,14 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             progress_bar.visibility = if (show) VISIBLE else INVISIBLE
         })
 
+        val versionView: TextView = nav_view.getHeaderView(0).findViewById(R.id.versionView)
         model.devMode.observe(this, Observer { enabled ->
             nav_view.menu.findItem(R.id.nav_pending_operations).isVisible = enabled
+            if (enabled) {
+                @SuppressLint("SetTextI18n")
+                versionView.text = "$VERSION_NAME ($VERSION_CODE)"
+                versionView.visibility = VISIBLE
+            } else versionView.visibility = GONE
         })
 
         if (intent.action == ACTION_VIEW) intent.dataString?.let { uri ->
