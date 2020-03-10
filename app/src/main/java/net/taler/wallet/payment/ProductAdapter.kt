@@ -16,9 +16,14 @@
 
 package net.taler.wallet.payment
 
+import android.graphics.BitmapFactory.decodeByteArray
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -50,11 +55,22 @@ internal class ProductAdapter : RecyclerView.Adapter<ProductViewHolder>() {
 
     internal inner class ProductViewHolder(v: View) : ViewHolder(v) {
         private val quantity: TextView = v.findViewById(R.id.quantity)
+        private val image: ImageView = v.findViewById(R.id.image)
         private val name: TextView = v.findViewById(R.id.name)
         private val price: TextView = v.findViewById(R.id.price)
 
         fun bind(product: ContractProduct) {
             quantity.text = product.quantity.toString()
+            if (product.image == null) {
+                image.visibility = GONE
+            } else {
+                image.visibility = VISIBLE
+                // product.image was validated before, so non-null below
+                val match = REGEX_PRODUCT_IMAGE.matchEntire(product.image)!!
+                val decodedString = Base64.decode(match.groups[2]!!.value, Base64.DEFAULT)
+                val bitmap = decodeByteArray(decodedString, 0, decodedString.size)
+                image.setImageBitmap(bitmap)
+            }
             name.text = product.description
             price.text = product.totalPrice.toString()
         }

@@ -29,20 +29,22 @@ data class ContractTerms(
 )
 
 interface Product {
-    val id: String
+    val id: String?
     val description: String
     val price: Amount
     val location: String?
+    val image: String?
 }
 
 @JsonIgnoreProperties("totalPrice")
 data class ContractProduct(
     @JsonProperty("product_id")
-    override val id: String,
+    override val id: String?,
     override val description: String,
     override val price: Amount,
     @JsonProperty("delivery_location")
     override val location: String?,
+    override val image: String?,
     val quantity: Int
 ) : Product {
 

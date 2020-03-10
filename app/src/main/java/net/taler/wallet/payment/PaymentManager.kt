@@ -26,6 +26,9 @@ import net.taler.wallet.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
+import java.net.MalformedURLException
+
+val REGEX_PRODUCT_IMAGE = Regex("^data:image/(jpeg|png);base64,([A-Za-z0-9+/=]+)$")
 
 class PaymentManager(
     private val walletBackendApi: WalletBackendApi,
@@ -61,7 +64,12 @@ class PaymentManager(
                 }
                 else -> {
                     val status = result.getString("status")
-                    mPayStatus.postValue(getPayStatusUpdate(status, result))
+                    try {
+                        mPayStatus.postValue(getPayStatusUpdate(status, result))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error getting PayStatusUpdate", e)
+                        mPayStatus.postValue(PayStatus.Error(e.message ?: "unknown error"))
+                    }
                 }
             }
         }
@@ -80,7 +88,16 @@ class PaymentManager(
     }
 
     private fun getContractTerms(json: JSONObject): ContractTerms {
-        return mapper.readValue(json.getString("contractTermsRaw"))
+        val terms: ContractTerms = mapper.readValue(json.getString("contractTermsRaw"))
+        // validate product images
+        terms.products.forEach { product ->
+            product.image?.let { image ->
+                if (REGEX_PRODUCT_IMAGE.matchEntire(image) == null) {
+                    throw MalformedURLException("Invalid image data URL for ${product.description}")
+                }
+            }
+        }
+        return terms
     }
 
     @UiThread
