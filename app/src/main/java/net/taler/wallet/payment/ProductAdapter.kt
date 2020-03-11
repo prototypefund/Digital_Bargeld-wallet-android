@@ -37,9 +37,14 @@ internal class ProductAdapter : RecyclerView.Adapter<ProductViewHolder>() {
 
     override fun getItemCount() = items.size
 
+    override fun getItemViewType(position: Int): Int {
+        return if (itemCount == 1) 1 else 0
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.list_item_product, parent, false)
+        val res =
+            if (viewType == 1) R.layout.list_item_product_single else R.layout.list_item_product
+        val view = LayoutInflater.from(parent.context).inflate(res, parent, false)
         return ProductViewHolder(view)
     }
 
