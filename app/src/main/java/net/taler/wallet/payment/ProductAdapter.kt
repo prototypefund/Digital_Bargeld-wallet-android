@@ -16,6 +16,7 @@
 
 package net.taler.wallet.payment
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory.decodeByteArray
 import android.util.Base64
 import android.view.LayoutInflater
@@ -30,8 +31,12 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import net.taler.wallet.R
 import net.taler.wallet.payment.ProductAdapter.ProductViewHolder
 
+internal interface ProductImageClickListener {
+    fun onImageClick(image: Bitmap)
+}
 
-internal class ProductAdapter : RecyclerView.Adapter<ProductViewHolder>() {
+internal class ProductAdapter(private val listener: ProductImageClickListener) :
+    RecyclerView.Adapter<ProductViewHolder>() {
 
     private val items = ArrayList<ContractProduct>()
 
@@ -75,6 +80,9 @@ internal class ProductAdapter : RecyclerView.Adapter<ProductViewHolder>() {
                 val decodedString = Base64.decode(match.groups[2]!!.value, Base64.DEFAULT)
                 val bitmap = decodeByteArray(decodedString, 0, decodedString.size)
                 image.setImageBitmap(bitmap)
+                if (itemCount > 1) image.setOnClickListener {
+                    listener.onImageClick(bitmap)
+                }
             }
             name.text = product.description
             price.text = product.totalPrice.toString()

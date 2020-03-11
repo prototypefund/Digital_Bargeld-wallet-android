@@ -17,6 +17,7 @@
 package net.taler.wallet.payment
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,11 +42,11 @@ import net.taler.wallet.fadeOut
 /**
  * Show a payment and ask the user to accept/decline.
  */
-class PromptPaymentFragment : Fragment() {
+class PromptPaymentFragment : Fragment(), ProductImageClickListener {
 
     private val model: WalletViewModel by activityViewModels()
     private val paymentManager by lazy { model.paymentManager }
-    private val adapter = ProductAdapter()
+    private val adapter = ProductAdapter(this)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -156,6 +157,11 @@ class PromptPaymentFragment : Fragment() {
         if (contractTerms.products.isNotEmpty()) detailsButton.fadeIn()
         totalLabelView.fadeIn()
         totalView.fadeIn()
+    }
+
+    override fun onImageClick(image: Bitmap) {
+        val f = ProductImageFragment.new(image)
+        f.show(parentFragmentManager, "image")
     }
 
 }
