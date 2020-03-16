@@ -142,6 +142,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
     private fun showOrder(contractTerms: ContractTerms, totalFees: Amount?) {
         orderView.text = contractTerms.summary
         adapter.setItems(contractTerms.products)
+        if (contractTerms.products.size == 1) paymentManager.toggleDetailsShown()
         val amount = contractTerms.amount
         @SuppressLint("SetTextI18n")
         totalView.text = "${amount.amount} ${amount.currency}"
@@ -154,7 +155,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         }
         orderLabelView.fadeIn()
         orderView.fadeIn()
-        if (contractTerms.products.isNotEmpty()) detailsButton.fadeIn()
+        if (contractTerms.products.size > 1) detailsButton.fadeIn()
         totalLabelView.fadeIn()
         totalView.fadeIn()
     }
