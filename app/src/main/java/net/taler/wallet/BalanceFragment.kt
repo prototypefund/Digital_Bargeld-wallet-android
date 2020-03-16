@@ -46,6 +46,7 @@ class BalanceFragment : Fragment() {
     private val model: WalletViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
+    private var reloadBalanceMenuItem: MenuItem? = null
     private val balancesAdapter = BalanceAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +76,7 @@ class BalanceFragment : Fragment() {
         model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
             delayedTransition()
             testWithdrawButton.visibility = if (enabled) VISIBLE else GONE
+            reloadBalanceMenuItem?.isVisible = enabled
         })
         testWithdrawButton.setOnClickListener {
             withdrawManager.withdrawTestkudos()
@@ -117,6 +119,9 @@ class BalanceFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.balance, menu)
         menu.findItem(R.id.developer_mode).isChecked = model.devMode.value!!
+        reloadBalanceMenuItem = menu.findItem(R.id.reload_balance).apply {
+            isVisible = model.devMode.value!!
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 

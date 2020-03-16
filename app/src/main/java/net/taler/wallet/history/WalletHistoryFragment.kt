@@ -31,6 +31,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
+import kotlinx.android.synthetic.main.fragment_show_balance.*
 import kotlinx.android.synthetic.main.fragment_show_history.*
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
@@ -44,6 +45,7 @@ class WalletHistoryFragment : Fragment(), OnEventClickListener {
     private val model: WalletViewModel by activityViewModels()
     private val historyManager by lazy { model.historyManager }
     private lateinit var showAllItem: MenuItem
+    private var reloadHistoryItem: MenuItem? = null
     private val historyAdapter = WalletHistoryAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +67,9 @@ class WalletHistoryFragment : Fragment(), OnEventClickListener {
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
 
+        model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
+            reloadHistoryItem?.isVisible = enabled
+        })
         historyManager.progress.observe(viewLifecycleOwner, Observer { show ->
             historyProgressBar.visibility = if (show) VISIBLE else INVISIBLE
         })
@@ -81,6 +86,9 @@ class WalletHistoryFragment : Fragment(), OnEventClickListener {
         inflater.inflate(R.menu.history, menu)
         showAllItem = menu.findItem(R.id.show_all_history)
         showAllItem.isChecked = historyManager.showAll.value == true
+        reloadHistoryItem = menu.findItem(R.id.reload_history).apply {
+            isVisible = model.devMode.value!!
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
