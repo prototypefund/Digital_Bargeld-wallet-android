@@ -14,7 +14,6 @@ var tty = _interopDefault(require('tty'));
 var util = _interopDefault(require('util'));
 var os = _interopDefault(require('os'));
 var zlib = _interopDefault(require('zlib'));
-var querystring = _interopDefault(require('querystring'));
 var fs = _interopDefault(require('fs'));
 var worker_threads = _interopDefault(require('worker_threads'));
 
@@ -31,6 +30,244 @@ function createCommonjsModule(fn, module) {
 function getCjsExportFromNamespace (n) {
 	return n && n['default'] || n;
 }
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+/* global Reflect, Promise */
+
+var extendStatics = function(d, b) {
+    extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return extendStatics(d, b);
+};
+
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
+function __rest(s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+}
+
+function __decorate(decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __param(paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+}
+
+function __metadata(metadataKey, metadataValue) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function __generator(thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+}
+
+function __exportStar(m, exports) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+
+function __values(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+function __spread() {
+    for (var ar = [], i = 0; i < arguments.length; i++)
+        ar = ar.concat(__read(arguments[i]));
+    return ar;
+}
+
+function __spreadArrays() {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+}
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+
+function __asyncGenerator(thisArg, _arguments, generator) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var g = generator.apply(thisArg, _arguments || []), i, q = [];
+    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+    function fulfill(value) { resume("next", value); }
+    function reject(value) { resume("throw", value); }
+    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+}
+
+function __asyncDelegator(o) {
+    var i, p;
+    return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+    function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+}
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+}
+
+function __makeTemplateObject(cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+}
+function __importStar(mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result.default = mod;
+    return result;
+}
+
+function __importDefault(mod) {
+    return (mod && mod.__esModule) ? mod : { default: mod };
+}
+
+function __classPrivateFieldGet(receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+}
+
+function __classPrivateFieldSet(receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+}
+
+var tslib_es6 = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	__extends: __extends,
+	get __assign () { return __assign; },
+	__rest: __rest,
+	__decorate: __decorate,
+	__param: __param,
+	__metadata: __metadata,
+	__awaiter: __awaiter,
+	__generator: __generator,
+	__exportStar: __exportStar,
+	__values: __values,
+	__read: __read,
+	__spread: __spread,
+	__spreadArrays: __spreadArrays,
+	__await: __await,
+	__asyncGenerator: __asyncGenerator,
+	__asyncDelegator: __asyncDelegator,
+	__asyncValues: __asyncValues,
+	__makeTemplateObject: __makeTemplateObject,
+	__importStar: __importStar,
+	__importDefault: __importDefault,
+	__classPrivateFieldGet: __classPrivateFieldGet,
+	__classPrivateFieldSet: __classPrivateFieldSet
+});
 
 var codec = createCommonjsModule(function (module, exports) {
 /*
@@ -64,8 +301,7 @@ class DecodingError extends Error {
 }
 exports.DecodingError = DecodingError;
 function renderContext(c) {
-    var _a;
-    const p = (_a = c) === null || _a === void 0 ? void 0 : _a.path;
+    const p = c === null || c === void 0 ? void 0 : c.path;
     if (p) {
         return p.join(".");
     }
@@ -75,8 +311,8 @@ function renderContext(c) {
 }
 exports.renderContext = renderContext;
 function joinContext(c, part) {
-    var _a, _b;
-    const path = (_b = (_a = c) === null || _a === void 0 ? void 0 : _a.path, (_b !== null && _b !== void 0 ? _b : []));
+    var _a;
+    const path = (_a = c === null || c === void 0 ? void 0 : c.path) !== null && _a !== void 0 ? _a : [];
     return {
         path: path.concat([part]),
     };
@@ -293,14 +529,10 @@ function makeCodecOptional(innerCodec) {
                 return undefined;
             }
             return innerCodec.decode(x, c);
-        }
+        },
     };
 }
 exports.makeCodecOptional = makeCodecOptional;
-function typecheckedCodec(c) {
-    return c;
-}
-exports.typecheckedCodec = typecheckedCodec;
 
 });
 
@@ -318,7 +550,6 @@ var codec_10 = codec.codecForString;
 var codec_11 = codec.codecForAny;
 var codec_12 = codec.makeCodecForConstString;
 var codec_13 = codec.makeCodecOptional;
-var codec_14 = codec.typecheckedCodec;
 
 var amounts = createCommonjsModule(function (module, exports) {
 /*
@@ -358,11 +589,11 @@ exports.fractionalLength = 8;
  * Maximum allowed value field of an amount.
  */
 exports.maxAmountValue = Math.pow(2, 52);
-exports.codecForAmountJson = () => codec.typecheckedCodec(codec.makeCodecForObject()
+exports.codecForAmountJson = () => codec.makeCodecForObject()
     .property("currency", codec.codecForString)
     .property("value", codec.codecForNumber)
     .property("fraction", codec.codecForNumber)
-    .build("AmountJson"));
+    .build("AmountJson");
 /**
  * Get an amount that represents zero units of a currency.
  */
@@ -531,7 +762,7 @@ function parse(s) {
     if (tail.length > exports.fractionalLength + 1) {
         return undefined;
     }
-    let value = Number.parseInt(res[2]);
+    const value = Number.parseInt(res[2]);
     if (value > exports.maxAmountValue) {
         return undefined;
     }
@@ -570,7 +801,7 @@ exports.fromFloat = fromFloat;
  * Convert to standard human-readable string representation that's
  * also used in JSON formats.
  */
-function toString(a) {
+function stringify(a) {
     const av = a.value + Math.floor(a.fraction / exports.fractionalBase);
     const af = a.fraction % exports.fractionalBase;
     let s = av.toString();
@@ -587,7 +818,7 @@ function toString(a) {
     }
     return `${a.currency}:${s}`;
 }
-exports.toString = toString;
+exports.stringify = stringify;
 /**
  * Check if the argument is a valid amount in string form.
  */
@@ -603,7 +834,21 @@ function check(a) {
         return false;
     }
 }
-exports.check = check;
+// Export all amount-related functions here for better IDE experience.
+exports.Amounts = {
+    stringify: stringify,
+    parse: parse,
+    parseOrThrow: parseOrThrow,
+    cmp: cmp,
+    add: add,
+    sum: sum,
+    sub: sub,
+    check: check,
+    getZero: getZero,
+    isZero: isZero,
+    maxAmountValue: exports.maxAmountValue,
+    fromFloat: fromFloat,
+};
 
 });
 
@@ -624,7 +869,8 @@ var amounts_13 = amounts.isZero;
 var amounts_14 = amounts.parse;
 var amounts_15 = amounts.parseOrThrow;
 var amounts_16 = amounts.fromFloat;
-var amounts_17 = amounts.check;
+var amounts_17 = amounts.stringify;
+var amounts_18 = amounts.Amounts;
 
 var promiseUtils = createCommonjsModule(function (module, exports) {
 /*
@@ -685,6 +931,8 @@ unwrapExports(promiseUtils);
 var promiseUtils_1 = promiseUtils.openPromise;
 var promiseUtils_2 = promiseUtils.AsyncCondition;
 
+var tslib_1 = getCjsExportFromNamespace(tslib_es6);
+
 var query = createCommonjsModule(function (module, exports) {
 /*
  This file is part of TALER
@@ -701,16 +949,8 @@ var query = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  TALER; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+
 /**
  * Database query abstractions.
  * @module Query
@@ -720,6 +960,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * Imports.
  */
 
+/**
+ * Exception that should be thrown by client code to abort a transaction.
+ */
+exports.TransactionAbort = Symbol("transaction_abort");
 /**
  * Definition of an object store.
  */
@@ -817,7 +1061,7 @@ class ResultStream {
         };
     }
     toArray() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const arr = [];
             while (true) {
                 const x = yield this.next();
@@ -832,7 +1076,7 @@ class ResultStream {
         });
     }
     map(f) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const arr = [];
             while (true) {
                 const x = yield this.next();
@@ -847,7 +1091,7 @@ class ResultStream {
         });
     }
     forEachAsync(f) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             while (true) {
                 const x = yield this.next();
                 if (x.hasValue) {
@@ -860,7 +1104,7 @@ class ResultStream {
         });
     }
     forEach(f) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             while (true) {
                 const x = yield this.next();
                 if (x.hasValue) {
@@ -873,7 +1117,7 @@ class ResultStream {
         });
     }
     filter(f) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const arr = [];
             while (true) {
                 const x = yield this.next();
@@ -890,7 +1134,7 @@ class ResultStream {
         });
     }
     next() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (this.gotCursorEnd) {
                 return { hasValue: false };
             }
@@ -941,6 +1185,13 @@ class TransactionHandle {
         const req = this.tx.objectStore(store.name).openCursor(key);
         return new ResultStream(req);
     }
+    iterIndexed(index, key) {
+        const req = this.tx
+            .objectStore(index.storeName)
+            .index(index.indexName)
+            .openCursor(key);
+        return new ResultStream(req);
+    }
     delete(store, key) {
         const req = this.tx.objectStore(store.name).delete(key);
         return requestToPromise(req);
@@ -954,7 +1205,7 @@ exports.TransactionHandle = TransactionHandle;
 function runWithTransaction(db, stores, f, mode) {
     const stack = Error("Failed transaction was started here.");
     return new Promise((resolve, reject) => {
-        const storeName = stores.map(x => x.name);
+        const storeName = stores.map((x) => x.name);
         const tx = db.transaction(storeName, mode);
         let funResult = undefined;
         let gotFunResult = false;
@@ -986,21 +1237,24 @@ function runWithTransaction(db, stores, f, mode) {
             reject(exports.TransactionAbort);
         };
         const th = new TransactionHandle(tx);
-        const resP = f(th);
+        const resP = Promise.resolve().then(() => f(th));
         resP
-            .then(result => {
+            .then((result) => {
             gotFunResult = true;
             funResult = result;
         })
-            .catch(e => {
+            .catch((e) => {
             if (e == exports.TransactionAbort) {
                 console.info("aborting transaction");
             }
             else {
-                tx.abort();
                 console.error("Transaction failed:", e);
                 console.error(stack);
+                tx.abort();
             }
+        })
+            .catch((e) => {
+            console.error("fatal: aborting transaction failed", e);
         });
     });
 }
@@ -1026,11 +1280,11 @@ exports.Index = Index;
 function openDatabase(idbFactory, databaseName, databaseVersion, onVersionChange, onUpgradeNeeded) {
     return new Promise((resolve, reject) => {
         const req = idbFactory.open(databaseName, databaseVersion);
-        req.onerror = e => {
+        req.onerror = (e) => {
             console.log("taler database error", e);
             reject(new Error("database error"));
         };
-        req.onsuccess = e => {
+        req.onsuccess = (e) => {
             req.result.onversionchange = (evt) => {
                 console.log(`handling live db version change from ${evt.oldVersion} to ${evt.newVersion}`);
                 req.result.close();
@@ -1038,18 +1292,18 @@ function openDatabase(idbFactory, databaseName, databaseVersion, onVersionChange
             };
             resolve(req.result);
         };
-        req.onupgradeneeded = e => {
+        req.onupgradeneeded = (e) => {
             const db = req.result;
-            onUpgradeNeeded(db, e.oldVersion, e.newVersion);
+            const newVersion = e.newVersion;
+            if (!newVersion) {
+                throw Error("upgrade needed, but new version unknown");
+            }
+            onUpgradeNeeded(db, e.oldVersion, newVersion);
             console.log(`DB: upgrade needed: oldVersion=${e.oldVersion}, newVersion=${e.newVersion}`);
         };
     });
 }
 exports.openDatabase = openDatabase;
-/**
- * Exception that should be thrown by client code to abort a transaction.
- */
-exports.TransactionAbort = Symbol("transaction_abort");
 class Database {
     constructor(db) {
         this.db = db;
@@ -1058,7 +1312,7 @@ class Database {
         idbFactory.deleteDatabase(dbName);
     }
     exportDatabase() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const db = this.db;
             const dump = {
                 name: db.name,
@@ -1113,7 +1367,7 @@ class Database {
         });
     }
     get(store, key) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const tx = this.db.transaction([store.name], "readonly");
             const req = tx.objectStore(store.name).get(key);
             const v = yield requestToPromise(req);
@@ -1122,19 +1376,16 @@ class Database {
         });
     }
     getIndexed(index, key) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const tx = this.db.transaction([index.storeName], "readonly");
-            const req = tx
-                .objectStore(index.storeName)
-                .index(index.indexName)
-                .get(key);
+            const req = tx.objectStore(index.storeName).index(index.indexName).get(key);
             const v = yield requestToPromise(req);
             yield transactionToPromise(tx);
             return v;
         });
     }
     put(store, value, key) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const tx = this.db.transaction([store.name], "readwrite");
             const req = tx.objectStore(store.name).put(value, key);
             const v = yield requestToPromise(req);
@@ -1143,7 +1394,7 @@ class Database {
         });
     }
     mutate(store, key, f) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const tx = this.db.transaction([store.name], "readwrite");
             const req = tx.objectStore(store.name).openCursor(key);
             yield applyMutation(req, f);
@@ -1164,12 +1415,12 @@ class Database {
         return new ResultStream(req);
     }
     runWithReadTransaction(stores, f) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return runWithTransaction(this.db, stores, f, "readonly");
         });
     }
     runWithWriteTransaction(stores, f) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return runWithTransaction(this.db, stores, f, "readwrite");
         });
     }
@@ -1179,11 +1430,11 @@ exports.Database = Database;
 });
 
 unwrapExports(query);
-var query_1 = query.Store;
-var query_2 = query.TransactionHandle;
-var query_3 = query.Index;
-var query_4 = query.openDatabase;
-var query_5 = query.TransactionAbort;
+var query_1 = query.TransactionAbort;
+var query_2 = query.Store;
+var query_3 = query.TransactionHandle;
+var query_4 = query.Index;
+var query_5 = query.openDatabase;
 var query_6 = query.Database;
 
 var time = createCommonjsModule(function (module, exports) {
@@ -1210,9 +1461,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Timestamp {
 }
 exports.Timestamp = Timestamp;
+let timeshift = 0;
+function setDangerousTimetravel(dt) {
+    timeshift = dt;
+}
+exports.setDangerousTimetravel = setDangerousTimetravel;
 function getTimestampNow() {
     return {
-        t_ms: new Date().getTime(),
+        t_ms: new Date().getTime() + timeshift,
     };
 }
 exports.getTimestampNow = getTimestampNow;
@@ -1239,6 +1495,19 @@ function timestampMin(t1, t2) {
     return { t_ms: Math.min(t1.t_ms, t2.t_ms) };
 }
 exports.timestampMin = timestampMin;
+/**
+ * Truncate a timestamp so that that it represents a multiple
+ * of seconds.  The timestamp is always rounded down.
+ */
+function timestampTruncateToSecond(t1) {
+    if (t1.t_ms === "never") {
+        return { t_ms: "never" };
+    }
+    return {
+        t_ms: Math.floor(t1.t_ms / 1000) * 1000,
+    };
+}
+exports.timestampTruncateToSecond = timestampTruncateToSecond;
 function durationMin(d1, d2) {
     if (d1.d_ms === "forever") {
         return { d_ms: d2.d_ms };
@@ -1302,6 +1571,16 @@ function timestampDifference(t1, t2) {
     return { d_ms: Math.abs(t1.t_ms - t2.t_ms) };
 }
 exports.timestampDifference = timestampDifference;
+function timestampIsBetween(t, start, end) {
+    if (timestampCmp(t, start) < 0) {
+        return false;
+    }
+    if (timestampCmp(t, end) > 0) {
+        return false;
+    }
+    return true;
+}
+exports.timestampIsBetween = timestampIsBetween;
 exports.codecForTimestamp = {
     decode(x, c) {
         const t_ms = x.t_ms;
@@ -1337,17 +1616,20 @@ exports.codecForDuration = {
 
 unwrapExports(time);
 var time_1 = time.Timestamp;
-var time_2 = time.getTimestampNow;
-var time_3 = time.getDurationRemaining;
-var time_4 = time.timestampMin;
-var time_5 = time.durationMin;
-var time_6 = time.timestampCmp;
-var time_7 = time.timestampAddDuration;
-var time_8 = time.timestampSubtractDuraction;
-var time_9 = time.stringifyTimestamp;
-var time_10 = time.timestampDifference;
-var time_11 = time.codecForTimestamp;
-var time_12 = time.codecForDuration;
+var time_2 = time.setDangerousTimetravel;
+var time_3 = time.getTimestampNow;
+var time_4 = time.getDurationRemaining;
+var time_5 = time.timestampMin;
+var time_6 = time.timestampTruncateToSecond;
+var time_7 = time.durationMin;
+var time_8 = time.timestampCmp;
+var time_9 = time.timestampAddDuration;
+var time_10 = time.timestampSubtractDuraction;
+var time_11 = time.stringifyTimestamp;
+var time_12 = time.timestampDifference;
+var time_13 = time.timestampIsBetween;
+var time_14 = time.codecForTimestamp;
+var time_15 = time.codecForDuration;
 
 var dbTypes = createCommonjsModule(function (module, exports) {
 /*
@@ -1455,26 +1737,6 @@ var DenominationStatus;
     DenominationStatus[DenominationStatus["VerifiedBad"] = 2] = "VerifiedBad";
 })(DenominationStatus = exports.DenominationStatus || (exports.DenominationStatus = {}));
 /**
- * Status of a coin.
- */
-var CoinStatus;
-(function (CoinStatus) {
-    /**
-     * Withdrawn and never shown to anybody.
-     */
-    CoinStatus["Fresh"] = "fresh";
-    /**
-     * A coin that has been spent and refreshed.
-     */
-    CoinStatus["Dormant"] = "dormant";
-})(CoinStatus = exports.CoinStatus || (exports.CoinStatus = {}));
-var CoinSource;
-(function (CoinSource) {
-    CoinSource["Withdraw"] = "withdraw";
-    CoinSource["Refresh"] = "refresh";
-    CoinSource["Tip"] = "tip";
-})(CoinSource = exports.CoinSource || (exports.CoinSource = {}));
-/**
  * Record to keep track of data imported into the wallet.
  */
 class WalletImportRecord {
@@ -1484,6 +1746,7 @@ exports.WalletImportRecord = WalletImportRecord;
 /**
  * The stores and indices for the wallet database.
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 var Stores;
 (function (Stores) {
     class ExchangesStore extends query.Store {
@@ -1496,7 +1759,7 @@ var Stores;
             super("coins", { keyPath: "coinPub" });
             this.exchangeBaseUrlIndex = new query.Index(this, "exchangeBaseUrl", "exchangeBaseUrl");
             this.denomPubIndex = new query.Index(this, "denomPubIndex", "denomPub");
-            this.byWithdrawalWithIdx = new query.Index(this, "planchetsByWithdrawalWithIdxIndex", ["withdrawSessionId", "coinIndex"]);
+            this.denomPubHashIndex = new query.Index(this, "denomPubHashIndex", "denomPubHash");
         }
     }
     class ProposalsStore extends query.Store {
@@ -1554,9 +1817,9 @@ var Stores;
             super("senderWires", { keyPath: "paytoUri" });
         }
     }
-    class WithdrawalSessionsStore extends query.Store {
+    class WithdrawalGroupsStore extends query.Store {
         constructor() {
-            super("withdrawals", { keyPath: "withdrawSessionId" });
+            super("withdrawals", { keyPath: "withdrawalGroupId" });
         }
     }
     class RefundEventsStore extends query.Store {
@@ -1601,11 +1864,14 @@ var Stores;
     Stores.refreshGroups = new query.Store("refreshGroups", {
         keyPath: "refreshGroupId",
     });
+    Stores.recoupGroups = new query.Store("recoupGroups", {
+        keyPath: "recoupGroupId",
+    });
     Stores.reserves = new ReservesStore();
     Stores.purchases = new PurchasesStore();
     Stores.tips = new TipsStore();
     Stores.senderWires = new SenderWiresStore();
-    Stores.withdrawalSession = new WithdrawalSessionsStore();
+    Stores.withdrawalGroups = new WithdrawalGroupsStore();
     Stores.bankWithdrawUris = new BankWithdrawUrisStore();
     Stores.refundEvents = new RefundEventsStore();
     Stores.payEvents = new PayEventsStore();
@@ -1622,10 +1888,8 @@ var dbTypes_1 = dbTypes.ReserveRecordStatus;
 var dbTypes_2 = dbTypes.updateRetryInfoTimeout;
 var dbTypes_3 = dbTypes.initRetryInfo;
 var dbTypes_4 = dbTypes.DenominationStatus;
-var dbTypes_5 = dbTypes.CoinStatus;
-var dbTypes_6 = dbTypes.CoinSource;
-var dbTypes_7 = dbTypes.WalletImportRecord;
-var dbTypes_8 = dbTypes.Stores;
+var dbTypes_5 = dbTypes.WalletImportRecord;
+var dbTypes_6 = dbTypes.Stores;
 
 var talerTypes = createCommonjsModule(function (module, exports) {
 /*
@@ -1727,9 +1991,15 @@ exports.TipResponse = TipResponse;
  * Element of the payback list that the
  * exchange gives us in /keys.
  */
-class Payback {
+class Recoup {
 }
-exports.Payback = Payback;
+exports.Recoup = Recoup;
+/**
+ * Structure of one exchange signing key in the /keys response.
+ */
+class ExchangeSignKeyJson {
+}
+exports.ExchangeSignKeyJson = ExchangeSignKeyJson;
 /**
  * Structure that the exchange gives us in /keys.
  */
@@ -1772,7 +2042,10 @@ exports.WithdrawOperationStatusResponse = WithdrawOperationStatusResponse;
 class TipPickupGetResponse {
 }
 exports.TipPickupGetResponse = TipPickupGetResponse;
-exports.codecForDenomination = () => codec.typecheckedCodec(codec.makeCodecForObject()
+class WithdrawResponse {
+}
+exports.WithdrawResponse = WithdrawResponse;
+exports.codecForDenomination = () => codec.makeCodecForObject()
     .property("value", codec.codecForString)
     .property("denom_pub", codec.codecForString)
     .property("fee_withdraw", codec.codecForString)
@@ -1784,26 +2057,26 @@ exports.codecForDenomination = () => codec.typecheckedCodec(codec.makeCodecForOb
     .property("stamp_expire_legal", time.codecForTimestamp)
     .property("stamp_expire_deposit", time.codecForTimestamp)
     .property("master_sig", codec.codecForString)
-    .build("Denomination"));
-exports.codecForAuditorDenomSig = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("Denomination");
+exports.codecForAuditorDenomSig = () => codec.makeCodecForObject()
     .property("denom_pub_h", codec.codecForString)
     .property("auditor_sig", codec.codecForString)
-    .build("AuditorDenomSig"));
-exports.codecForAuditor = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("AuditorDenomSig");
+exports.codecForAuditor = () => codec.makeCodecForObject()
     .property("auditor_pub", codec.codecForString)
     .property("auditor_url", codec.codecForString)
     .property("denomination_keys", codec.makeCodecForList(exports.codecForAuditorDenomSig()))
-    .build("Auditor"));
-exports.codecForExchangeHandle = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("Auditor");
+exports.codecForExchangeHandle = () => codec.makeCodecForObject()
     .property("master_pub", codec.codecForString)
     .property("url", codec.codecForString)
-    .build("ExchangeHandle"));
-exports.codecForAuditorHandle = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("ExchangeHandle");
+exports.codecForAuditorHandle = () => codec.makeCodecForObject()
     .property("name", codec.codecForString)
     .property("master_pub", codec.codecForString)
     .property("url", codec.codecForString)
-    .build("AuditorHandle"));
-exports.codecForContractTerms = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("AuditorHandle");
+exports.codecForContractTerms = () => codec.makeCodecForObject()
     .property("order_id", codec.codecForString)
     .property("fulfillment_url", codec.codecForString)
     .property("merchant_base_url", codec.codecForString)
@@ -1826,66 +2099,73 @@ exports.codecForContractTerms = () => codec.typecheckedCodec(codec.makeCodecForO
     .property("exchanges", codec.makeCodecForList(exports.codecForExchangeHandle()))
     .property("products", codec.makeCodecOptional(codec.makeCodecForList(codec.codecForAny)))
     .property("extra", codec.codecForAny)
-    .build("ContractTerms"));
-exports.codecForMerchantRefundPermission = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("ContractTerms");
+exports.codecForMerchantRefundPermission = () => codec.makeCodecForObject()
     .property("refund_amount", codec.codecForString)
     .property("refund_fee", codec.codecForString)
     .property("coin_pub", codec.codecForString)
     .property("rtransaction_id", codec.codecForNumber)
     .property("merchant_sig", codec.codecForString)
-    .build("MerchantRefundPermission"));
-exports.codecForMerchantRefundResponse = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("MerchantRefundPermission");
+exports.codecForMerchantRefundResponse = () => codec.makeCodecForObject()
     .property("merchant_pub", codec.codecForString)
     .property("h_contract_terms", codec.codecForString)
     .property("refund_permissions", codec.makeCodecForList(exports.codecForMerchantRefundPermission()))
-    .build("MerchantRefundResponse"));
-exports.codecForReserveSigSingleton = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("MerchantRefundResponse");
+exports.codecForReserveSigSingleton = () => codec.makeCodecForObject()
     .property("reserve_sig", codec.codecForString)
-    .build("ReserveSigSingleton"));
-exports.codecForTipResponse = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("ReserveSigSingleton");
+exports.codecForTipResponse = () => codec.makeCodecForObject()
     .property("reserve_pub", codec.codecForString)
     .property("reserve_sigs", codec.makeCodecForList(exports.codecForReserveSigSingleton()))
-    .build("TipResponse"));
-exports.codecForPayback = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("TipResponse");
+exports.codecForRecoup = () => codec.makeCodecForObject()
     .property("h_denom_pub", codec.codecForString)
-    .build("Payback"));
-exports.codecForExchangeKeysJson = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("Recoup");
+exports.codecForExchangeSigningKey = () => codec.makeCodecForObject()
+    .property("key", codec.codecForString)
+    .property("master_sig", codec.codecForString)
+    .property("stamp_end", time.codecForTimestamp)
+    .property("stamp_start", time.codecForTimestamp)
+    .property("stamp_expire", time.codecForTimestamp)
+    .build("ExchangeSignKeyJson");
+exports.codecForExchangeKeysJson = () => codec.makeCodecForObject()
     .property("denoms", codec.makeCodecForList(exports.codecForDenomination()))
     .property("master_public_key", codec.codecForString)
     .property("auditors", codec.makeCodecForList(exports.codecForAuditor()))
     .property("list_issue_date", time.codecForTimestamp)
-    .property("payback", codec.makeCodecOptional(codec.makeCodecForList(exports.codecForPayback())))
-    .property("signkeys", codec.codecForAny)
+    .property("recoup", codec.makeCodecOptional(codec.makeCodecForList(exports.codecForRecoup())))
+    .property("signkeys", codec.makeCodecForList(exports.codecForExchangeSigningKey()))
     .property("version", codec.codecForString)
-    .build("KeysJson"));
-exports.codecForWireFeesJson = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("KeysJson");
+exports.codecForWireFeesJson = () => codec.makeCodecForObject()
     .property("wire_fee", codec.codecForString)
     .property("closing_fee", codec.codecForString)
     .property("sig", codec.codecForString)
     .property("start_date", time.codecForTimestamp)
     .property("end_date", time.codecForTimestamp)
-    .build("WireFeesJson"));
-exports.codecForAccountInfo = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("WireFeesJson");
+exports.codecForAccountInfo = () => codec.makeCodecForObject()
     .property("payto_uri", codec.codecForString)
     .property("master_sig", codec.codecForString)
-    .build("AccountInfo"));
-exports.codecForExchangeWireJson = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("AccountInfo");
+exports.codecForExchangeWireJson = () => codec.makeCodecForObject()
     .property("accounts", codec.makeCodecForList(exports.codecForAccountInfo()))
     .property("fees", codec.makeCodecForMap(codec.makeCodecForList(exports.codecForWireFeesJson())))
-    .build("ExchangeWireJson"));
-exports.codecForProposal = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("ExchangeWireJson");
+exports.codecForProposal = () => codec.makeCodecForObject()
     .property("contract_terms", codec.codecForAny)
     .property("sig", codec.codecForString)
-    .build("Proposal"));
-exports.codecForCheckPaymentResponse = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("Proposal");
+exports.codecForCheckPaymentResponse = () => codec.makeCodecForObject()
     .property("paid", codec.codecForBoolean)
     .property("refunded", codec.makeCodecOptional(codec.codecForBoolean))
     .property("refunded_amount", codec.makeCodecOptional(codec.codecForString))
     .property("contract_terms", codec.makeCodecOptional(codec.codecForAny))
     .property("taler_pay_uri", codec.makeCodecOptional(codec.codecForString))
     .property("contract_url", codec.makeCodecOptional(codec.codecForString))
-    .build("CheckPaymentResponse"));
-exports.codecForWithdrawOperationStatusResponse = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("CheckPaymentResponse");
+exports.codecForWithdrawOperationStatusResponse = () => codec.makeCodecForObject()
     .property("selection_done", codec.codecForBoolean)
     .property("transfer_done", codec.codecForBoolean)
     .property("amount", codec.codecForString)
@@ -1893,22 +2173,22 @@ exports.codecForWithdrawOperationStatusResponse = () => codec.typecheckedCodec(c
     .property("suggested_exchange", codec.makeCodecOptional(codec.codecForString))
     .property("confirm_transfer_url", codec.makeCodecOptional(codec.codecForString))
     .property("wire_types", codec.makeCodecForList(codec.codecForString))
-    .build("WithdrawOperationStatusResponse"));
-exports.codecForTipPickupGetResponse = () => codec.typecheckedCodec(codec.makeCodecForObject()
+    .build("WithdrawOperationStatusResponse");
+exports.codecForTipPickupGetResponse = () => codec.makeCodecForObject()
     .property("extra", codec.codecForAny)
     .property("amount", codec.codecForString)
     .property("amount_left", codec.codecForString)
     .property("exchange_url", codec.codecForString)
     .property("stamp_expire", time.codecForTimestamp)
     .property("stamp_created", time.codecForTimestamp)
-    .build("TipPickupGetResponse"));
-exports.codecForRecoupConfirmation = () => codec.typecheckedCodec(codec.makeCodecForObject()
-    .property("reserve_pub", codec.codecForString)
-    .property("amount", codec.codecForString)
-    .property("timestamp", time.codecForTimestamp)
-    .property("exchange_sig", codec.codecForString)
-    .property("exchange_pub", codec.codecForString)
-    .build("RecoupConfirmation"));
+    .build("TipPickupGetResponse");
+exports.codecForRecoupConfirmation = () => codec.makeCodecForObject()
+    .property("reserve_pub", codec.makeCodecOptional(codec.codecForString))
+    .property("old_coin_pub", codec.makeCodecOptional(codec.codecForString))
+    .build("RecoupConfirmation");
+exports.codecForWithdrawResponse = () => codec.makeCodecForObject()
+    .property("ev_sig", codec.codecForString)
+    .build("WithdrawResponse");
 
 });
 
@@ -1924,35 +2204,39 @@ var talerTypes_8 = talerTypes.MerchantRefundPermission;
 var talerTypes_9 = talerTypes.MerchantRefundResponse;
 var talerTypes_10 = talerTypes.ReserveSigSingleton;
 var talerTypes_11 = talerTypes.TipResponse;
-var talerTypes_12 = talerTypes.Payback;
-var talerTypes_13 = talerTypes.ExchangeKeysJson;
-var talerTypes_14 = talerTypes.WireFeesJson;
-var talerTypes_15 = talerTypes.AccountInfo;
-var talerTypes_16 = talerTypes.ExchangeWireJson;
-var talerTypes_17 = talerTypes.Proposal;
-var talerTypes_18 = talerTypes.CheckPaymentResponse;
-var talerTypes_19 = talerTypes.WithdrawOperationStatusResponse;
-var talerTypes_20 = talerTypes.TipPickupGetResponse;
-var talerTypes_21 = talerTypes.codecForDenomination;
-var talerTypes_22 = talerTypes.codecForAuditorDenomSig;
-var talerTypes_23 = talerTypes.codecForAuditor;
-var talerTypes_24 = talerTypes.codecForExchangeHandle;
-var talerTypes_25 = talerTypes.codecForAuditorHandle;
-var talerTypes_26 = talerTypes.codecForContractTerms;
-var talerTypes_27 = talerTypes.codecForMerchantRefundPermission;
-var talerTypes_28 = talerTypes.codecForMerchantRefundResponse;
-var talerTypes_29 = talerTypes.codecForReserveSigSingleton;
-var talerTypes_30 = talerTypes.codecForTipResponse;
-var talerTypes_31 = talerTypes.codecForPayback;
-var talerTypes_32 = talerTypes.codecForExchangeKeysJson;
-var talerTypes_33 = talerTypes.codecForWireFeesJson;
-var talerTypes_34 = talerTypes.codecForAccountInfo;
-var talerTypes_35 = talerTypes.codecForExchangeWireJson;
-var talerTypes_36 = talerTypes.codecForProposal;
-var talerTypes_37 = talerTypes.codecForCheckPaymentResponse;
-var talerTypes_38 = talerTypes.codecForWithdrawOperationStatusResponse;
-var talerTypes_39 = talerTypes.codecForTipPickupGetResponse;
-var talerTypes_40 = talerTypes.codecForRecoupConfirmation;
+var talerTypes_12 = talerTypes.Recoup;
+var talerTypes_13 = talerTypes.ExchangeSignKeyJson;
+var talerTypes_14 = talerTypes.ExchangeKeysJson;
+var talerTypes_15 = talerTypes.WireFeesJson;
+var talerTypes_16 = talerTypes.AccountInfo;
+var talerTypes_17 = talerTypes.ExchangeWireJson;
+var talerTypes_18 = talerTypes.Proposal;
+var talerTypes_19 = talerTypes.CheckPaymentResponse;
+var talerTypes_20 = talerTypes.WithdrawOperationStatusResponse;
+var talerTypes_21 = talerTypes.TipPickupGetResponse;
+var talerTypes_22 = talerTypes.WithdrawResponse;
+var talerTypes_23 = talerTypes.codecForDenomination;
+var talerTypes_24 = talerTypes.codecForAuditorDenomSig;
+var talerTypes_25 = talerTypes.codecForAuditor;
+var talerTypes_26 = talerTypes.codecForExchangeHandle;
+var talerTypes_27 = talerTypes.codecForAuditorHandle;
+var talerTypes_28 = talerTypes.codecForContractTerms;
+var talerTypes_29 = talerTypes.codecForMerchantRefundPermission;
+var talerTypes_30 = talerTypes.codecForMerchantRefundResponse;
+var talerTypes_31 = talerTypes.codecForReserveSigSingleton;
+var talerTypes_32 = talerTypes.codecForTipResponse;
+var talerTypes_33 = talerTypes.codecForRecoup;
+var talerTypes_34 = talerTypes.codecForExchangeSigningKey;
+var talerTypes_35 = talerTypes.codecForExchangeKeysJson;
+var talerTypes_36 = talerTypes.codecForWireFeesJson;
+var talerTypes_37 = talerTypes.codecForAccountInfo;
+var talerTypes_38 = talerTypes.codecForExchangeWireJson;
+var talerTypes_39 = talerTypes.codecForProposal;
+var talerTypes_40 = talerTypes.codecForCheckPaymentResponse;
+var talerTypes_41 = talerTypes.codecForWithdrawOperationStatusResponse;
+var talerTypes_42 = talerTypes.codecForTipPickupGetResponse;
+var talerTypes_43 = talerTypes.codecForRecoupConfirmation;
+var talerTypes_44 = talerTypes.codecForWithdrawResponse;
 
 var taleruri = createCommonjsModule(function (module, exports) {
 /*
@@ -2149,6 +2433,49 @@ var taleruri_4 = taleruri.parsePayUri;
 var taleruri_5 = taleruri.parseTipUri;
 var taleruri_6 = taleruri.parseRefundUri;
 
+var compat = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of TALER
+ (C) 2017 INRIA
+
+ TALER is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ TALER is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ TALER; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Compatibility helpers needed for browsers that don't implement
+ * WebExtension APIs consistently.
+ */
+function isFirefox() {
+    const rt = chrome.runtime;
+    if (typeof rt.getBrowserInfo === "function") {
+        return true;
+    }
+    return false;
+}
+exports.isFirefox = isFirefox;
+/**
+ * Check if we are running under nodejs.
+ */
+function isNode() {
+    return typeof process !== "undefined" && process.release.name === "node";
+}
+exports.isNode = isNode;
+
+});
+
+unwrapExports(compat);
+var compat_1 = compat.isFirefox;
+var compat_2 = compat.isNode;
+
 var logging = createCommonjsModule(function (module, exports) {
 /*
  This file is part of TALER
@@ -2166,15 +2493,58 @@ var logging = createCommonjsModule(function (module, exports) {
  TALER; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Imports.
+ */
+
+function writeNodeLog(message, tag, level, args) {
+    process.stderr.write(`${new Date().toISOString()} ${tag} ${level} `);
+    process.stderr.write(message);
+    if (args.length != 0) {
+        process.stderr.write(" ");
+        process.stderr.write(JSON.stringify(args, undefined, 2));
+    }
+    process.stderr.write("\n");
+}
+/**
+ * Logger that writes to stderr when running under node,
+ * and uses the corresponding console.* method to log in the browser.
+ */
 class Logger {
     constructor(tag) {
         this.tag = tag;
     }
     info(message, ...args) {
-        console.log(`${new Date().toISOString()} ${this.tag} INFO ` + message, ...args);
+        if (compat.isNode()) {
+            writeNodeLog(message, this.tag, "INFO", args);
+        }
+        else {
+            console.info(`${new Date().toISOString()} ${this.tag} INFO ` + message, ...args);
+        }
+    }
+    warn(message, ...args) {
+        if (compat.isNode()) {
+            writeNodeLog(message, this.tag, "WARN", args);
+        }
+        else {
+            console.warn(`${new Date().toISOString()} ${this.tag} INFO ` + message, ...args);
+        }
+    }
+    error(message, ...args) {
+        if (compat.isNode()) {
+            writeNodeLog(message, this.tag, "ERROR", args);
+        }
+        else {
+            console.info(`${new Date().toISOString()} ${this.tag} ERROR ` + message, ...args);
+        }
     }
     trace(message, ...args) {
-        console.log(`${new Date().toISOString()} ${this.tag} TRACE ` + message, ...args);
+        if (compat.isNode()) {
+            writeNodeLog(message, this.tag, "TRACE", args);
+        }
+        else {
+            console.info(`${new Date().toISOString()} ${this.tag} TRACE ` + message, ...args);
+        }
     }
 }
 exports.Logger = Logger;
@@ -2200,15 +2570,9 @@ var helpers = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  TALER; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Amounts = __importStar(amounts);
+
+const Amounts = tslib_1.__importStar(amounts);
 /**
  * Show an amount in a form suitable for the user.
  * FIXME:  In the future, this should consider currency-specific
@@ -2279,10 +2643,15 @@ function deepEquals(x, y) {
         return false;
     }
     const p = Object.keys(x);
-    return Object.keys(y).every((i) => p.indexOf(i) !== -1) &&
-        p.every((i) => deepEquals(x[i], y[i]));
+    return (Object.keys(y).every((i) => p.indexOf(i) !== -1) &&
+        p.every((i) => deepEquals(x[i], y[i])));
 }
 exports.deepEquals = deepEquals;
+function deepCopy(x) {
+    // FIXME: this has many issues ...
+    return JSON.parse(JSON.stringify(x));
+}
+exports.deepCopy = deepCopy;
 /**
  * Map from a collection to a list or results and then
  * concatenate the results.
@@ -2303,8 +2672,8 @@ function hash(val) {
         h = (h * 33) ^ str.charCodeAt(--i);
     }
     /* JavaScript does bitwise operations (like XOR, above) on 32-bit signed
-    * integers. Since we want the results to be always positive, convert the
-    * signed int to an unsigned by doing an unsigned bitshift. */
+     * integers. Since we want the results to be always positive, convert the
+     * signed int to an unsigned by doing an unsigned bitshift. */
     return h >>> 0;
 }
 exports.hash = hash;
@@ -2321,16 +2690,6 @@ function strcmp(s1, s2) {
     return 0;
 }
 exports.strcmp = strcmp;
-/**
- * Run a function and return its result.
- *
- * Used as a nicer-looking way to do immediately invoked function
- * expressions (IFFEs).
- */
-function runBlock(f) {
-    return f();
-}
-exports.runBlock = runBlock;
 
 });
 
@@ -2339,10 +2698,10 @@ var helpers_1 = helpers.amountToPretty;
 var helpers_2 = helpers.canonicalizeBaseUrl;
 var helpers_3 = helpers.canonicalJson;
 var helpers_4 = helpers.deepEquals;
-var helpers_5 = helpers.flatMap;
-var helpers_6 = helpers.hash;
-var helpers_7 = helpers.strcmp;
-var helpers_8 = helpers.runBlock;
+var helpers_5 = helpers.deepCopy;
+var helpers_6 = helpers.flatMap;
+var helpers_7 = helpers.hash;
+var helpers_8 = helpers.strcmp;
 
 var payto = createCommonjsModule(function (module, exports) {
 /*
@@ -2392,19 +2751,9 @@ unwrapExports(payto);
 var payto_1 = payto.parsePaytoUri;
 
 var errors = createCommonjsModule(function (module, exports) {
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 /*
  This file is part of GNU Taler
- (C) 2019 GNUnet e.V.
+ (C) 2019-2020 Taler Systems SA
 
  GNU Taler is free software; you can redistribute it and/or modify it under the
  terms of the GNU General Public License as published by the Free Software
@@ -2417,13 +2766,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
+Object.defineProperty(exports, "__esModule", { value: true });
+
 /**
  * This exception is there to let the caller know that an error happened,
  * but the error has already been reported by writing it to the database.
  */
 class OperationFailedAndReportedError extends Error {
-    constructor(message) {
-        super(message);
+    constructor(operationError) {
+        super(operationError.message);
+        this.operationError = operationError;
         // Set the prototype explicitly.
         Object.setPrototypeOf(this, OperationFailedAndReportedError.prototype);
     }
@@ -2434,21 +2786,78 @@ exports.OperationFailedAndReportedError = OperationFailedAndReportedError;
  * responsible for recording the failure in the database.
  */
 class OperationFailedError extends Error {
-    constructor(message, err) {
-        super(message);
-        this.err = err;
+    constructor(operationError) {
+        super(operationError.message);
+        this.operationError = operationError;
         // Set the prototype explicitly.
         Object.setPrototypeOf(this, OperationFailedError.prototype);
     }
 }
 exports.OperationFailedError = OperationFailedError;
 /**
+ * Process an HTTP response that we expect to contain Taler-specific JSON.
+ *
+ * Depending on the status code, we throw an exception.  This function
+ * will try to extract Taler-specific error information from the HTTP response
+ * if possible.
+ */
+function scrutinizeTalerJsonResponse(resp, codec) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        // FIXME: We should distinguish between different types of error status
+        // to react differently (throttle, report permanent failure)
+        // FIXME: Make sure that when we receive an error message,
+        // it looks like a Taler error message
+        if (resp.status !== 200) {
+            let exc = undefined;
+            try {
+                const errorJson = yield resp.json();
+                const m = `received error response (status ${resp.status})`;
+                exc = new OperationFailedError({
+                    type: "protocol",
+                    message: m,
+                    details: {
+                        httpStatusCode: resp.status,
+                        errorResponse: errorJson,
+                    },
+                });
+            }
+            catch (e) {
+                const m = "could not parse response JSON";
+                exc = new OperationFailedError({
+                    type: "network",
+                    message: m,
+                    details: {
+                        status: resp.status,
+                    },
+                });
+            }
+            throw exc;
+        }
+        let json;
+        try {
+            json = yield resp.json();
+        }
+        catch (e) {
+            const m = "could not parse response JSON";
+            throw new OperationFailedError({
+                type: "network",
+                message: m,
+                details: {
+                    status: resp.status,
+                },
+            });
+        }
+        return codec.decode(json);
+    });
+}
+exports.scrutinizeTalerJsonResponse = scrutinizeTalerJsonResponse;
+/**
  * Run an operation and call the onOpError callback
  * when there was an exception or operation error that must be reported.
  * The cause will be re-thrown to the caller.
  */
 function guardOperationException(op, onOpError) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         try {
             return yield op();
         }
@@ -2458,27 +2867,29 @@ function guardOperationException(op, onOpError) {
                 throw e;
             }
             if (e instanceof OperationFailedError) {
-                yield onOpError(e.err);
-                throw new OperationFailedAndReportedError(e.message);
+                yield onOpError(e.operationError);
+                throw new OperationFailedAndReportedError(e.operationError);
             }
             if (e instanceof Error) {
                 console.log("guard: caught Error");
-                yield onOpError({
+                const opErr = {
                     type: "exception",
                     message: e.message,
                     details: {},
-                });
-                throw new OperationFailedAndReportedError(e.message);
+                };
+                yield onOpError(opErr);
+                throw new OperationFailedAndReportedError(opErr);
             }
             console.log("guard: caught something else");
-            yield onOpError({
+            const opErr = {
                 type: "exception",
                 message: "non-error exception thrown",
                 details: {
                     value: e.toString(),
                 },
-            });
-            throw new OperationFailedAndReportedError(e.message);
+            };
+            yield onOpError(opErr);
+            throw new OperationFailedAndReportedError(opErr);
         }
     });
 }
@@ -2489,7 +2900,8 @@ exports.guardOperationException = guardOperationException;
 unwrapExports(errors);
 var errors_1 = errors.OperationFailedAndReportedError;
 var errors_2 = errors.OperationFailedError;
-var errors_3 = errors.guardOperationException;
+var errors_3 = errors.scrutinizeTalerJsonResponse;
+var errors_4 = errors.guardOperationException;
 
 var versions = createCommonjsModule(function (module, exports) {
 /*
@@ -2514,7 +2926,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  *
  * Uses libtool's current:revision:age versioning.
  */
-exports.WALLET_EXCHANGE_PROTOCOL_VERSION = "6";
+exports.WALLET_EXCHANGE_PROTOCOL_VERSION = "7:0:0";
 /**
  * Cache breaker that is appended to queries such as /keys and /wire
  * to break through caching, if it has been accidentally/badly configured
@@ -2529,470 +2941,6 @@ exports.WALLET_CACHE_BREAKER_CLIENT_VERSION = "3";
 unwrapExports(versions);
 var versions_1 = versions.WALLET_EXCHANGE_PROTOCOL_VERSION;
 var versions_2 = versions.WALLET_CACHE_BREAKER_CLIENT_VERSION;
-
-var exchanges = createCommonjsModule(function (module, exports) {
-/*
- This file is part of GNU Taler
- (C) 2019 GNUnet e.V.
-
- GNU Taler is free software; you can redistribute it and/or modify it under the
- terms of the GNU General Public License as published by the Free Software
- Foundation; either version 3, or (at your option) any later version.
-
- GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along with
- GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
- */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-const Amounts = __importStar(amounts);
-
-
-
-
-function denominationRecordFromKeys(ws, exchangeBaseUrl, denomIn) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const denomPubHash = yield ws.cryptoApi.hashDenomPub(denomIn.denom_pub);
-        const d = {
-            denomPub: denomIn.denom_pub,
-            denomPubHash,
-            exchangeBaseUrl,
-            feeDeposit: Amounts.parseOrThrow(denomIn.fee_deposit),
-            feeRefresh: Amounts.parseOrThrow(denomIn.fee_refresh),
-            feeRefund: Amounts.parseOrThrow(denomIn.fee_refund),
-            feeWithdraw: Amounts.parseOrThrow(denomIn.fee_withdraw),
-            isOffered: true,
-            masterSig: denomIn.master_sig,
-            stampExpireDeposit: denomIn.stamp_expire_deposit,
-            stampExpireLegal: denomIn.stamp_expire_legal,
-            stampExpireWithdraw: denomIn.stamp_expire_withdraw,
-            stampStart: denomIn.stamp_start,
-            status: dbTypes.DenominationStatus.Unverified,
-            value: Amounts.parseOrThrow(denomIn.value),
-        };
-        return d;
-    });
-}
-function setExchangeError(ws, baseUrl, err) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const mut = (exchange) => {
-            exchange.lastError = err;
-            return exchange;
-        };
-        yield ws.db.mutate(dbTypes.Stores.exchanges, baseUrl, mut);
-    });
-}
-/**
- * Fetch the exchange's /keys and update our database accordingly.
- *
- * Exceptions thrown in this method must be caught and reported
- * in the pending operations.
- */
-function updateExchangeWithKeys(ws, baseUrl) {
-    var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        const existingExchangeRecord = yield ws.db.get(dbTypes.Stores.exchanges, baseUrl);
-        if (((_a = existingExchangeRecord) === null || _a === void 0 ? void 0 : _a.updateStatus) != "fetch-keys" /* FetchKeys */) {
-            return;
-        }
-        const keysUrl = new URL("keys", baseUrl);
-        keysUrl.searchParams.set("cacheBreaker", versions.WALLET_CACHE_BREAKER_CLIENT_VERSION);
-        let keysResp;
-        try {
-            const r = yield ws.http.get(keysUrl.href);
-            if (r.status !== 200) {
-                throw Error(`unexpected status for keys: ${r.status}`);
-            }
-            keysResp = yield r.json();
-        }
-        catch (e) {
-            const m = `Fetching keys failed: ${e.message}`;
-            yield setExchangeError(ws, baseUrl, {
-                type: "network",
-                details: {
-                    requestUrl: (_b = e.config) === null || _b === void 0 ? void 0 : _b.url,
-                },
-                message: m,
-            });
-            throw new errors.OperationFailedAndReportedError(m);
-        }
-        let exchangeKeysJson;
-        try {
-            exchangeKeysJson = talerTypes.codecForExchangeKeysJson().decode(keysResp);
-        }
-        catch (e) {
-            const m = `Parsing /keys response failed: ${e.message}`;
-            yield setExchangeError(ws, baseUrl, {
-                type: "protocol-violation",
-                details: {},
-                message: m,
-            });
-            throw new errors.OperationFailedAndReportedError(m);
-        }
-        const lastUpdateTimestamp = exchangeKeysJson.list_issue_date;
-        if (!lastUpdateTimestamp) {
-            const m = `Parsing /keys response failed: invalid list_issue_date.`;
-            yield setExchangeError(ws, baseUrl, {
-                type: "protocol-violation",
-                details: {},
-                message: m,
-            });
-            throw new errors.OperationFailedAndReportedError(m);
-        }
-        if (exchangeKeysJson.denoms.length === 0) {
-            const m = "exchange doesn't offer any denominations";
-            yield setExchangeError(ws, baseUrl, {
-                type: "protocol-violation",
-                details: {},
-                message: m,
-            });
-            throw new errors.OperationFailedAndReportedError(m);
-        }
-        const protocolVersion = exchangeKeysJson.version;
-        if (!protocolVersion) {
-            const m = "outdate exchange, no version in /keys response";
-            yield setExchangeError(ws, baseUrl, {
-                type: "protocol-violation",
-                details: {},
-                message: m,
-            });
-            throw new errors.OperationFailedAndReportedError(m);
-        }
-        const currency = Amounts.parseOrThrow(exchangeKeysJson.denoms[0].value)
-            .currency;
-        const newDenominations = yield Promise.all(exchangeKeysJson.denoms.map(d => denominationRecordFromKeys(ws, baseUrl, d)));
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges, dbTypes.Stores.denominations], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const r = yield tx.get(dbTypes.Stores.exchanges, baseUrl);
-            if (!r) {
-                console.warn(`exchange ${baseUrl} no longer present`);
-                return;
-            }
-            if (r.details) ;
-            r.details = {
-                auditors: exchangeKeysJson.auditors,
-                currency: currency,
-                lastUpdateTime: lastUpdateTimestamp,
-                masterPublicKey: exchangeKeysJson.master_public_key,
-                protocolVersion: protocolVersion,
-            };
-            r.updateStatus = "fetch-wire" /* FetchWire */;
-            r.lastError = undefined;
-            yield tx.put(dbTypes.Stores.exchanges, r);
-            for (const newDenom of newDenominations) {
-                const oldDenom = yield tx.get(dbTypes.Stores.denominations, [
-                    baseUrl,
-                    newDenom.denomPub,
-                ]);
-                if (oldDenom) ;
-                else {
-                    yield tx.put(dbTypes.Stores.denominations, newDenom);
-                }
-            }
-        }));
-    });
-}
-function updateExchangeFinalize(ws, exchangeBaseUrl) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
-        if (!exchange) {
-            return;
-        }
-        if (exchange.updateStatus != "finalize-update" /* FinalizeUpdate */) {
-            return;
-        }
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges, dbTypes.Stores.exchangeUpdatedEvents], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const r = yield tx.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
-            if (!r) {
-                return;
-            }
-            if (r.updateStatus != "finalize-update" /* FinalizeUpdate */) {
-                return;
-            }
-            r.updateStatus = "finished" /* Finished */;
-            yield tx.put(dbTypes.Stores.exchanges, r);
-            const updateEvent = {
-                exchangeBaseUrl: exchange.baseUrl,
-                timestamp: time.getTimestampNow(),
-            };
-            yield tx.put(dbTypes.Stores.exchangeUpdatedEvents, updateEvent);
-        }));
-    });
-}
-function updateExchangeWithTermsOfService(ws, exchangeBaseUrl) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
-        if (!exchange) {
-            return;
-        }
-        if (exchange.updateStatus != "fetch-terms" /* FetchTerms */) {
-            return;
-        }
-        const reqUrl = new URL("terms", exchangeBaseUrl);
-        reqUrl.searchParams.set("cacheBreaker", versions.WALLET_CACHE_BREAKER_CLIENT_VERSION);
-        const headers = {
-            Accept: "text/plain",
-        };
-        const resp = yield ws.http.get(reqUrl.href, { headers });
-        if (resp.status !== 200) {
-            throw Error(`/terms response has unexpected status code (${resp.status})`);
-        }
-        const tosText = yield resp.text();
-        const tosEtag = resp.headers.get("etag") || undefined;
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const r = yield tx.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
-            if (!r) {
-                return;
-            }
-            if (r.updateStatus != "fetch-terms" /* FetchTerms */) {
-                return;
-            }
-            r.termsOfServiceText = tosText;
-            r.termsOfServiceLastEtag = tosEtag;
-            r.updateStatus = "finalize-update" /* FinalizeUpdate */;
-            yield tx.put(dbTypes.Stores.exchanges, r);
-        }));
-    });
-}
-function acceptExchangeTermsOfService(ws, exchangeBaseUrl, etag) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const r = yield tx.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
-            if (!r) {
-                return;
-            }
-            r.termsOfServiceAcceptedEtag = etag;
-            r.termsOfServiceAcceptedTimestamp = time.getTimestampNow();
-            yield tx.put(dbTypes.Stores.exchanges, r);
-        }));
-    });
-}
-exports.acceptExchangeTermsOfService = acceptExchangeTermsOfService;
-/**
- * Fetch wire information for an exchange and store it in the database.
- *
- * @param exchangeBaseUrl Exchange base URL, assumed to be already normalized.
- */
-function updateExchangeWithWireInfo(ws, exchangeBaseUrl) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
-        if (!exchange) {
-            return;
-        }
-        if (exchange.updateStatus != "fetch-wire" /* FetchWire */) {
-            return;
-        }
-        const details = exchange.details;
-        if (!details) {
-            throw Error("invalid exchange state");
-        }
-        const reqUrl = new URL("wire", exchangeBaseUrl);
-        reqUrl.searchParams.set("cacheBreaker", versions.WALLET_CACHE_BREAKER_CLIENT_VERSION);
-        const resp = yield ws.http.get(reqUrl.href);
-        if (resp.status !== 200) {
-            throw Error(`/wire response has unexpected status code (${resp.status})`);
-        }
-        const wiJson = yield resp.json();
-        if (!wiJson) {
-            throw Error("/wire response malformed");
-        }
-        const wireInfo = talerTypes.codecForExchangeWireJson().decode(wiJson);
-        for (const a of wireInfo.accounts) {
-            console.log("validating exchange acct");
-            const isValid = yield ws.cryptoApi.isValidWireAccount(a.payto_uri, a.master_sig, details.masterPublicKey);
-            if (!isValid) {
-                throw Error("exchange acct signature invalid");
-            }
-        }
-        const feesForType = {};
-        for (const wireMethod of Object.keys(wireInfo.fees)) {
-            const feeList = [];
-            for (const x of wireInfo.fees[wireMethod]) {
-                const startStamp = x.start_date;
-                const endStamp = x.end_date;
-                const fee = {
-                    closingFee: Amounts.parseOrThrow(x.closing_fee),
-                    endStamp,
-                    sig: x.sig,
-                    startStamp,
-                    wireFee: Amounts.parseOrThrow(x.wire_fee),
-                };
-                const isValid = yield ws.cryptoApi.isValidWireFee(wireMethod, fee, details.masterPublicKey);
-                if (!isValid) {
-                    throw Error("exchange wire fee signature invalid");
-                }
-                feeList.push(fee);
-            }
-            feesForType[wireMethod] = feeList;
-        }
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const r = yield tx.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
-            if (!r) {
-                return;
-            }
-            if (r.updateStatus != "fetch-wire" /* FetchWire */) {
-                return;
-            }
-            r.wireInfo = {
-                accounts: wireInfo.accounts,
-                feesForType: feesForType,
-            };
-            r.updateStatus = "fetch-terms" /* FetchTerms */;
-            r.lastError = undefined;
-            yield tx.put(dbTypes.Stores.exchanges, r);
-        }));
-    });
-}
-function updateExchangeFromUrl(ws, baseUrl, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const onOpErr = (e) => setExchangeError(ws, baseUrl, e);
-        return yield errors.guardOperationException(() => updateExchangeFromUrlImpl(ws, baseUrl, forceNow), onOpErr);
-    });
-}
-exports.updateExchangeFromUrl = updateExchangeFromUrl;
-/**
- * Update or add exchange DB entry by fetching the /keys and /wire information.
- * Optionally link the reserve entry to the new or existing
- * exchange entry in then DB.
- */
-function updateExchangeFromUrlImpl(ws, baseUrl, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const now = time.getTimestampNow();
-        baseUrl = helpers.canonicalizeBaseUrl(baseUrl);
-        const r = yield ws.db.get(dbTypes.Stores.exchanges, baseUrl);
-        if (!r) {
-            const newExchangeRecord = {
-                builtIn: false,
-                baseUrl: baseUrl,
-                details: undefined,
-                wireInfo: undefined,
-                updateStatus: "fetch-keys" /* FetchKeys */,
-                updateStarted: now,
-                updateReason: "initial" /* Initial */,
-                timestampAdded: time.getTimestampNow(),
-                termsOfServiceAcceptedEtag: undefined,
-                termsOfServiceAcceptedTimestamp: undefined,
-                termsOfServiceLastEtag: undefined,
-                termsOfServiceText: undefined,
-                updateDiff: undefined,
-            };
-            yield ws.db.put(dbTypes.Stores.exchanges, newExchangeRecord);
-        }
-        else {
-            yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges], (t) => __awaiter(this, void 0, void 0, function* () {
-                const rec = yield t.get(dbTypes.Stores.exchanges, baseUrl);
-                if (!rec) {
-                    return;
-                }
-                if (rec.updateStatus != "fetch-keys" /* FetchKeys */ && !forceNow) {
-                    return;
-                }
-                if (rec.updateStatus != "fetch-keys" /* FetchKeys */ && forceNow) {
-                    rec.updateReason = "forced" /* Forced */;
-                }
-                rec.updateStarted = now;
-                rec.updateStatus = "fetch-keys" /* FetchKeys */;
-                rec.lastError = undefined;
-                t.put(dbTypes.Stores.exchanges, rec);
-            }));
-        }
-        yield updateExchangeWithKeys(ws, baseUrl);
-        yield updateExchangeWithWireInfo(ws, baseUrl);
-        yield updateExchangeWithTermsOfService(ws, baseUrl);
-        yield updateExchangeFinalize(ws, baseUrl);
-        const updatedExchange = yield ws.db.get(dbTypes.Stores.exchanges, baseUrl);
-        if (!updatedExchange) {
-            // This should practically never happen
-            throw Error("exchange not found");
-        }
-        return updatedExchange;
-    });
-}
-/**
- * Check if and how an exchange is trusted and/or audited.
- */
-function getExchangeTrust(ws, exchangeInfo) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let isTrusted = false;
-        let isAudited = false;
-        const exchangeDetails = exchangeInfo.details;
-        if (!exchangeDetails) {
-            throw Error(`exchange ${exchangeInfo.baseUrl} details not available`);
-        }
-        const currencyRecord = yield ws.db.get(dbTypes.Stores.currencies, exchangeDetails.currency);
-        if (currencyRecord) {
-            for (const trustedExchange of currencyRecord.exchanges) {
-                if (trustedExchange.exchangePub === exchangeDetails.masterPublicKey) {
-                    isTrusted = true;
-                    break;
-                }
-            }
-            for (const trustedAuditor of currencyRecord.auditors) {
-                for (const exchangeAuditor of exchangeDetails.auditors) {
-                    if (trustedAuditor.auditorPub === exchangeAuditor.auditor_pub) {
-                        isAudited = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return { isTrusted, isAudited };
-    });
-}
-exports.getExchangeTrust = getExchangeTrust;
-function getExchangePaytoUri(ws, exchangeBaseUrl, supportedTargetTypes) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // We do the update here, since the exchange might not even exist
-        // yet in our database.
-        const exchangeRecord = yield updateExchangeFromUrl(ws, exchangeBaseUrl);
-        if (!exchangeRecord) {
-            throw Error(`Exchange '${exchangeBaseUrl}' not found.`);
-        }
-        const exchangeWireInfo = exchangeRecord.wireInfo;
-        if (!exchangeWireInfo) {
-            throw Error(`Exchange wire info for '${exchangeBaseUrl}' not found.`);
-        }
-        for (let account of exchangeWireInfo.accounts) {
-            const res = payto.parsePaytoUri(account.payto_uri);
-            if (!res) {
-                continue;
-            }
-            if (supportedTargetTypes.includes(res.targetType)) {
-                return account.payto_uri;
-            }
-        }
-        throw Error("no matching exchange account found");
-    });
-}
-exports.getExchangePaytoUri = getExchangePaytoUri;
-
-});
-
-unwrapExports(exchanges);
-var exchanges_1 = exchanges.acceptExchangeTermsOfService;
-var exchanges_2 = exchanges.updateExchangeFromUrl;
-var exchanges_3 = exchanges.getExchangeTrust;
-var exchanges_4 = exchanges.getExchangePaytoUri;
 
 var libtoolVersion = createCommonjsModule(function (module, exports) {
 /*
@@ -3020,8 +2968,8 @@ function compare(me, other) {
     if (!(meVer && otherVer)) {
         return undefined;
     }
-    const compatible = (meVer.current - meVer.age <= otherVer.current &&
-        meVer.current >= (otherVer.current - otherVer.age));
+    const compatible = meVer.current - meVer.age <= otherVer.current &&
+        meVer.current >= otherVer.current - otherVer.age;
     const currentCmp = Math.sign(meVer.current - otherVer.current);
     return { compatible, currentCmp };
 }
@@ -3051,7 +2999,7 @@ function parseVersion(v) {
 unwrapExports(libtoolVersion);
 var libtoolVersion_1 = libtoolVersion.compare;
 
-var withdraw = createCommonjsModule(function (module, exports) {
+var assertUnreachable_1 = createCommonjsModule(function (module, exports) {
 /*
  This file is part of GNU Taler
  (C) 2019 GNUnet e.V.
@@ -3067,514 +3015,16 @@ var withdraw = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-
-const Amounts = __importStar(amounts);
-
-
-
-
-
-const LibtoolVersion = __importStar(libtoolVersion);
-
-
-const logger = new logging.Logger("withdraw.ts");
-function isWithdrawableDenom(d) {
-    const now = time.getTimestampNow();
-    const started = time.timestampCmp(now, d.stampStart) >= 0;
-    const lastPossibleWithdraw = time.timestampSubtractDuraction(d.stampExpireWithdraw, { d_ms: 50 * 1000 });
-    const remaining = time.getDurationRemaining(lastPossibleWithdraw, now);
-    const stillOkay = remaining.d_ms !== 0;
-    return started && stillOkay;
+function assertUnreachable(x) {
+    throw new Error("Didn't expect to get here");
 }
-/**
- * Get a list of denominations (with repetitions possible)
- * whose total value is as close as possible to the available
- * amount, but never larger.
- */
-function getWithdrawDenomList(amountAvailable, denoms) {
-    let remaining = Amounts.copy(amountAvailable);
-    const ds = [];
-    denoms = denoms.filter(isWithdrawableDenom);
-    denoms.sort((d1, d2) => Amounts.cmp(d2.value, d1.value));
-    // This is an arbitrary number of coins
-    // we can withdraw in one go.  It's not clear if this limit
-    // is useful ...
-    for (let i = 0; i < 1000; i++) {
-        let found = false;
-        for (const d of denoms) {
-            const cost = Amounts.add(d.value, d.feeWithdraw).amount;
-            if (Amounts.cmp(remaining, cost) < 0) {
-                continue;
-            }
-            found = true;
-            remaining = Amounts.sub(remaining, cost).amount;
-            ds.push(d);
-            break;
-        }
-        if (!found) {
-            break;
-        }
-    }
-    return ds;
-}
-exports.getWithdrawDenomList = getWithdrawDenomList;
-/**
- * Get information about a withdrawal from
- * a taler://withdraw URI by asking the bank.
- */
-function getBankWithdrawalInfo(ws, talerWithdrawUri) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const uriResult = taleruri.parseWithdrawUri(talerWithdrawUri);
-        if (!uriResult) {
-            throw Error(`can't parse URL ${talerWithdrawUri}`);
-        }
-        const resp = yield ws.http.get(uriResult.statusUrl);
-        if (resp.status !== 200) {
-            throw Error(`unexpected status (${resp.status}) from bank for ${uriResult.statusUrl}`);
-        }
-        const respJson = yield resp.json();
-        console.log("resp:", respJson);
-        const status = talerTypes.codecForWithdrawOperationStatusResponse().decode(respJson);
-        return {
-            amount: Amounts.parseOrThrow(status.amount),
-            confirmTransferUrl: status.confirm_transfer_url,
-            extractedStatusUrl: uriResult.statusUrl,
-            selectionDone: status.selection_done,
-            senderWire: status.sender_wire,
-            suggestedExchange: status.suggested_exchange,
-            transferDone: status.transfer_done,
-            wireTypes: status.wire_types,
-        };
-    });
-}
-exports.getBankWithdrawalInfo = getBankWithdrawalInfo;
-function getPossibleDenoms(ws, exchangeBaseUrl) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return yield ws.db
-            .iterIndex(dbTypes.Stores.denominations.exchangeBaseUrlIndex, exchangeBaseUrl)
-            .filter(d => {
-            return (d.status === dbTypes.DenominationStatus.Unverified ||
-                d.status === dbTypes.DenominationStatus.VerifiedGood);
-        });
-    });
-}
-/**
- * Given a planchet, withdraw a coin from the exchange.
- */
-function processPlanchet(ws, withdrawalSessionId, coinIdx) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const withdrawalSession = yield ws.db.get(dbTypes.Stores.withdrawalSession, withdrawalSessionId);
-        if (!withdrawalSession) {
-            return;
-        }
-        if (withdrawalSession.withdrawn[coinIdx]) {
-            return;
-        }
-        if (withdrawalSession.source.type === "reserve") ;
-        const planchet = withdrawalSession.planchets[coinIdx];
-        if (!planchet) {
-            console.log("processPlanchet: planchet not found");
-            return;
-        }
-        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, withdrawalSession.exchangeBaseUrl);
-        if (!exchange) {
-            console.error("db inconsistent: exchange for planchet not found");
-            return;
-        }
-        const denom = yield ws.db.get(dbTypes.Stores.denominations, [
-            withdrawalSession.exchangeBaseUrl,
-            planchet.denomPub,
-        ]);
-        if (!denom) {
-            console.error("db inconsistent: denom for planchet not found");
-            return;
-        }
-        const wd = {};
-        wd.denom_pub_hash = planchet.denomPubHash;
-        wd.reserve_pub = planchet.reservePub;
-        wd.reserve_sig = planchet.withdrawSig;
-        wd.coin_ev = planchet.coinEv;
-        const reqUrl = new URL("reserve/withdraw", exchange.baseUrl).href;
-        const resp = yield ws.http.postJson(reqUrl, wd);
-        if (resp.status !== 200) {
-            throw Error(`unexpected status ${resp.status} for withdraw`);
-        }
-        const r = yield resp.json();
-        const denomSig = yield ws.cryptoApi.rsaUnblind(r.ev_sig, planchet.blindingKey, planchet.denomPub);
-        const isValid = yield ws.cryptoApi.rsaVerify(planchet.coinPub, denomSig, planchet.denomPub);
-        if (!isValid) {
-            throw Error("invalid RSA signature by the exchange");
-        }
-        const coin = {
-            blindingKey: planchet.blindingKey,
-            coinPriv: planchet.coinPriv,
-            coinPub: planchet.coinPub,
-            currentAmount: planchet.coinValue,
-            denomPub: planchet.denomPub,
-            denomPubHash: planchet.denomPubHash,
-            denomSig,
-            exchangeBaseUrl: withdrawalSession.exchangeBaseUrl,
-            reservePub: planchet.reservePub,
-            status: dbTypes.CoinStatus.Fresh,
-            coinIndex: coinIdx,
-            withdrawSessionId: withdrawalSessionId,
-        };
-        let withdrawSessionFinished = false;
-        let reserveDepleted = false;
-        const success = yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.withdrawalSession, dbTypes.Stores.reserves], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const ws = yield tx.get(dbTypes.Stores.withdrawalSession, withdrawalSessionId);
-            if (!ws) {
-                return false;
-            }
-            if (ws.withdrawn[coinIdx]) {
-                // Already withdrawn
-                return false;
-            }
-            ws.withdrawn[coinIdx] = true;
-            delete ws.lastErrorPerCoin[coinIdx];
-            let numDone = 0;
-            for (let i = 0; i < ws.withdrawn.length; i++) {
-                if (ws.withdrawn[i]) {
-                    numDone++;
-                }
-            }
-            if (numDone === ws.denoms.length) {
-                ws.timestampFinish = time.getTimestampNow();
-                ws.lastError = undefined;
-                ws.retryInfo = dbTypes.initRetryInfo(false);
-                withdrawSessionFinished = true;
-            }
-            yield tx.put(dbTypes.Stores.withdrawalSession, ws);
-            if (!planchet.isFromTip) {
-                const r = yield tx.get(dbTypes.Stores.reserves, planchet.reservePub);
-                if (r) {
-                    r.amountWithdrawCompleted = Amounts.add(r.amountWithdrawCompleted, Amounts.add(denom.value, denom.feeWithdraw).amount).amount;
-                    if (Amounts.cmp(r.amountWithdrawCompleted, r.amountWithdrawAllocated) ==
-                        0) {
-                        reserveDepleted = true;
-                    }
-                    yield tx.put(dbTypes.Stores.reserves, r);
-                }
-            }
-            yield tx.add(dbTypes.Stores.coins, coin);
-            return true;
-        }));
-        if (success) {
-            ws.notify({
-                type: "coin-withdrawn" /* CoinWithdrawn */,
-            });
-        }
-        if (withdrawSessionFinished) {
-            ws.notify({
-                type: "withdraw-session-finished" /* WithdrawSessionFinished */,
-                withdrawSessionId: withdrawalSessionId,
-            });
-        }
-        if (reserveDepleted && withdrawalSession.source.type === "reserve") {
-            ws.notify({
-                type: "reserve-depleted" /* ReserveDepleted */,
-                reservePub: withdrawalSession.source.reservePub,
-            });
-        }
-    });
-}
-/**
- * Get a list of denominations to withdraw from the given exchange for the
- * given amount, making sure that all denominations' signatures are verified.
- *
- * Writes to the DB in order to record the result from verifying
- * denominations.
- */
-function getVerifiedWithdrawDenomList(ws, exchangeBaseUrl, amount) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
-        if (!exchange) {
-            console.log("exchange not found");
-            throw Error(`exchange ${exchangeBaseUrl} not found`);
-        }
-        const exchangeDetails = exchange.details;
-        if (!exchangeDetails) {
-            console.log("exchange details not available");
-            throw Error(`exchange ${exchangeBaseUrl} details not available`);
-        }
-        console.log("getting possible denoms");
-        const possibleDenoms = yield getPossibleDenoms(ws, exchange.baseUrl);
-        console.log("got possible denoms");
-        let allValid = false;
-        let selectedDenoms;
-        do {
-            allValid = true;
-            selectedDenoms = getWithdrawDenomList(amount, possibleDenoms);
-            console.log("got withdraw denom list");
-            for (const denom of selectedDenoms || []) {
-                if (denom.status === dbTypes.DenominationStatus.Unverified) {
-                    console.log("checking validity", denom, exchangeDetails.masterPublicKey);
-                    const valid = yield ws.cryptoApi.isValidDenom(denom, exchangeDetails.masterPublicKey);
-                    console.log("done checking validity");
-                    if (!valid) {
-                        denom.status = dbTypes.DenominationStatus.VerifiedBad;
-                        allValid = false;
-                    }
-                    else {
-                        denom.status = dbTypes.DenominationStatus.VerifiedGood;
-                    }
-                    yield ws.db.put(dbTypes.Stores.denominations, denom);
-                }
-            }
-        } while (selectedDenoms.length > 0 && !allValid);
-        console.log("returning denoms");
-        return selectedDenoms;
-    });
-}
-exports.getVerifiedWithdrawDenomList = getVerifiedWithdrawDenomList;
-function makePlanchet(ws, withdrawalSessionId, coinIndex) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const withdrawalSession = yield ws.db.get(dbTypes.Stores.withdrawalSession, withdrawalSessionId);
-        if (!withdrawalSession) {
-            return;
-        }
-        const src = withdrawalSession.source;
-        if (src.type !== "reserve") {
-            throw Error("invalid state");
-        }
-        const reserve = yield ws.db.get(dbTypes.Stores.reserves, src.reservePub);
-        if (!reserve) {
-            return;
-        }
-        const denom = yield ws.db.get(dbTypes.Stores.denominations, [
-            withdrawalSession.exchangeBaseUrl,
-            withdrawalSession.denoms[coinIndex],
-        ]);
-        if (!denom) {
-            return;
-        }
-        const r = yield ws.cryptoApi.createPlanchet({
-            denomPub: denom.denomPub,
-            feeWithdraw: denom.feeWithdraw,
-            reservePriv: reserve.reservePriv,
-            reservePub: reserve.reservePub,
-            value: denom.value,
-        });
-        const newPlanchet = {
-            blindingKey: r.blindingKey,
-            coinEv: r.coinEv,
-            coinPriv: r.coinPriv,
-            coinPub: r.coinPub,
-            coinValue: r.coinValue,
-            denomPub: r.denomPub,
-            denomPubHash: r.denomPubHash,
-            isFromTip: false,
-            reservePub: r.reservePub,
-            withdrawSig: r.withdrawSig,
-        };
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.withdrawalSession], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const myWs = yield tx.get(dbTypes.Stores.withdrawalSession, withdrawalSessionId);
-            if (!myWs) {
-                return;
-            }
-            if (myWs.planchets[coinIndex]) {
-                return;
-            }
-            myWs.planchets[coinIndex] = newPlanchet;
-            yield tx.put(dbTypes.Stores.withdrawalSession, myWs);
-        }));
-    });
-}
-function processWithdrawCoin(ws, withdrawalSessionId, coinIndex) {
-    return __awaiter(this, void 0, void 0, function* () {
-        logger.trace("starting withdraw for coin", coinIndex);
-        const withdrawalSession = yield ws.db.get(dbTypes.Stores.withdrawalSession, withdrawalSessionId);
-        if (!withdrawalSession) {
-            console.log("ws doesn't exist");
-            return;
-        }
-        const coin = yield ws.db.getIndexed(dbTypes.Stores.coins.byWithdrawalWithIdx, [
-            withdrawalSessionId,
-            coinIndex,
-        ]);
-        if (coin) {
-            console.log("coin already exists");
-            return;
-        }
-        if (!withdrawalSession.planchets[coinIndex]) {
-            const key = `${withdrawalSessionId}-${coinIndex}`;
-            yield ws.memoMakePlanchet.memo(key, () => __awaiter(this, void 0, void 0, function* () {
-                logger.trace("creating planchet for coin", coinIndex);
-                return makePlanchet(ws, withdrawalSessionId, coinIndex);
-            }));
-        }
-        yield processPlanchet(ws, withdrawalSessionId, coinIndex);
-    });
-}
-function incrementWithdrawalRetry(ws, withdrawalSessionId, err) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.withdrawalSession], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const wsr = yield tx.get(dbTypes.Stores.withdrawalSession, withdrawalSessionId);
-            if (!wsr) {
-                return;
-            }
-            if (!wsr.retryInfo) {
-                return;
-            }
-            wsr.retryInfo.retryCounter++;
-            dbTypes.updateRetryInfoTimeout(wsr.retryInfo);
-            wsr.lastError = err;
-            yield tx.put(dbTypes.Stores.withdrawalSession, wsr);
-        }));
-        ws.notify({ type: "withdraw-error" /* WithdrawOperationError */ });
-    });
-}
-function processWithdrawSession(ws, withdrawalSessionId, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const onOpErr = (e) => incrementWithdrawalRetry(ws, withdrawalSessionId, e);
-        yield errors.guardOperationException(() => processWithdrawSessionImpl(ws, withdrawalSessionId, forceNow), onOpErr);
-    });
-}
-exports.processWithdrawSession = processWithdrawSession;
-function resetWithdrawSessionRetry(ws, withdrawalSessionId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.mutate(dbTypes.Stores.withdrawalSession, withdrawalSessionId, x => {
-            if (x.retryInfo.active) {
-                x.retryInfo = dbTypes.initRetryInfo();
-            }
-            return x;
-        });
-    });
-}
-function processWithdrawSessionImpl(ws, withdrawalSessionId, forceNow) {
-    return __awaiter(this, void 0, void 0, function* () {
-        logger.trace("processing withdraw session", withdrawalSessionId);
-        if (forceNow) {
-            yield resetWithdrawSessionRetry(ws, withdrawalSessionId);
-        }
-        const withdrawalSession = yield ws.db.get(dbTypes.Stores.withdrawalSession, withdrawalSessionId);
-        if (!withdrawalSession) {
-            logger.trace("withdraw session doesn't exist");
-            return;
-        }
-        const ps = withdrawalSession.denoms.map((d, i) => processWithdrawCoin(ws, withdrawalSessionId, i));
-        yield Promise.all(ps);
-        return;
-    });
-}
-function getExchangeWithdrawalInfo(ws, baseUrl, amount) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const exchangeInfo = yield exchanges.updateExchangeFromUrl(ws, baseUrl);
-        const exchangeDetails = exchangeInfo.details;
-        if (!exchangeDetails) {
-            throw Error(`exchange ${exchangeInfo.baseUrl} details not available`);
-        }
-        const exchangeWireInfo = exchangeInfo.wireInfo;
-        if (!exchangeWireInfo) {
-            throw Error(`exchange ${exchangeInfo.baseUrl} wire details not available`);
-        }
-        const selectedDenoms = yield getVerifiedWithdrawDenomList(ws, baseUrl, amount);
-        let acc = Amounts.getZero(amount.currency);
-        for (const d of selectedDenoms) {
-            acc = Amounts.add(acc, d.feeWithdraw).amount;
-        }
-        const actualCoinCost = selectedDenoms
-            .map((d) => Amounts.add(d.value, d.feeWithdraw).amount)
-            .reduce((a, b) => Amounts.add(a, b).amount);
-        const exchangeWireAccounts = [];
-        for (let account of exchangeWireInfo.accounts) {
-            exchangeWireAccounts.push(account.payto_uri);
-        }
-        const { isTrusted, isAudited } = yield exchanges.getExchangeTrust(ws, exchangeInfo);
-        let earliestDepositExpiration = selectedDenoms[0].stampExpireDeposit;
-        for (let i = 1; i < selectedDenoms.length; i++) {
-            const expireDeposit = selectedDenoms[i].stampExpireDeposit;
-            if (expireDeposit.t_ms < earliestDepositExpiration.t_ms) {
-                earliestDepositExpiration = expireDeposit;
-            }
-        }
-        const possibleDenoms = yield ws.db
-            .iterIndex(dbTypes.Stores.denominations.exchangeBaseUrlIndex, baseUrl)
-            .filter(d => d.isOffered);
-        const trustedAuditorPubs = [];
-        const currencyRecord = yield ws.db.get(dbTypes.Stores.currencies, amount.currency);
-        if (currencyRecord) {
-            trustedAuditorPubs.push(...currencyRecord.auditors.map(a => a.auditorPub));
-        }
-        let versionMatch;
-        if (exchangeDetails.protocolVersion) {
-            versionMatch = LibtoolVersion.compare(versions.WALLET_EXCHANGE_PROTOCOL_VERSION, exchangeDetails.protocolVersion);
-            if (versionMatch &&
-                !versionMatch.compatible &&
-                versionMatch.currentCmp === -1) {
-                console.warn(`wallet's support for exchange protocol version ${versions.WALLET_EXCHANGE_PROTOCOL_VERSION} might be outdated ` +
-                    `(exchange has ${exchangeDetails.protocolVersion}), checking for updates`);
-            }
-        }
-        let tosAccepted = false;
-        if (exchangeInfo.termsOfServiceAcceptedTimestamp) {
-            if (exchangeInfo.termsOfServiceAcceptedEtag ==
-                exchangeInfo.termsOfServiceLastEtag) {
-                tosAccepted = true;
-            }
-        }
-        const ret = {
-            earliestDepositExpiration,
-            exchangeInfo,
-            exchangeWireAccounts,
-            exchangeVersion: exchangeDetails.protocolVersion || "unknown",
-            isAudited,
-            isTrusted,
-            numOfferedDenoms: possibleDenoms.length,
-            overhead: Amounts.sub(amount, actualCoinCost).amount,
-            selectedDenoms,
-            trustedAuditorPubs,
-            versionMatch,
-            walletVersion: versions.WALLET_EXCHANGE_PROTOCOL_VERSION,
-            wireFees: exchangeWireInfo,
-            withdrawFee: acc,
-            termsOfServiceAccepted: tosAccepted,
-        };
-        return ret;
-    });
-}
-exports.getExchangeWithdrawalInfo = getExchangeWithdrawalInfo;
-function getWithdrawDetailsForUri(ws, talerWithdrawUri, maybeSelectedExchange) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const info = yield getBankWithdrawalInfo(ws, talerWithdrawUri);
-        let rci = undefined;
-        if (maybeSelectedExchange) {
-            rci = yield getExchangeWithdrawalInfo(ws, maybeSelectedExchange, info.amount);
-        }
-        return {
-            bankWithdrawDetails: info,
-            exchangeWithdrawDetails: rci,
-        };
-    });
-}
-exports.getWithdrawDetailsForUri = getWithdrawDetailsForUri;
+exports.assertUnreachable = assertUnreachable;
 
 });
 
-unwrapExports(withdraw);
-var withdraw_1 = withdraw.getWithdrawDenomList;
-var withdraw_2 = withdraw.getBankWithdrawalInfo;
-var withdraw_3 = withdraw.getVerifiedWithdrawDenomList;
-var withdraw_4 = withdraw.processWithdrawSession;
-var withdraw_5 = withdraw.getExchangeWithdrawalInfo;
-var withdraw_6 = withdraw.getWithdrawDetailsForUri;
+unwrapExports(assertUnreachable_1);
+var assertUnreachable_2 = assertUnreachable_1.assertUnreachable;
 
 var naclFast = createCommonjsModule(function (module, exports) {
 // Ported in 2014 by Dmitry Chestnykh and Devi Mandiri.
@@ -3595,7 +3045,6 @@ const gf = function (init = []) {
 let randombytes = function (x, n) {
     throw new Error("no PRNG");
 };
-const _0 = new Uint8Array(16);
 const _9 = new Uint8Array(32);
 _9[0] = 9;
 // prettier-ignore
@@ -3703,801 +3152,21 @@ function ts64(x, i, h, l) {
     x[i + 7] = l & 0xff;
 }
 function vn(x, xi, y, yi, n) {
-    var i, d = 0;
+    let i, d = 0;
     for (i = 0; i < n; i++)
         d |= x[xi + i] ^ y[yi + i];
     return (1 & ((d - 1) >>> 8)) - 1;
 }
-function crypto_verify_16(x, xi, y, yi) {
-    return vn(x, xi, y, yi, 16);
-}
 function crypto_verify_32(x, xi, y, yi) {
     return vn(x, xi, y, yi, 32);
 }
-// prettier-ignore
-function core_salsa20(o, p, k, c) {
-    var j0 = c[0] & 0xff | (c[1] & 0xff) << 8 | (c[2] & 0xff) << 16 | (c[3] & 0xff) << 24, j1 = k[0] & 0xff | (k[1] & 0xff) << 8 | (k[2] & 0xff) << 16 | (k[3] & 0xff) << 24, j2 = k[4] & 0xff | (k[5] & 0xff) << 8 | (k[6] & 0xff) << 16 | (k[7] & 0xff) << 24, j3 = k[8] & 0xff | (k[9] & 0xff) << 8 | (k[10] & 0xff) << 16 | (k[11] & 0xff) << 24, j4 = k[12] & 0xff | (k[13] & 0xff) << 8 | (k[14] & 0xff) << 16 | (k[15] & 0xff) << 24, j5 = c[4] & 0xff | (c[5] & 0xff) << 8 | (c[6] & 0xff) << 16 | (c[7] & 0xff) << 24, j6 = p[0] & 0xff | (p[1] & 0xff) << 8 | (p[2] & 0xff) << 16 | (p[3] & 0xff) << 24, j7 = p[4] & 0xff | (p[5] & 0xff) << 8 | (p[6] & 0xff) << 16 | (p[7] & 0xff) << 24, j8 = p[8] & 0xff | (p[9] & 0xff) << 8 | (p[10] & 0xff) << 16 | (p[11] & 0xff) << 24, j9 = p[12] & 0xff | (p[13] & 0xff) << 8 | (p[14] & 0xff) << 16 | (p[15] & 0xff) << 24, j10 = c[8] & 0xff | (c[9] & 0xff) << 8 | (c[10] & 0xff) << 16 | (c[11] & 0xff) << 24, j11 = k[16] & 0xff | (k[17] & 0xff) << 8 | (k[18] & 0xff) << 16 | (k[19] & 0xff) << 24, j12 = k[20] & 0xff | (k[21] & 0xff) << 8 | (k[22] & 0xff) << 16 | (k[23] & 0xff) << 24, j13 = k[24] & 0xff | (k[25] & 0xff) << 8 | (k[26] & 0xff) << 16 | (k[27] & 0xff) << 24, j14 = k[28] & 0xff | (k[29] & 0xff) << 8 | (k[30] & 0xff) << 16 | (k[31] & 0xff) << 24, j15 = c[12] & 0xff | (c[13] & 0xff) << 8 | (c[14] & 0xff) << 16 | (c[15] & 0xff) << 24;
-    var x0 = j0, x1 = j1, x2 = j2, x3 = j3, x4 = j4, x5 = j5, x6 = j6, x7 = j7, x8 = j8, x9 = j9, x10 = j10, x11 = j11, x12 = j12, x13 = j13, x14 = j14, x15 = j15, u;
-    for (var i = 0; i < 20; i += 2) {
-        u = x0 + x12 | 0;
-        x4 ^= u << 7 | u >>> (32 - 7);
-        u = x4 + x0 | 0;
-        x8 ^= u << 9 | u >>> (32 - 9);
-        u = x8 + x4 | 0;
-        x12 ^= u << 13 | u >>> (32 - 13);
-        u = x12 + x8 | 0;
-        x0 ^= u << 18 | u >>> (32 - 18);
-        u = x5 + x1 | 0;
-        x9 ^= u << 7 | u >>> (32 - 7);
-        u = x9 + x5 | 0;
-        x13 ^= u << 9 | u >>> (32 - 9);
-        u = x13 + x9 | 0;
-        x1 ^= u << 13 | u >>> (32 - 13);
-        u = x1 + x13 | 0;
-        x5 ^= u << 18 | u >>> (32 - 18);
-        u = x10 + x6 | 0;
-        x14 ^= u << 7 | u >>> (32 - 7);
-        u = x14 + x10 | 0;
-        x2 ^= u << 9 | u >>> (32 - 9);
-        u = x2 + x14 | 0;
-        x6 ^= u << 13 | u >>> (32 - 13);
-        u = x6 + x2 | 0;
-        x10 ^= u << 18 | u >>> (32 - 18);
-        u = x15 + x11 | 0;
-        x3 ^= u << 7 | u >>> (32 - 7);
-        u = x3 + x15 | 0;
-        x7 ^= u << 9 | u >>> (32 - 9);
-        u = x7 + x3 | 0;
-        x11 ^= u << 13 | u >>> (32 - 13);
-        u = x11 + x7 | 0;
-        x15 ^= u << 18 | u >>> (32 - 18);
-        u = x0 + x3 | 0;
-        x1 ^= u << 7 | u >>> (32 - 7);
-        u = x1 + x0 | 0;
-        x2 ^= u << 9 | u >>> (32 - 9);
-        u = x2 + x1 | 0;
-        x3 ^= u << 13 | u >>> (32 - 13);
-        u = x3 + x2 | 0;
-        x0 ^= u << 18 | u >>> (32 - 18);
-        u = x5 + x4 | 0;
-        x6 ^= u << 7 | u >>> (32 - 7);
-        u = x6 + x5 | 0;
-        x7 ^= u << 9 | u >>> (32 - 9);
-        u = x7 + x6 | 0;
-        x4 ^= u << 13 | u >>> (32 - 13);
-        u = x4 + x7 | 0;
-        x5 ^= u << 18 | u >>> (32 - 18);
-        u = x10 + x9 | 0;
-        x11 ^= u << 7 | u >>> (32 - 7);
-        u = x11 + x10 | 0;
-        x8 ^= u << 9 | u >>> (32 - 9);
-        u = x8 + x11 | 0;
-        x9 ^= u << 13 | u >>> (32 - 13);
-        u = x9 + x8 | 0;
-        x10 ^= u << 18 | u >>> (32 - 18);
-        u = x15 + x14 | 0;
-        x12 ^= u << 7 | u >>> (32 - 7);
-        u = x12 + x15 | 0;
-        x13 ^= u << 9 | u >>> (32 - 9);
-        u = x13 + x12 | 0;
-        x14 ^= u << 13 | u >>> (32 - 13);
-        u = x14 + x13 | 0;
-        x15 ^= u << 18 | u >>> (32 - 18);
-    }
-    x0 = x0 + j0 | 0;
-    x1 = x1 + j1 | 0;
-    x2 = x2 + j2 | 0;
-    x3 = x3 + j3 | 0;
-    x4 = x4 + j4 | 0;
-    x5 = x5 + j5 | 0;
-    x6 = x6 + j6 | 0;
-    x7 = x7 + j7 | 0;
-    x8 = x8 + j8 | 0;
-    x9 = x9 + j9 | 0;
-    x10 = x10 + j10 | 0;
-    x11 = x11 + j11 | 0;
-    x12 = x12 + j12 | 0;
-    x13 = x13 + j13 | 0;
-    x14 = x14 + j14 | 0;
-    x15 = x15 + j15 | 0;
-    o[0] = x0 >>> 0 & 0xff;
-    o[1] = x0 >>> 8 & 0xff;
-    o[2] = x0 >>> 16 & 0xff;
-    o[3] = x0 >>> 24 & 0xff;
-    o[4] = x1 >>> 0 & 0xff;
-    o[5] = x1 >>> 8 & 0xff;
-    o[6] = x1 >>> 16 & 0xff;
-    o[7] = x1 >>> 24 & 0xff;
-    o[8] = x2 >>> 0 & 0xff;
-    o[9] = x2 >>> 8 & 0xff;
-    o[10] = x2 >>> 16 & 0xff;
-    o[11] = x2 >>> 24 & 0xff;
-    o[12] = x3 >>> 0 & 0xff;
-    o[13] = x3 >>> 8 & 0xff;
-    o[14] = x3 >>> 16 & 0xff;
-    o[15] = x3 >>> 24 & 0xff;
-    o[16] = x4 >>> 0 & 0xff;
-    o[17] = x4 >>> 8 & 0xff;
-    o[18] = x4 >>> 16 & 0xff;
-    o[19] = x4 >>> 24 & 0xff;
-    o[20] = x5 >>> 0 & 0xff;
-    o[21] = x5 >>> 8 & 0xff;
-    o[22] = x5 >>> 16 & 0xff;
-    o[23] = x5 >>> 24 & 0xff;
-    o[24] = x6 >>> 0 & 0xff;
-    o[25] = x6 >>> 8 & 0xff;
-    o[26] = x6 >>> 16 & 0xff;
-    o[27] = x6 >>> 24 & 0xff;
-    o[28] = x7 >>> 0 & 0xff;
-    o[29] = x7 >>> 8 & 0xff;
-    o[30] = x7 >>> 16 & 0xff;
-    o[31] = x7 >>> 24 & 0xff;
-    o[32] = x8 >>> 0 & 0xff;
-    o[33] = x8 >>> 8 & 0xff;
-    o[34] = x8 >>> 16 & 0xff;
-    o[35] = x8 >>> 24 & 0xff;
-    o[36] = x9 >>> 0 & 0xff;
-    o[37] = x9 >>> 8 & 0xff;
-    o[38] = x9 >>> 16 & 0xff;
-    o[39] = x9 >>> 24 & 0xff;
-    o[40] = x10 >>> 0 & 0xff;
-    o[41] = x10 >>> 8 & 0xff;
-    o[42] = x10 >>> 16 & 0xff;
-    o[43] = x10 >>> 24 & 0xff;
-    o[44] = x11 >>> 0 & 0xff;
-    o[45] = x11 >>> 8 & 0xff;
-    o[46] = x11 >>> 16 & 0xff;
-    o[47] = x11 >>> 24 & 0xff;
-    o[48] = x12 >>> 0 & 0xff;
-    o[49] = x12 >>> 8 & 0xff;
-    o[50] = x12 >>> 16 & 0xff;
-    o[51] = x12 >>> 24 & 0xff;
-    o[52] = x13 >>> 0 & 0xff;
-    o[53] = x13 >>> 8 & 0xff;
-    o[54] = x13 >>> 16 & 0xff;
-    o[55] = x13 >>> 24 & 0xff;
-    o[56] = x14 >>> 0 & 0xff;
-    o[57] = x14 >>> 8 & 0xff;
-    o[58] = x14 >>> 16 & 0xff;
-    o[59] = x14 >>> 24 & 0xff;
-    o[60] = x15 >>> 0 & 0xff;
-    o[61] = x15 >>> 8 & 0xff;
-    o[62] = x15 >>> 16 & 0xff;
-    o[63] = x15 >>> 24 & 0xff;
-}
-function core_hsalsa20(o, p, k, c) {
-    var j0 = (c[0] & 0xff) |
-        ((c[1] & 0xff) << 8) |
-        ((c[2] & 0xff) << 16) |
-        ((c[3] & 0xff) << 24), j1 = (k[0] & 0xff) |
-        ((k[1] & 0xff) << 8) |
-        ((k[2] & 0xff) << 16) |
-        ((k[3] & 0xff) << 24), j2 = (k[4] & 0xff) |
-        ((k[5] & 0xff) << 8) |
-        ((k[6] & 0xff) << 16) |
-        ((k[7] & 0xff) << 24), j3 = (k[8] & 0xff) |
-        ((k[9] & 0xff) << 8) |
-        ((k[10] & 0xff) << 16) |
-        ((k[11] & 0xff) << 24), j4 = (k[12] & 0xff) |
-        ((k[13] & 0xff) << 8) |
-        ((k[14] & 0xff) << 16) |
-        ((k[15] & 0xff) << 24), j5 = (c[4] & 0xff) |
-        ((c[5] & 0xff) << 8) |
-        ((c[6] & 0xff) << 16) |
-        ((c[7] & 0xff) << 24), j6 = (p[0] & 0xff) |
-        ((p[1] & 0xff) << 8) |
-        ((p[2] & 0xff) << 16) |
-        ((p[3] & 0xff) << 24), j7 = (p[4] & 0xff) |
-        ((p[5] & 0xff) << 8) |
-        ((p[6] & 0xff) << 16) |
-        ((p[7] & 0xff) << 24), j8 = (p[8] & 0xff) |
-        ((p[9] & 0xff) << 8) |
-        ((p[10] & 0xff) << 16) |
-        ((p[11] & 0xff) << 24), j9 = (p[12] & 0xff) |
-        ((p[13] & 0xff) << 8) |
-        ((p[14] & 0xff) << 16) |
-        ((p[15] & 0xff) << 24), j10 = (c[8] & 0xff) |
-        ((c[9] & 0xff) << 8) |
-        ((c[10] & 0xff) << 16) |
-        ((c[11] & 0xff) << 24), j11 = (k[16] & 0xff) |
-        ((k[17] & 0xff) << 8) |
-        ((k[18] & 0xff) << 16) |
-        ((k[19] & 0xff) << 24), j12 = (k[20] & 0xff) |
-        ((k[21] & 0xff) << 8) |
-        ((k[22] & 0xff) << 16) |
-        ((k[23] & 0xff) << 24), j13 = (k[24] & 0xff) |
-        ((k[25] & 0xff) << 8) |
-        ((k[26] & 0xff) << 16) |
-        ((k[27] & 0xff) << 24), j14 = (k[28] & 0xff) |
-        ((k[29] & 0xff) << 8) |
-        ((k[30] & 0xff) << 16) |
-        ((k[31] & 0xff) << 24), j15 = (c[12] & 0xff) |
-        ((c[13] & 0xff) << 8) |
-        ((c[14] & 0xff) << 16) |
-        ((c[15] & 0xff) << 24);
-    var x0 = j0, x1 = j1, x2 = j2, x3 = j3, x4 = j4, x5 = j5, x6 = j6, x7 = j7, x8 = j8, x9 = j9, x10 = j10, x11 = j11, x12 = j12, x13 = j13, x14 = j14, x15 = j15, u;
-    for (var i = 0; i < 20; i += 2) {
-        u = (x0 + x12) | 0;
-        x4 ^= (u << 7) | (u >>> (32 - 7));
-        u = (x4 + x0) | 0;
-        x8 ^= (u << 9) | (u >>> (32 - 9));
-        u = (x8 + x4) | 0;
-        x12 ^= (u << 13) | (u >>> (32 - 13));
-        u = (x12 + x8) | 0;
-        x0 ^= (u << 18) | (u >>> (32 - 18));
-        u = (x5 + x1) | 0;
-        x9 ^= (u << 7) | (u >>> (32 - 7));
-        u = (x9 + x5) | 0;
-        x13 ^= (u << 9) | (u >>> (32 - 9));
-        u = (x13 + x9) | 0;
-        x1 ^= (u << 13) | (u >>> (32 - 13));
-        u = (x1 + x13) | 0;
-        x5 ^= (u << 18) | (u >>> (32 - 18));
-        u = (x10 + x6) | 0;
-        x14 ^= (u << 7) | (u >>> (32 - 7));
-        u = (x14 + x10) | 0;
-        x2 ^= (u << 9) | (u >>> (32 - 9));
-        u = (x2 + x14) | 0;
-        x6 ^= (u << 13) | (u >>> (32 - 13));
-        u = (x6 + x2) | 0;
-        x10 ^= (u << 18) | (u >>> (32 - 18));
-        u = (x15 + x11) | 0;
-        x3 ^= (u << 7) | (u >>> (32 - 7));
-        u = (x3 + x15) | 0;
-        x7 ^= (u << 9) | (u >>> (32 - 9));
-        u = (x7 + x3) | 0;
-        x11 ^= (u << 13) | (u >>> (32 - 13));
-        u = (x11 + x7) | 0;
-        x15 ^= (u << 18) | (u >>> (32 - 18));
-        u = (x0 + x3) | 0;
-        x1 ^= (u << 7) | (u >>> (32 - 7));
-        u = (x1 + x0) | 0;
-        x2 ^= (u << 9) | (u >>> (32 - 9));
-        u = (x2 + x1) | 0;
-        x3 ^= (u << 13) | (u >>> (32 - 13));
-        u = (x3 + x2) | 0;
-        x0 ^= (u << 18) | (u >>> (32 - 18));
-        u = (x5 + x4) | 0;
-        x6 ^= (u << 7) | (u >>> (32 - 7));
-        u = (x6 + x5) | 0;
-        x7 ^= (u << 9) | (u >>> (32 - 9));
-        u = (x7 + x6) | 0;
-        x4 ^= (u << 13) | (u >>> (32 - 13));
-        u = (x4 + x7) | 0;
-        x5 ^= (u << 18) | (u >>> (32 - 18));
-        u = (x10 + x9) | 0;
-        x11 ^= (u << 7) | (u >>> (32 - 7));
-        u = (x11 + x10) | 0;
-        x8 ^= (u << 9) | (u >>> (32 - 9));
-        u = (x8 + x11) | 0;
-        x9 ^= (u << 13) | (u >>> (32 - 13));
-        u = (x9 + x8) | 0;
-        x10 ^= (u << 18) | (u >>> (32 - 18));
-        u = (x15 + x14) | 0;
-        x12 ^= (u << 7) | (u >>> (32 - 7));
-        u = (x12 + x15) | 0;
-        x13 ^= (u << 9) | (u >>> (32 - 9));
-        u = (x13 + x12) | 0;
-        x14 ^= (u << 13) | (u >>> (32 - 13));
-        u = (x14 + x13) | 0;
-        x15 ^= (u << 18) | (u >>> (32 - 18));
-    }
-    o[0] = (x0 >>> 0) & 0xff;
-    o[1] = (x0 >>> 8) & 0xff;
-    o[2] = (x0 >>> 16) & 0xff;
-    o[3] = (x0 >>> 24) & 0xff;
-    o[4] = (x5 >>> 0) & 0xff;
-    o[5] = (x5 >>> 8) & 0xff;
-    o[6] = (x5 >>> 16) & 0xff;
-    o[7] = (x5 >>> 24) & 0xff;
-    o[8] = (x10 >>> 0) & 0xff;
-    o[9] = (x10 >>> 8) & 0xff;
-    o[10] = (x10 >>> 16) & 0xff;
-    o[11] = (x10 >>> 24) & 0xff;
-    o[12] = (x15 >>> 0) & 0xff;
-    o[13] = (x15 >>> 8) & 0xff;
-    o[14] = (x15 >>> 16) & 0xff;
-    o[15] = (x15 >>> 24) & 0xff;
-    o[16] = (x6 >>> 0) & 0xff;
-    o[17] = (x6 >>> 8) & 0xff;
-    o[18] = (x6 >>> 16) & 0xff;
-    o[19] = (x6 >>> 24) & 0xff;
-    o[20] = (x7 >>> 0) & 0xff;
-    o[21] = (x7 >>> 8) & 0xff;
-    o[22] = (x7 >>> 16) & 0xff;
-    o[23] = (x7 >>> 24) & 0xff;
-    o[24] = (x8 >>> 0) & 0xff;
-    o[25] = (x8 >>> 8) & 0xff;
-    o[26] = (x8 >>> 16) & 0xff;
-    o[27] = (x8 >>> 24) & 0xff;
-    o[28] = (x9 >>> 0) & 0xff;
-    o[29] = (x9 >>> 8) & 0xff;
-    o[30] = (x9 >>> 16) & 0xff;
-    o[31] = (x9 >>> 24) & 0xff;
-}
-function crypto_core_salsa20(out, inp, k, c) {
-    core_salsa20(out, inp, k, c);
-}
-function crypto_core_hsalsa20(out, inp, k, c) {
-    core_hsalsa20(out, inp, k, c);
-}
-var sigma = new Uint8Array([
-    101,
-    120,
-    112,
-    97,
-    110,
-    100,
-    32,
-    51,
-    50,
-    45,
-    98,
-    121,
-    116,
-    101,
-    32,
-    107,
-]);
-// "expand 32-byte k"
-function crypto_stream_salsa20_xor(c, cpos, m, mpos, b, n, k) {
-    var z = new Uint8Array(16), x = new Uint8Array(64);
-    var u, i;
-    for (i = 0; i < 16; i++)
-        z[i] = 0;
-    for (i = 0; i < 8; i++)
-        z[i] = n[i];
-    while (b >= 64) {
-        crypto_core_salsa20(x, z, k, sigma);
-        for (i = 0; i < 64; i++)
-            c[cpos + i] = m[mpos + i] ^ x[i];
-        u = 1;
-        for (i = 8; i < 16; i++) {
-            u = (u + (z[i] & 0xff)) | 0;
-            z[i] = u & 0xff;
-            u >>>= 8;
-        }
-        b -= 64;
-        cpos += 64;
-        mpos += 64;
-    }
-    if (b > 0) {
-        crypto_core_salsa20(x, z, k, sigma);
-        for (i = 0; i < b; i++)
-            c[cpos + i] = m[mpos + i] ^ x[i];
-    }
-    return 0;
-}
-function crypto_stream_salsa20(c, cpos, b, n, k) {
-    var z = new Uint8Array(16), x = new Uint8Array(64);
-    var u, i;
-    for (i = 0; i < 16; i++)
-        z[i] = 0;
-    for (i = 0; i < 8; i++)
-        z[i] = n[i];
-    while (b >= 64) {
-        crypto_core_salsa20(x, z, k, sigma);
-        for (i = 0; i < 64; i++)
-            c[cpos + i] = x[i];
-        u = 1;
-        for (i = 8; i < 16; i++) {
-            u = (u + (z[i] & 0xff)) | 0;
-            z[i] = u & 0xff;
-            u >>>= 8;
-        }
-        b -= 64;
-        cpos += 64;
-    }
-    if (b > 0) {
-        crypto_core_salsa20(x, z, k, sigma);
-        for (i = 0; i < b; i++)
-            c[cpos + i] = x[i];
-    }
-    return 0;
-}
-function crypto_stream(c, cpos, d, n, k) {
-    var s = new Uint8Array(32);
-    crypto_core_hsalsa20(s, n, k, sigma);
-    var sn = new Uint8Array(8);
-    for (var i = 0; i < 8; i++)
-        sn[i] = n[i + 16];
-    return crypto_stream_salsa20(c, cpos, d, sn, s);
-}
-function crypto_stream_xor(c, cpos, m, mpos, d, n, k) {
-    var s = new Uint8Array(32);
-    crypto_core_hsalsa20(s, n, k, sigma);
-    var sn = new Uint8Array(8);
-    for (var i = 0; i < 8; i++)
-        sn[i] = n[i + 16];
-    return crypto_stream_salsa20_xor(c, cpos, m, mpos, d, sn, s);
-}
-/*
- * Port of Andrew Moon's Poly1305-donna-16. Public domain.
- * https://github.com/floodyberry/poly1305-donna
- */
-class poly1305 {
-    constructor(key) {
-        this.buffer = new Uint8Array(16);
-        this.r = new Uint16Array(10);
-        this.h = new Uint16Array(10);
-        this.pad = new Uint16Array(8);
-        this.leftover = 0;
-        this.fin = 0;
-        var t0, t1, t2, t3, t4, t5, t6, t7;
-        t0 = (key[0] & 0xff) | ((key[1] & 0xff) << 8);
-        this.r[0] = t0 & 0x1fff;
-        t1 = (key[2] & 0xff) | ((key[3] & 0xff) << 8);
-        this.r[1] = ((t0 >>> 13) | (t1 << 3)) & 0x1fff;
-        t2 = (key[4] & 0xff) | ((key[5] & 0xff) << 8);
-        this.r[2] = ((t1 >>> 10) | (t2 << 6)) & 0x1f03;
-        t3 = (key[6] & 0xff) | ((key[7] & 0xff) << 8);
-        this.r[3] = ((t2 >>> 7) | (t3 << 9)) & 0x1fff;
-        t4 = (key[8] & 0xff) | ((key[9] & 0xff) << 8);
-        this.r[4] = ((t3 >>> 4) | (t4 << 12)) & 0x00ff;
-        this.r[5] = (t4 >>> 1) & 0x1ffe;
-        t5 = (key[10] & 0xff) | ((key[11] & 0xff) << 8);
-        this.r[6] = ((t4 >>> 14) | (t5 << 2)) & 0x1fff;
-        t6 = (key[12] & 0xff) | ((key[13] & 0xff) << 8);
-        this.r[7] = ((t5 >>> 11) | (t6 << 5)) & 0x1f81;
-        t7 = (key[14] & 0xff) | ((key[15] & 0xff) << 8);
-        this.r[8] = ((t6 >>> 8) | (t7 << 8)) & 0x1fff;
-        this.r[9] = (t7 >>> 5) & 0x007f;
-        this.pad[0] = (key[16] & 0xff) | ((key[17] & 0xff) << 8);
-        this.pad[1] = (key[18] & 0xff) | ((key[19] & 0xff) << 8);
-        this.pad[2] = (key[20] & 0xff) | ((key[21] & 0xff) << 8);
-        this.pad[3] = (key[22] & 0xff) | ((key[23] & 0xff) << 8);
-        this.pad[4] = (key[24] & 0xff) | ((key[25] & 0xff) << 8);
-        this.pad[5] = (key[26] & 0xff) | ((key[27] & 0xff) << 8);
-        this.pad[6] = (key[28] & 0xff) | ((key[29] & 0xff) << 8);
-        this.pad[7] = (key[30] & 0xff) | ((key[31] & 0xff) << 8);
-    }
-    blocks(m, mpos, bytes) {
-        var hibit = this.fin ? 0 : 1 << 11;
-        var t0, t1, t2, t3, t4, t5, t6, t7, c;
-        var d0, d1, d2, d3, d4, d5, d6, d7, d8, d9;
-        var h0 = this.h[0], h1 = this.h[1], h2 = this.h[2], h3 = this.h[3], h4 = this.h[4], h5 = this.h[5], h6 = this.h[6], h7 = this.h[7], h8 = this.h[8], h9 = this.h[9];
-        var r0 = this.r[0], r1 = this.r[1], r2 = this.r[2], r3 = this.r[3], r4 = this.r[4], r5 = this.r[5], r6 = this.r[6], r7 = this.r[7], r8 = this.r[8], r9 = this.r[9];
-        while (bytes >= 16) {
-            t0 = (m[mpos + 0] & 0xff) | ((m[mpos + 1] & 0xff) << 8);
-            h0 += t0 & 0x1fff;
-            t1 = (m[mpos + 2] & 0xff) | ((m[mpos + 3] & 0xff) << 8);
-            h1 += ((t0 >>> 13) | (t1 << 3)) & 0x1fff;
-            t2 = (m[mpos + 4] & 0xff) | ((m[mpos + 5] & 0xff) << 8);
-            h2 += ((t1 >>> 10) | (t2 << 6)) & 0x1fff;
-            t3 = (m[mpos + 6] & 0xff) | ((m[mpos + 7] & 0xff) << 8);
-            h3 += ((t2 >>> 7) | (t3 << 9)) & 0x1fff;
-            t4 = (m[mpos + 8] & 0xff) | ((m[mpos + 9] & 0xff) << 8);
-            h4 += ((t3 >>> 4) | (t4 << 12)) & 0x1fff;
-            h5 += (t4 >>> 1) & 0x1fff;
-            t5 = (m[mpos + 10] & 0xff) | ((m[mpos + 11] & 0xff) << 8);
-            h6 += ((t4 >>> 14) | (t5 << 2)) & 0x1fff;
-            t6 = (m[mpos + 12] & 0xff) | ((m[mpos + 13] & 0xff) << 8);
-            h7 += ((t5 >>> 11) | (t6 << 5)) & 0x1fff;
-            t7 = (m[mpos + 14] & 0xff) | ((m[mpos + 15] & 0xff) << 8);
-            h8 += ((t6 >>> 8) | (t7 << 8)) & 0x1fff;
-            h9 += (t7 >>> 5) | hibit;
-            c = 0;
-            d0 = c;
-            d0 += h0 * r0;
-            d0 += h1 * (5 * r9);
-            d0 += h2 * (5 * r8);
-            d0 += h3 * (5 * r7);
-            d0 += h4 * (5 * r6);
-            c = d0 >>> 13;
-            d0 &= 0x1fff;
-            d0 += h5 * (5 * r5);
-            d0 += h6 * (5 * r4);
-            d0 += h7 * (5 * r3);
-            d0 += h8 * (5 * r2);
-            d0 += h9 * (5 * r1);
-            c += d0 >>> 13;
-            d0 &= 0x1fff;
-            d1 = c;
-            d1 += h0 * r1;
-            d1 += h1 * r0;
-            d1 += h2 * (5 * r9);
-            d1 += h3 * (5 * r8);
-            d1 += h4 * (5 * r7);
-            c = d1 >>> 13;
-            d1 &= 0x1fff;
-            d1 += h5 * (5 * r6);
-            d1 += h6 * (5 * r5);
-            d1 += h7 * (5 * r4);
-            d1 += h8 * (5 * r3);
-            d1 += h9 * (5 * r2);
-            c += d1 >>> 13;
-            d1 &= 0x1fff;
-            d2 = c;
-            d2 += h0 * r2;
-            d2 += h1 * r1;
-            d2 += h2 * r0;
-            d2 += h3 * (5 * r9);
-            d2 += h4 * (5 * r8);
-            c = d2 >>> 13;
-            d2 &= 0x1fff;
-            d2 += h5 * (5 * r7);
-            d2 += h6 * (5 * r6);
-            d2 += h7 * (5 * r5);
-            d2 += h8 * (5 * r4);
-            d2 += h9 * (5 * r3);
-            c += d2 >>> 13;
-            d2 &= 0x1fff;
-            d3 = c;
-            d3 += h0 * r3;
-            d3 += h1 * r2;
-            d3 += h2 * r1;
-            d3 += h3 * r0;
-            d3 += h4 * (5 * r9);
-            c = d3 >>> 13;
-            d3 &= 0x1fff;
-            d3 += h5 * (5 * r8);
-            d3 += h6 * (5 * r7);
-            d3 += h7 * (5 * r6);
-            d3 += h8 * (5 * r5);
-            d3 += h9 * (5 * r4);
-            c += d3 >>> 13;
-            d3 &= 0x1fff;
-            d4 = c;
-            d4 += h0 * r4;
-            d4 += h1 * r3;
-            d4 += h2 * r2;
-            d4 += h3 * r1;
-            d4 += h4 * r0;
-            c = d4 >>> 13;
-            d4 &= 0x1fff;
-            d4 += h5 * (5 * r9);
-            d4 += h6 * (5 * r8);
-            d4 += h7 * (5 * r7);
-            d4 += h8 * (5 * r6);
-            d4 += h9 * (5 * r5);
-            c += d4 >>> 13;
-            d4 &= 0x1fff;
-            d5 = c;
-            d5 += h0 * r5;
-            d5 += h1 * r4;
-            d5 += h2 * r3;
-            d5 += h3 * r2;
-            d5 += h4 * r1;
-            c = d5 >>> 13;
-            d5 &= 0x1fff;
-            d5 += h5 * r0;
-            d5 += h6 * (5 * r9);
-            d5 += h7 * (5 * r8);
-            d5 += h8 * (5 * r7);
-            d5 += h9 * (5 * r6);
-            c += d5 >>> 13;
-            d5 &= 0x1fff;
-            d6 = c;
-            d6 += h0 * r6;
-            d6 += h1 * r5;
-            d6 += h2 * r4;
-            d6 += h3 * r3;
-            d6 += h4 * r2;
-            c = d6 >>> 13;
-            d6 &= 0x1fff;
-            d6 += h5 * r1;
-            d6 += h6 * r0;
-            d6 += h7 * (5 * r9);
-            d6 += h8 * (5 * r8);
-            d6 += h9 * (5 * r7);
-            c += d6 >>> 13;
-            d6 &= 0x1fff;
-            d7 = c;
-            d7 += h0 * r7;
-            d7 += h1 * r6;
-            d7 += h2 * r5;
-            d7 += h3 * r4;
-            d7 += h4 * r3;
-            c = d7 >>> 13;
-            d7 &= 0x1fff;
-            d7 += h5 * r2;
-            d7 += h6 * r1;
-            d7 += h7 * r0;
-            d7 += h8 * (5 * r9);
-            d7 += h9 * (5 * r8);
-            c += d7 >>> 13;
-            d7 &= 0x1fff;
-            d8 = c;
-            d8 += h0 * r8;
-            d8 += h1 * r7;
-            d8 += h2 * r6;
-            d8 += h3 * r5;
-            d8 += h4 * r4;
-            c = d8 >>> 13;
-            d8 &= 0x1fff;
-            d8 += h5 * r3;
-            d8 += h6 * r2;
-            d8 += h7 * r1;
-            d8 += h8 * r0;
-            d8 += h9 * (5 * r9);
-            c += d8 >>> 13;
-            d8 &= 0x1fff;
-            d9 = c;
-            d9 += h0 * r9;
-            d9 += h1 * r8;
-            d9 += h2 * r7;
-            d9 += h3 * r6;
-            d9 += h4 * r5;
-            c = d9 >>> 13;
-            d9 &= 0x1fff;
-            d9 += h5 * r4;
-            d9 += h6 * r3;
-            d9 += h7 * r2;
-            d9 += h8 * r1;
-            d9 += h9 * r0;
-            c += d9 >>> 13;
-            d9 &= 0x1fff;
-            c = ((c << 2) + c) | 0;
-            c = (c + d0) | 0;
-            d0 = c & 0x1fff;
-            c = c >>> 13;
-            d1 += c;
-            h0 = d0;
-            h1 = d1;
-            h2 = d2;
-            h3 = d3;
-            h4 = d4;
-            h5 = d5;
-            h6 = d6;
-            h7 = d7;
-            h8 = d8;
-            h9 = d9;
-            mpos += 16;
-            bytes -= 16;
-        }
-        this.h[0] = h0;
-        this.h[1] = h1;
-        this.h[2] = h2;
-        this.h[3] = h3;
-        this.h[4] = h4;
-        this.h[5] = h5;
-        this.h[6] = h6;
-        this.h[7] = h7;
-        this.h[8] = h8;
-        this.h[9] = h9;
-    }
-    finish(mac, macpos) {
-        var g = new Uint16Array(10);
-        var c, mask, f, i;
-        if (this.leftover) {
-            i = this.leftover;
-            this.buffer[i++] = 1;
-            for (; i < 16; i++)
-                this.buffer[i] = 0;
-            this.fin = 1;
-            this.blocks(this.buffer, 0, 16);
-        }
-        c = this.h[1] >>> 13;
-        this.h[1] &= 0x1fff;
-        for (i = 2; i < 10; i++) {
-            this.h[i] += c;
-            c = this.h[i] >>> 13;
-            this.h[i] &= 0x1fff;
-        }
-        this.h[0] += c * 5;
-        c = this.h[0] >>> 13;
-        this.h[0] &= 0x1fff;
-        this.h[1] += c;
-        c = this.h[1] >>> 13;
-        this.h[1] &= 0x1fff;
-        this.h[2] += c;
-        g[0] = this.h[0] + 5;
-        c = g[0] >>> 13;
-        g[0] &= 0x1fff;
-        for (i = 1; i < 10; i++) {
-            g[i] = this.h[i] + c;
-            c = g[i] >>> 13;
-            g[i] &= 0x1fff;
-        }
-        g[9] -= 1 << 13;
-        mask = (c ^ 1) - 1;
-        for (i = 0; i < 10; i++)
-            g[i] &= mask;
-        mask = ~mask;
-        for (i = 0; i < 10; i++)
-            this.h[i] = (this.h[i] & mask) | g[i];
-        this.h[0] = (this.h[0] | (this.h[1] << 13)) & 0xffff;
-        this.h[1] = ((this.h[1] >>> 3) | (this.h[2] << 10)) & 0xffff;
-        this.h[2] = ((this.h[2] >>> 6) | (this.h[3] << 7)) & 0xffff;
-        this.h[3] = ((this.h[3] >>> 9) | (this.h[4] << 4)) & 0xffff;
-        this.h[4] =
-            ((this.h[4] >>> 12) | (this.h[5] << 1) | (this.h[6] << 14)) & 0xffff;
-        this.h[5] = ((this.h[6] >>> 2) | (this.h[7] << 11)) & 0xffff;
-        this.h[6] = ((this.h[7] >>> 5) | (this.h[8] << 8)) & 0xffff;
-        this.h[7] = ((this.h[8] >>> 8) | (this.h[9] << 5)) & 0xffff;
-        f = this.h[0] + this.pad[0];
-        this.h[0] = f & 0xffff;
-        for (i = 1; i < 8; i++) {
-            f = (((this.h[i] + this.pad[i]) | 0) + (f >>> 16)) | 0;
-            this.h[i] = f & 0xffff;
-        }
-        mac[macpos + 0] = (this.h[0] >>> 0) & 0xff;
-        mac[macpos + 1] = (this.h[0] >>> 8) & 0xff;
-        mac[macpos + 2] = (this.h[1] >>> 0) & 0xff;
-        mac[macpos + 3] = (this.h[1] >>> 8) & 0xff;
-        mac[macpos + 4] = (this.h[2] >>> 0) & 0xff;
-        mac[macpos + 5] = (this.h[2] >>> 8) & 0xff;
-        mac[macpos + 6] = (this.h[3] >>> 0) & 0xff;
-        mac[macpos + 7] = (this.h[3] >>> 8) & 0xff;
-        mac[macpos + 8] = (this.h[4] >>> 0) & 0xff;
-        mac[macpos + 9] = (this.h[4] >>> 8) & 0xff;
-        mac[macpos + 10] = (this.h[5] >>> 0) & 0xff;
-        mac[macpos + 11] = (this.h[5] >>> 8) & 0xff;
-        mac[macpos + 12] = (this.h[6] >>> 0) & 0xff;
-        mac[macpos + 13] = (this.h[6] >>> 8) & 0xff;
-        mac[macpos + 14] = (this.h[7] >>> 0) & 0xff;
-        mac[macpos + 15] = (this.h[7] >>> 8) & 0xff;
-    }
-    update(m, mpos, bytes) {
-        var i, want;
-        if (this.leftover) {
-            want = 16 - this.leftover;
-            if (want > bytes)
-                want = bytes;
-            for (i = 0; i < want; i++)
-                this.buffer[this.leftover + i] = m[mpos + i];
-            bytes -= want;
-            mpos += want;
-            this.leftover += want;
-            if (this.leftover < 16)
-                return;
-            this.blocks(this.buffer, 0, 16);
-            this.leftover = 0;
-        }
-        if (bytes >= 16) {
-            want = bytes - (bytes % 16);
-            this.blocks(m, mpos, want);
-            mpos += want;
-            bytes -= want;
-        }
-        if (bytes) {
-            for (i = 0; i < bytes; i++)
-                this.buffer[this.leftover + i] = m[mpos + i];
-            this.leftover += bytes;
-        }
-    }
-}
-function crypto_onetimeauth(out, outpos, m, mpos, n, k) {
-    var s = new poly1305(k);
-    s.update(m, mpos, n);
-    s.finish(out, outpos);
-    return 0;
-}
-function crypto_onetimeauth_verify(h, hpos, m, mpos, n, k) {
-    var x = new Uint8Array(16);
-    crypto_onetimeauth(x, 0, m, mpos, n, k);
-    return crypto_verify_16(h, hpos, x, 0);
-}
-function crypto_secretbox(c, m, d, n, k) {
-    var i;
-    if (d < 32)
-        return -1;
-    crypto_stream_xor(c, 0, m, 0, d, n, k);
-    crypto_onetimeauth(c, 16, c, 32, d - 32, c);
-    for (i = 0; i < 16; i++)
-        c[i] = 0;
-    return 0;
-}
-function crypto_secretbox_open(m, c, d, n, k) {
-    var i;
-    var x = new Uint8Array(32);
-    if (d < 32)
-        return -1;
-    crypto_stream(x, 0, 32, n, k);
-    if (crypto_onetimeauth_verify(c, 16, c, 32, d - 32, x) !== 0)
-        return -1;
-    crypto_stream_xor(m, 0, c, 0, d, n, k);
-    for (i = 0; i < 32; i++)
-        m[i] = 0;
-    return 0;
-}
 function set25519(r, a) {
-    var i;
+    let i;
     for (i = 0; i < 16; i++)
         r[i] = a[i] | 0;
 }
 function car25519(o) {
-    var i, v, c = 1;
+    let i, v, c = 1;
     for (i = 0; i < 16; i++) {
         v = o[i] + c + 65535;
         c = Math.floor(v / 65536);
@@ -4506,16 +3175,17 @@ function car25519(o) {
     o[0] += c - 1 + 37 * (c - 1);
 }
 function sel25519(p, q, b) {
-    var t, c = ~(b - 1);
-    for (var i = 0; i < 16; i++) {
+    let t;
+    const c = ~(b - 1);
+    for (let i = 0; i < 16; i++) {
         t = c & (p[i] ^ q[i]);
         p[i] ^= t;
         q[i] ^= t;
     }
 }
 function pack25519(o, n) {
-    var i, j, b;
-    var m = gf(), t = gf();
+    let i, j, b;
+    const m = gf(), t = gf();
     for (i = 0; i < 16; i++)
         t[i] = n[i];
     car25519(t);
@@ -4538,32 +3208,33 @@ function pack25519(o, n) {
     }
 }
 function neq25519(a, b) {
-    var c = new Uint8Array(32), d = new Uint8Array(32);
+    const c = new Uint8Array(32), d = new Uint8Array(32);
     pack25519(c, a);
     pack25519(d, b);
     return crypto_verify_32(c, 0, d, 0);
 }
 function par25519(a) {
-    var d = new Uint8Array(32);
+    const d = new Uint8Array(32);
     pack25519(d, a);
     return d[0] & 1;
 }
 function unpack25519(o, n) {
-    var i;
+    let i;
     for (i = 0; i < 16; i++)
         o[i] = n[2 * i] + (n[2 * i + 1] << 8);
     o[15] &= 0x7fff;
 }
 function A(o, a, b) {
-    for (var i = 0; i < 16; i++)
+    for (let i = 0; i < 16; i++)
         o[i] = a[i] + b[i];
 }
 function Z(o, a, b) {
-    for (var i = 0; i < 16; i++)
+    for (let i = 0; i < 16; i++)
         o[i] = a[i] - b[i];
 }
 function M(o, a, b) {
-    var v, c, t0 = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0, t7 = 0, t8 = 0, t9 = 0, t10 = 0, t11 = 0, t12 = 0, t13 = 0, t14 = 0, t15 = 0, t16 = 0, t17 = 0, t18 = 0, t19 = 0, t20 = 0, t21 = 0, t22 = 0, t23 = 0, t24 = 0, t25 = 0, t26 = 0, t27 = 0, t28 = 0, t29 = 0, t30 = 0, b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5], b6 = b[6], b7 = b[7], b8 = b[8], b9 = b[9], b10 = b[10], b11 = b[11], b12 = b[12], b13 = b[13], b14 = b[14], b15 = b[15];
+    let v, c, t0 = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0, t7 = 0, t8 = 0, t9 = 0, t10 = 0, t11 = 0, t12 = 0, t13 = 0, t14 = 0, t15 = 0, t16 = 0, t17 = 0, t18 = 0, t19 = 0, t20 = 0, t21 = 0, t22 = 0, t23 = 0, t24 = 0, t25 = 0, t26 = 0, t27 = 0, t28 = 0, t29 = 0, t30 = 0;
+    const b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5], b6 = b[6], b7 = b[7], b8 = b[8], b9 = b[9], b10 = b[10], b11 = b[11], b12 = b[12], b13 = b[13], b14 = b[14], b15 = b[15];
     v = a[0];
     t0 += v * b0;
     t1 += v * b1;
@@ -4975,8 +3646,8 @@ function S(o, a) {
     M(o, a, a);
 }
 function inv25519(o, i) {
-    var c = gf();
-    var a;
+    const c = gf();
+    let a;
     for (a = 0; a < 16; a++)
         c[a] = i[a];
     for (a = 253; a >= 0; a--) {
@@ -4988,8 +3659,8 @@ function inv25519(o, i) {
         o[a] = c[a];
 }
 function pow2523(o, i) {
-    var c = gf();
-    var a;
+    const c = gf();
+    let a;
     for (a = 0; a < 16; a++)
         c[a] = i[a];
     for (a = 250; a >= 0; a--) {
@@ -5001,9 +3672,11 @@ function pow2523(o, i) {
         o[a] = c[a];
 }
 function crypto_scalarmult(q, n, p) {
-    var z = new Uint8Array(32);
-    var x = new Float64Array(80), r, i;
-    var a = gf(), b = gf(), c = gf(), d = gf(), e = gf(), f = gf();
+    const z = new Uint8Array(32);
+    const x = new Float64Array(80);
+    let r;
+    let i;
+    const a = gf(), b = gf(), c = gf(), d = gf(), e = gf(), f = gf();
     for (i = 0; i < 31; i++)
         z[i] = n[i];
     z[31] = (n[31] & 127) | 64;
@@ -5045,8 +3718,8 @@ function crypto_scalarmult(q, n, p) {
         x[i + 48] = b[i];
         x[i + 64] = d[i];
     }
-    var x32 = x.subarray(32);
-    var x16 = x.subarray(16);
+    const x32 = x.subarray(32);
+    const x16 = x.subarray(16);
     inv25519(x32, x32);
     M(x16, x16, x32);
     pack25519(q, x16);
@@ -5055,17 +3728,8 @@ function crypto_scalarmult(q, n, p) {
 function crypto_scalarmult_base(q, n) {
     return crypto_scalarmult(q, n, _9);
 }
-function crypto_box_keypair(y, x) {
-    randombytes(x, 32);
-    return crypto_scalarmult_base(y, x);
-}
-function crypto_box_beforenm(k, y, x) {
-    var s = new Uint8Array(32);
-    crypto_scalarmult(s, x, y);
-    return crypto_core_hsalsa20(k, _0, s, sigma);
-}
 // prettier-ignore
-var K = [
+const K = [
     0x428a2f98, 0xd728ae22, 0x71374491, 0x23ef65cd,
     0xb5c0fbcf, 0xec4d3b2f, 0xe9b5dba5, 0x8189dbbc,
     0x3956c25b, 0xf348b538, 0x59f111f1, 0xb605d019,
@@ -5108,9 +3772,10 @@ var K = [
     0x5fcb6fab, 0x3ad6faec, 0x6c44198c, 0x4a475817
 ];
 function crypto_hashblocks_hl(hh, hl, m, n) {
-    var wh = new Int32Array(16), wl = new Int32Array(16), bh0, bh1, bh2, bh3, bh4, bh5, bh6, bh7, bl0, bl1, bl2, bl3, bl4, bl5, bl6, bl7, th, tl, i, j, h, l, a, b, c, d;
-    var ah0 = hh[0], ah1 = hh[1], ah2 = hh[2], ah3 = hh[3], ah4 = hh[4], ah5 = hh[5], ah6 = hh[6], ah7 = hh[7], al0 = hl[0], al1 = hl[1], al2 = hl[2], al3 = hl[3], al4 = hl[4], al5 = hl[5], al6 = hl[6], al7 = hl[7];
-    var pos = 0;
+    const wh = new Int32Array(16), wl = new Int32Array(16);
+    let bh0, bh1, bh2, bh3, bh4, bh5, bh6, bh7, bl0, bl1, bl2, bl3, bl4, bl5, bl6, bl7, th, tl, i, j, h, l, a, b, c, d;
+    let ah0 = hh[0], ah1 = hh[1], ah2 = hh[2], ah3 = hh[3], ah4 = hh[4], ah5 = hh[5], ah6 = hh[6], ah7 = hh[7], al0 = hl[0], al1 = hl[1], al2 = hl[2], al3 = hl[3], al4 = hl[4], al5 = hl[5], al6 = hl[6], al7 = hl[7];
+    let pos = 0;
     while (n >= 128) {
         for (i = 0; i < 16; i++) {
             j = 8 * i + pos;
@@ -5445,7 +4110,7 @@ function crypto_hash(out, m, n) {
     const hh = new Int32Array(8);
     const hl = new Int32Array(8);
     const x = new Uint8Array(256);
-    let b = n;
+    const b = n;
     hh[0] = 0x6a09e667;
     hh[1] = 0xbb67ae85;
     hh[2] = 0x3c6ef372;
@@ -5507,7 +4172,7 @@ class HashState {
         let i = 0;
         while (i < data.length) {
             const r = 128 - this.p;
-            if (r > (data.length - i)) {
+            if (r > data.length - i) {
                 for (let j = 0; i + j < data.length; j++) {
                     this.next[this.p + j] = data[i + j];
                 }
@@ -5529,7 +4194,7 @@ class HashState {
         const out = new Uint8Array(64);
         let n = this.p;
         const x = new Uint8Array(256);
-        let b = this.total;
+        const b = this.total;
         for (let i = 0; i < n; i++)
             x[i] = this.next[i];
         x[n] = 128;
@@ -5544,7 +4209,7 @@ class HashState {
 }
 exports.HashState = HashState;
 function add(p, q) {
-    var a = gf(), b = gf(), c = gf(), d = gf(), e = gf(), f = gf(), g = gf(), h = gf(), t = gf();
+    const a = gf(), b = gf(), c = gf(), d = gf(), e = gf(), f = gf(), g = gf(), h = gf(), t = gf();
     Z(a, p[1], p[0]);
     Z(t, q[1], q[0]);
     M(a, a, t);
@@ -5565,13 +4230,13 @@ function add(p, q) {
     M(p[3], e, h);
 }
 function cswap(p, q, b) {
-    var i;
+    let i;
     for (i = 0; i < 4; i++) {
         sel25519(p[i], q[i], b);
     }
 }
 function pack(r, p) {
-    var tx = gf(), ty = gf(), zi = gf();
+    const tx = gf(), ty = gf(), zi = gf();
     inv25519(zi, p[2]);
     M(tx, p[0], zi);
     M(ty, p[1], zi);
@@ -5579,7 +4244,7 @@ function pack(r, p) {
     r[31] ^= par25519(tx) << 7;
 }
 function scalarmult(p, q, s) {
-    var b, i;
+    let b, i;
     set25519(p[0], gf0);
     set25519(p[1], gf1);
     set25519(p[2], gf1);
@@ -5615,7 +4280,7 @@ function crypto_sign_keypair(pk, sk, seeded) {
         sk[i + 32] = pk[i];
     return 0;
 }
-var L = new Float64Array([
+const L = new Float64Array([
     0xed,
     0xd3,
     0xf5,
@@ -5650,7 +4315,7 @@ var L = new Float64Array([
     0x10,
 ]);
 function modL(r, x) {
-    var carry, i, j, k;
+    let carry, i, j, k;
     for (i = 63; i >= 32; --i) {
         carry = 0;
         for (j = i - 32, k = i - 12; j < k; ++j) {
@@ -5684,14 +4349,15 @@ function reduce(r) {
 }
 // Note: difference from C - smlen returned, not passed as argument.
 function crypto_sign(sm, m, n, sk) {
-    var d = new Uint8Array(64), h = new Uint8Array(64), r = new Uint8Array(64);
-    var i, j, x = new Float64Array(64);
-    var p = [gf(), gf(), gf(), gf()];
+    const d = new Uint8Array(64), h = new Uint8Array(64), r = new Uint8Array(64);
+    let i, j;
+    const x = new Float64Array(64);
+    const p = [gf(), gf(), gf(), gf()];
     crypto_hash(d, sk, 32);
     d[0] &= 248;
     d[31] &= 127;
     d[31] |= 64;
-    var smlen = n + 64;
+    const smlen = n + 64;
     for (i = 0; i < n; i++)
         sm[64 + i] = m[i];
     for (i = 0; i < 32; i++)
@@ -5754,9 +4420,9 @@ function unpackneg(r, p) {
     return 0;
 }
 function crypto_sign_open(m, sm, n, pk) {
-    var i, mlen;
-    var t = new Uint8Array(32), h = new Uint8Array(64);
-    var p = [gf(), gf(), gf(), gf()], q = [gf(), gf(), gf(), gf()];
+    let i, mlen;
+    const t = new Uint8Array(32), h = new Uint8Array(64);
+    const p = [gf(), gf(), gf(), gf()], q = [gf(), gf(), gf(), gf()];
     mlen = -1;
     if (n < 64)
         return -1;
@@ -5783,71 +4449,31 @@ function crypto_sign_open(m, sm, n, pk) {
     mlen = n;
     return mlen;
 }
-var crypto_secretbox_KEYBYTES = 32, crypto_secretbox_NONCEBYTES = 24, crypto_secretbox_ZEROBYTES = 32, crypto_secretbox_BOXZEROBYTES = 16, crypto_scalarmult_BYTES = 32, crypto_scalarmult_SCALARBYTES = 32, crypto_box_PUBLICKEYBYTES = 32, crypto_box_SECRETKEYBYTES = 32, crypto_box_BEFORENMBYTES = 32, crypto_box_NONCEBYTES = crypto_secretbox_NONCEBYTES, crypto_sign_BYTES = 64, crypto_sign_PUBLICKEYBYTES = 32, crypto_sign_SECRETKEYBYTES = 64, crypto_sign_SEEDBYTES = 32, crypto_hash_BYTES = 64;
+const crypto_scalarmult_BYTES = 32, crypto_scalarmult_SCALARBYTES = 32, crypto_sign_BYTES = 64, crypto_sign_PUBLICKEYBYTES = 32, crypto_sign_SECRETKEYBYTES = 64, crypto_sign_SEEDBYTES = 32, crypto_hash_BYTES = 64;
 /* High-level API */
-function checkLengths(k, n) {
-    if (k.length !== crypto_secretbox_KEYBYTES)
-        throw new Error("bad key size");
-    if (n.length !== crypto_secretbox_NONCEBYTES)
-        throw new Error("bad nonce size");
-}
-function checkBoxLengths(pk, sk) {
-    if (pk.length !== crypto_box_PUBLICKEYBYTES)
-        throw new Error("bad public key size");
-    if (sk.length !== crypto_box_SECRETKEYBYTES)
-        throw new Error("bad secret key size");
-}
 function checkArrayTypes(...args) {
-    for (var i = 0; i < args.length; i++) {
+    for (let i = 0; i < args.length; i++) {
         if (!(args[i] instanceof Uint8Array))
             throw new TypeError("unexpected type, use Uint8Array");
     }
 }
 function cleanup(arr) {
-    for (var i = 0; i < arr.length; i++)
+    for (let i = 0; i < arr.length; i++)
         arr[i] = 0;
 }
 function randomBytes(n) {
-    var b = new Uint8Array(n);
+    const b = new Uint8Array(n);
     randombytes(b, n);
     return b;
 }
 exports.randomBytes = randomBytes;
-function secretbox(msg, nonce, key) {
-    checkArrayTypes(msg, nonce, key);
-    checkLengths(key, nonce);
-    var m = new Uint8Array(crypto_secretbox_ZEROBYTES + msg.length);
-    var c = new Uint8Array(m.length);
-    for (var i = 0; i < msg.length; i++)
-        m[i + crypto_secretbox_ZEROBYTES] = msg[i];
-    crypto_secretbox(c, m, m.length, nonce, key);
-    return c.subarray(crypto_secretbox_BOXZEROBYTES);
-}
-exports.secretbox = secretbox;
-function secretbox_open(box, nonce, key) {
-    checkArrayTypes(box, nonce, key);
-    checkLengths(key, nonce);
-    var c = new Uint8Array(crypto_secretbox_BOXZEROBYTES + box.length);
-    var m = new Uint8Array(c.length);
-    for (var i = 0; i < box.length; i++)
-        c[i + crypto_secretbox_BOXZEROBYTES] = box[i];
-    if (c.length < 32)
-        return null;
-    if (crypto_secretbox_open(m, c, c.length, nonce, key) !== 0)
-        return null;
-    return m.subarray(crypto_secretbox_ZEROBYTES);
-}
-exports.secretbox_open = secretbox_open;
-exports.secretbox_keyLength = crypto_secretbox_KEYBYTES;
-exports.secretbox_nonceLength = crypto_secretbox_NONCEBYTES;
-exports.secretbox_overheadLength = crypto_secretbox_BOXZEROBYTES;
 function scalarMult(n, p) {
     checkArrayTypes(n, p);
     if (n.length !== crypto_scalarmult_SCALARBYTES)
         throw new Error("bad n size");
     if (p.length !== crypto_scalarmult_BYTES)
         throw new Error("bad p size");
-    var q = new Uint8Array(crypto_scalarmult_BYTES);
+    const q = new Uint8Array(crypto_scalarmult_BYTES);
     crypto_scalarmult(q, n, p);
     return q;
 }
@@ -5856,59 +4482,18 @@ function scalarMult_base(n) {
     checkArrayTypes(n);
     if (n.length !== crypto_scalarmult_SCALARBYTES)
         throw new Error("bad n size");
-    var q = new Uint8Array(crypto_scalarmult_BYTES);
+    const q = new Uint8Array(crypto_scalarmult_BYTES);
     crypto_scalarmult_base(q, n);
     return q;
 }
 exports.scalarMult_base = scalarMult_base;
 exports.scalarMult_scalarLength = crypto_scalarmult_SCALARBYTES;
 exports.scalarMult_groupElementLength = crypto_scalarmult_BYTES;
-function box(msg, nonce, publicKey, secretKey) {
-    var k = box_before(publicKey, secretKey);
-    return secretbox(msg, nonce, k);
-}
-exports.box = box;
-function box_before(publicKey, secretKey) {
-    checkArrayTypes(publicKey, secretKey);
-    checkBoxLengths(publicKey, secretKey);
-    var k = new Uint8Array(crypto_box_BEFORENMBYTES);
-    crypto_box_beforenm(k, publicKey, secretKey);
-    return k;
-}
-exports.box_before = box_before;
-exports.box_after = secretbox;
-function box_open(msg, nonce, publicKey, secretKey) {
-    var k = box_before(publicKey, secretKey);
-    return secretbox_open(msg, nonce, k);
-}
-exports.box_open = box_open;
-exports.box_open_after = secretbox_open;
-function box_keyPair() {
-    var pk = new Uint8Array(crypto_box_PUBLICKEYBYTES);
-    var sk = new Uint8Array(crypto_box_SECRETKEYBYTES);
-    crypto_box_keypair(pk, sk);
-    return { publicKey: pk, secretKey: sk };
-}
-exports.box_keyPair = box_keyPair;
-function box_keyPair_fromSecretKey(secretKey) {
-    checkArrayTypes(secretKey);
-    if (secretKey.length !== crypto_box_SECRETKEYBYTES)
-        throw new Error("bad secret key size");
-    var pk = new Uint8Array(crypto_box_PUBLICKEYBYTES);
-    crypto_scalarmult_base(pk, secretKey);
-    return { publicKey: pk, secretKey: new Uint8Array(secretKey) };
-}
-exports.box_keyPair_fromSecretKey = box_keyPair_fromSecretKey;
-exports.box_publicKeyLength = crypto_box_PUBLICKEYBYTES;
-exports.box_secretKeyLength = crypto_box_SECRETKEYBYTES;
-exports.box_sharedKeyLength = crypto_box_BEFORENMBYTES;
-exports.box_nonceLength = crypto_box_NONCEBYTES;
-exports.box_overheadLength = exports.secretbox_overheadLength;
 function sign(msg, secretKey) {
     checkArrayTypes(msg, secretKey);
     if (secretKey.length !== crypto_sign_SECRETKEYBYTES)
         throw new Error("bad secret key size");
-    var signedMsg = new Uint8Array(crypto_sign_BYTES + msg.length);
+    const signedMsg = new Uint8Array(crypto_sign_BYTES + msg.length);
     crypto_sign(signedMsg, msg, msg.length, secretKey);
     return signedMsg;
 }
@@ -5917,20 +4502,20 @@ function sign_open(signedMsg, publicKey) {
     checkArrayTypes(signedMsg, publicKey);
     if (publicKey.length !== crypto_sign_PUBLICKEYBYTES)
         throw new Error("bad public key size");
-    var tmp = new Uint8Array(signedMsg.length);
-    var mlen = crypto_sign_open(tmp, signedMsg, signedMsg.length, publicKey);
+    const tmp = new Uint8Array(signedMsg.length);
+    const mlen = crypto_sign_open(tmp, signedMsg, signedMsg.length, publicKey);
     if (mlen < 0)
         return null;
-    var m = new Uint8Array(mlen);
-    for (var i = 0; i < m.length; i++)
+    const m = new Uint8Array(mlen);
+    for (let i = 0; i < m.length; i++)
         m[i] = tmp[i];
     return m;
 }
 exports.sign_open = sign_open;
 function sign_detached(msg, secretKey) {
-    var signedMsg = sign(msg, secretKey);
-    var sig = new Uint8Array(crypto_sign_BYTES);
-    for (var i = 0; i < sig.length; i++)
+    const signedMsg = sign(msg, secretKey);
+    const sig = new Uint8Array(crypto_sign_BYTES);
+    for (let i = 0; i < sig.length; i++)
         sig[i] = signedMsg[i];
     return sig;
 }
@@ -5941,9 +4526,9 @@ function sign_detached_verify(msg, sig, publicKey) {
         throw new Error("bad signature size");
     if (publicKey.length !== crypto_sign_PUBLICKEYBYTES)
         throw new Error("bad public key size");
-    var sm = new Uint8Array(crypto_sign_BYTES + msg.length);
-    var m = new Uint8Array(crypto_sign_BYTES + msg.length);
-    var i;
+    const sm = new Uint8Array(crypto_sign_BYTES + msg.length);
+    const m = new Uint8Array(crypto_sign_BYTES + msg.length);
+    let i;
     for (i = 0; i < crypto_sign_BYTES; i++)
         sm[i] = sig[i];
     for (i = 0; i < msg.length; i++)
@@ -5952,8 +4537,8 @@ function sign_detached_verify(msg, sig, publicKey) {
 }
 exports.sign_detached_verify = sign_detached_verify;
 function sign_keyPair() {
-    var pk = new Uint8Array(crypto_sign_PUBLICKEYBYTES);
-    var sk = new Uint8Array(crypto_sign_SECRETKEYBYTES);
+    const pk = new Uint8Array(crypto_sign_PUBLICKEYBYTES);
+    const sk = new Uint8Array(crypto_sign_SECRETKEYBYTES);
     crypto_sign_keypair(pk, sk, false);
     return { publicKey: pk, secretKey: sk };
 }
@@ -5979,8 +4564,8 @@ function sign_keyPair_fromSecretKey(secretKey) {
     checkArrayTypes(secretKey);
     if (secretKey.length !== crypto_sign_SECRETKEYBYTES)
         throw new Error("bad secret key size");
-    var pk = new Uint8Array(crypto_sign_PUBLICKEYBYTES);
-    for (var i = 0; i < pk.length; i++)
+    const pk = new Uint8Array(crypto_sign_PUBLICKEYBYTES);
+    for (let i = 0; i < pk.length; i++)
         pk[i] = secretKey[32 + i];
     return { publicKey: pk, secretKey: new Uint8Array(secretKey) };
 }
@@ -5989,9 +4574,9 @@ function sign_keyPair_fromSeed(seed) {
     checkArrayTypes(seed);
     if (seed.length !== crypto_sign_SEEDBYTES)
         throw new Error("bad seed size");
-    var pk = new Uint8Array(crypto_sign_PUBLICKEYBYTES);
-    var sk = new Uint8Array(crypto_sign_SECRETKEYBYTES);
-    for (var i = 0; i < 32; i++)
+    const pk = new Uint8Array(crypto_sign_PUBLICKEYBYTES);
+    const sk = new Uint8Array(crypto_sign_SECRETKEYBYTES);
+    for (let i = 0; i < 32; i++)
         sk[i] = seed[i];
     crypto_sign_keypair(pk, sk, true);
     return { publicKey: pk, secretKey: sk };
@@ -6003,7 +4588,7 @@ exports.sign_seedLength = crypto_sign_SEEDBYTES;
 exports.sign_signatureLength = crypto_sign_BYTES;
 function hash(msg) {
     checkArrayTypes(msg);
-    var h = new Uint8Array(crypto_hash_BYTES);
+    const h = new Uint8Array(crypto_hash_BYTES);
     crypto_hash(h, msg, msg.length);
     return h;
 }
@@ -6044,14 +4629,15 @@ exports.sign_ed25519_pk_to_curve25519 = sign_ed25519_pk_to_curve25519;
 (function () {
     // Initialize PRNG if environment provides CSPRNG.
     // If not, methods calling randombytes will throw.
-    const crypto$1 = typeof self !== "undefined" ? self.crypto || self.msCrypto : null;
-    if (crypto$1 && crypto$1.getRandomValues) {
+    const cr = typeof self !== "undefined" ? self.crypto || self.msCrypto : null;
+    if (cr && cr.getRandomValues) {
         // Browsers.
-        var QUOTA = 65536;
+        const QUOTA = 65536;
         setPRNG(function (x, n) {
-            var i, v = new Uint8Array(n);
+            let i;
+            const v = new Uint8Array(n);
             for (i = 0; i < n; i += QUOTA) {
-                crypto$1.getRandomValues(v.subarray(i, i + Math.min(n - i, QUOTA)));
+                cr.getRandomValues(v.subarray(i, i + Math.min(n - i, QUOTA)));
             }
             for (i = 0; i < n; i++)
                 x[i] = v[i];
@@ -6060,11 +4646,12 @@ exports.sign_ed25519_pk_to_curve25519 = sign_ed25519_pk_to_curve25519;
     }
     else if (typeof require !== "undefined") {
         // Node.js.
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const cr = crypto;
         if (cr && cr.randomBytes) {
             setPRNG(function (x, n) {
-                var i, v = cr.randomBytes(n);
-                for (i = 0; i < n; i++)
+                const v = cr.randomBytes(n);
+                for (let i = 0; i < n; i++)
                     x[i] = v[i];
                 cleanup(v);
             });
@@ -6077,44 +4664,27 @@ exports.sign_ed25519_pk_to_curve25519 = sign_ed25519_pk_to_curve25519;
 unwrapExports(naclFast);
 var naclFast_1 = naclFast.HashState;
 var naclFast_2 = naclFast.randomBytes;
-var naclFast_3 = naclFast.secretbox;
-var naclFast_4 = naclFast.secretbox_open;
-var naclFast_5 = naclFast.secretbox_keyLength;
-var naclFast_6 = naclFast.secretbox_nonceLength;
-var naclFast_7 = naclFast.secretbox_overheadLength;
-var naclFast_8 = naclFast.scalarMult;
-var naclFast_9 = naclFast.scalarMult_base;
-var naclFast_10 = naclFast.scalarMult_scalarLength;
-var naclFast_11 = naclFast.scalarMult_groupElementLength;
-var naclFast_12 = naclFast.box;
-var naclFast_13 = naclFast.box_before;
-var naclFast_14 = naclFast.box_after;
-var naclFast_15 = naclFast.box_open;
-var naclFast_16 = naclFast.box_open_after;
-var naclFast_17 = naclFast.box_keyPair;
-var naclFast_18 = naclFast.box_keyPair_fromSecretKey;
-var naclFast_19 = naclFast.box_publicKeyLength;
-var naclFast_20 = naclFast.box_secretKeyLength;
-var naclFast_21 = naclFast.box_sharedKeyLength;
-var naclFast_22 = naclFast.box_nonceLength;
-var naclFast_23 = naclFast.box_overheadLength;
-var naclFast_24 = naclFast.sign;
-var naclFast_25 = naclFast.sign_open;
-var naclFast_26 = naclFast.sign_detached;
-var naclFast_27 = naclFast.sign_detached_verify;
-var naclFast_28 = naclFast.sign_keyPair;
-var naclFast_29 = naclFast.x25519_edwards_keyPair_fromSecretKey;
-var naclFast_30 = naclFast.sign_keyPair_fromSecretKey;
-var naclFast_31 = naclFast.sign_keyPair_fromSeed;
-var naclFast_32 = naclFast.sign_publicKeyLength;
-var naclFast_33 = naclFast.sign_secretKeyLength;
-var naclFast_34 = naclFast.sign_seedLength;
-var naclFast_35 = naclFast.sign_signatureLength;
-var naclFast_36 = naclFast.hash;
-var naclFast_37 = naclFast.hash_hashLength;
-var naclFast_38 = naclFast.verify;
-var naclFast_39 = naclFast.setPRNG;
-var naclFast_40 = naclFast.sign_ed25519_pk_to_curve25519;
+var naclFast_3 = naclFast.scalarMult;
+var naclFast_4 = naclFast.scalarMult_base;
+var naclFast_5 = naclFast.scalarMult_scalarLength;
+var naclFast_6 = naclFast.scalarMult_groupElementLength;
+var naclFast_7 = naclFast.sign;
+var naclFast_8 = naclFast.sign_open;
+var naclFast_9 = naclFast.sign_detached;
+var naclFast_10 = naclFast.sign_detached_verify;
+var naclFast_11 = naclFast.sign_keyPair;
+var naclFast_12 = naclFast.x25519_edwards_keyPair_fromSecretKey;
+var naclFast_13 = naclFast.sign_keyPair_fromSecretKey;
+var naclFast_14 = naclFast.sign_keyPair_fromSeed;
+var naclFast_15 = naclFast.sign_publicKeyLength;
+var naclFast_16 = naclFast.sign_secretKeyLength;
+var naclFast_17 = naclFast.sign_seedLength;
+var naclFast_18 = naclFast.sign_signatureLength;
+var naclFast_19 = naclFast.hash;
+var naclFast_20 = naclFast.hash_hashLength;
+var naclFast_21 = naclFast.verify;
+var naclFast_22 = naclFast.setPRNG;
+var naclFast_23 = naclFast.sign_ed25519_pk_to_curve25519;
 
 var BigInteger = createCommonjsModule(function (module) {
 var bigInt = (function (undefined$1) {
@@ -7855,10 +6425,7 @@ class HMAC {
         this.digestLength = this.inner.digestLength;
         const pad = new Uint8Array(this.blockSize);
         if (key.length > this.blockSize) {
-            new HashSha256()
-                .update(key)
-                .finish(pad)
-                .clean();
+            new HashSha256().update(key).finish(pad).clean();
         }
         else {
             for (let i = 0; i < key.length; i++) {
@@ -7966,9 +6533,10 @@ var kdf_1 = createCommonjsModule(function (module, exports) {
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 
+const nacl = tslib_1.__importStar(naclFast);
 
 function sha512(data) {
-    return naclFast.hash(data);
+    return nacl.hash(data);
 }
 exports.sha512 = sha512;
 function hmac(digest, blockSize, key, message) {
@@ -8056,18 +6624,16 @@ var talerCrypto = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+
 /**
  * Native implementation of GNU Taler crypto.
  */
-
-const big_integer_1 = __importDefault(BigInteger);
+const nacl = tslib_1.__importStar(naclFast);
+const big_integer_1 = tslib_1.__importDefault(BigInteger);
 
 function getRandomBytes(n) {
-    return naclFast.randomBytes(n);
+    return nacl.randomBytes(n);
 }
 exports.getRandomBytes = getRandomBytes;
 const encTable = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
@@ -8166,28 +6732,28 @@ function decodeCrock(encoded) {
 }
 exports.decodeCrock = decodeCrock;
 function eddsaGetPublic(eddsaPriv) {
-    const pair = naclFast.sign_keyPair_fromSeed(eddsaPriv);
+    const pair = nacl.sign_keyPair_fromSeed(eddsaPriv);
     return pair.publicKey;
 }
 exports.eddsaGetPublic = eddsaGetPublic;
 function ecdheGetPublic(ecdhePriv) {
-    return naclFast.scalarMult_base(ecdhePriv);
+    return nacl.scalarMult_base(ecdhePriv);
 }
 exports.ecdheGetPublic = ecdheGetPublic;
 function keyExchangeEddsaEcdhe(eddsaPriv, ecdhePub) {
-    const ph = naclFast.hash(eddsaPriv);
+    const ph = nacl.hash(eddsaPriv);
     const a = new Uint8Array(32);
     for (let i = 0; i < 32; i++) {
         a[i] = ph[i];
     }
-    const x = naclFast.scalarMult(a, ecdhePub);
-    return naclFast.hash(x);
+    const x = nacl.scalarMult(a, ecdhePub);
+    return nacl.hash(x);
 }
 exports.keyExchangeEddsaEcdhe = keyExchangeEddsaEcdhe;
 function keyExchangeEcdheEddsa(ecdhePriv, eddsaPub) {
-    const curve25519Pub = naclFast.sign_ed25519_pk_to_curve25519(eddsaPub);
-    const x = naclFast.scalarMult(ecdhePriv, curve25519Pub);
-    return naclFast.hash(x);
+    const curve25519Pub = nacl.sign_ed25519_pk_to_curve25519(eddsaPub);
+    const x = nacl.scalarMult(ecdhePriv, curve25519Pub);
+    return nacl.hash(x);
 }
 exports.keyExchangeEcdheEddsa = keyExchangeEcdheEddsa;
 /**
@@ -8302,36 +6868,36 @@ function rsaVerify(hm, rsaSig, rsaPubEnc) {
 }
 exports.rsaVerify = rsaVerify;
 function createEddsaKeyPair() {
-    const eddsaPriv = naclFast.randomBytes(32);
+    const eddsaPriv = nacl.randomBytes(32);
     const eddsaPub = eddsaGetPublic(eddsaPriv);
     return { eddsaPriv, eddsaPub };
 }
 exports.createEddsaKeyPair = createEddsaKeyPair;
 function createEcdheKeyPair() {
-    const ecdhePriv = naclFast.randomBytes(32);
+    const ecdhePriv = nacl.randomBytes(32);
     const ecdhePub = ecdheGetPublic(ecdhePriv);
     return { ecdhePriv, ecdhePub };
 }
 exports.createEcdheKeyPair = createEcdheKeyPair;
 function createBlindingKeySecret() {
-    return naclFast.randomBytes(32);
+    return nacl.randomBytes(32);
 }
 exports.createBlindingKeySecret = createBlindingKeySecret;
 function hash(d) {
-    return naclFast.hash(d);
+    return nacl.hash(d);
 }
 exports.hash = hash;
 function eddsaSign(msg, eddsaPriv) {
-    const pair = naclFast.sign_keyPair_fromSeed(eddsaPriv);
-    return naclFast.sign_detached(msg, pair.secretKey);
+    const pair = nacl.sign_keyPair_fromSeed(eddsaPriv);
+    return nacl.sign_detached(msg, pair.secretKey);
 }
 exports.eddsaSign = eddsaSign;
 function eddsaVerify(msg, sig, eddsaPub) {
-    return naclFast.sign_detached_verify(msg, sig, eddsaPub);
+    return nacl.sign_detached_verify(msg, sig, eddsaPub);
 }
 exports.eddsaVerify = eddsaVerify;
 function createHashContext() {
-    return new naclFast.HashState();
+    return new nacl.HashState();
 }
 exports.createHashContext = createHashContext;
 function setupRefreshPlanchet(secretSeed, coinNumber) {
@@ -8374,6 +6940,1008 @@ var talerCrypto_17 = talerCrypto.eddsaVerify;
 var talerCrypto_18 = talerCrypto.createHashContext;
 var talerCrypto_19 = talerCrypto.setupRefreshPlanchet;
 
+var ReserveTransaction = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2019 Taler Systems S.A.
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @author Florian Dold <dold@taler.net>
+ */
+/**
+ * Imports.
+ */
+
+
+exports.codecForReserveWithdrawTransaction = () => codec.makeCodecForObject()
+    .property("amount", codec.codecForString)
+    .property("h_coin_envelope", codec.codecForString)
+    .property("h_denom_pub", codec.codecForString)
+    .property("reserve_sig", codec.codecForString)
+    .property("type", codec.makeCodecForConstString("WITHDRAW" /* Withdraw */))
+    .property("withdraw_fee", codec.codecForString)
+    .build("ReserveWithdrawTransaction");
+exports.codecForReserveCreditTransaction = () => codec.makeCodecForObject()
+    .property("amount", codec.codecForString)
+    .property("sender_account_url", codec.codecForString)
+    .property("timestamp", time.codecForTimestamp)
+    .property("wire_reference", codec.codecForString)
+    .property("type", codec.makeCodecForConstString("CREDIT" /* Credit */))
+    .build("ReserveCreditTransaction");
+exports.codecForReserveClosingTransaction = () => codec.makeCodecForObject()
+    .property("amount", codec.codecForString)
+    .property("closing_fee", codec.codecForString)
+    .property("exchange_pub", codec.codecForString)
+    .property("exchange_sig", codec.codecForString)
+    .property("h_wire", codec.codecForString)
+    .property("timestamp", time.codecForTimestamp)
+    .property("type", codec.makeCodecForConstString("CLOSING" /* Closing */))
+    .property("wtid", codec.codecForString)
+    .build("ReserveClosingTransaction");
+exports.codecForReserveRecoupTransaction = () => codec.makeCodecForObject()
+    .property("amount", codec.codecForString)
+    .property("coin_pub", codec.codecForString)
+    .property("exchange_pub", codec.codecForString)
+    .property("exchange_sig", codec.codecForString)
+    .property("timestamp", time.codecForTimestamp)
+    .property("type", codec.makeCodecForConstString("RECOUP" /* Recoup */))
+    .build("ReserveRecoupTransaction");
+exports.codecForReserveTransaction = () => codec.makeCodecForUnion()
+    .discriminateOn("type")
+    .alternative("WITHDRAW" /* Withdraw */, exports.codecForReserveWithdrawTransaction())
+    .alternative("CLOSING" /* Closing */, exports.codecForReserveClosingTransaction())
+    .alternative("RECOUP" /* Recoup */, exports.codecForReserveRecoupTransaction())
+    .alternative("CREDIT" /* Credit */, exports.codecForReserveCreditTransaction())
+    .build("ReserveTransaction");
+
+});
+
+unwrapExports(ReserveTransaction);
+var ReserveTransaction_1 = ReserveTransaction.codecForReserveWithdrawTransaction;
+var ReserveTransaction_2 = ReserveTransaction.codecForReserveCreditTransaction;
+var ReserveTransaction_3 = ReserveTransaction.codecForReserveClosingTransaction;
+var ReserveTransaction_4 = ReserveTransaction.codecForReserveRecoupTransaction;
+var ReserveTransaction_5 = ReserveTransaction.codecForReserveTransaction;
+
+var ReserveStatus = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2019 Taler Systems S.A.
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @author Florian Dold <dold@taler.net>
+ */
+/**
+ * Imports.
+ */
+
+
+exports.codecForReserveStatus = () => codec.makeCodecForObject()
+    .property("balance", codec.codecForString)
+    .property("history", codec.makeCodecForList(ReserveTransaction.codecForReserveTransaction()))
+    .build("ReserveStatus");
+
+});
+
+unwrapExports(ReserveStatus);
+var ReserveStatus_1 = ReserveStatus.codecForReserveStatus;
+
+var reserveHistoryUtil = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2020 Taler Systems S.A.
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+const Amounts = tslib_1.__importStar(amounts);
+
+
+/**
+ * Check if two reserve history items (exchange's version) match.
+ */
+function isRemoteHistoryMatch(t1, t2) {
+    switch (t1.type) {
+        case "CLOSING" /* Closing */: {
+            return t1.type === t2.type && t1.wtid == t2.wtid;
+        }
+        case "CREDIT" /* Credit */: {
+            return t1.type === t2.type && t1.wire_reference === t2.wire_reference;
+        }
+        case "RECOUP" /* Recoup */: {
+            return (t1.type === t2.type &&
+                t1.coin_pub === t2.coin_pub &&
+                time.timestampCmp(t1.timestamp, t2.timestamp) === 0);
+        }
+        case "WITHDRAW" /* Withdraw */: {
+            return t1.type === t2.type && t1.h_coin_envelope === t2.h_coin_envelope;
+        }
+    }
+}
+/**
+ * Check a local reserve history item and a remote history item are a match.
+ */
+function isLocalRemoteHistoryMatch(t1, t2) {
+    switch (t1.type) {
+        case "credit" /* Credit */: {
+            return (t2.type === "CREDIT" /* Credit */ &&
+                !!t1.expectedAmount &&
+                Amounts.cmp(t1.expectedAmount, Amounts.parseOrThrow(t2.amount)) === 0);
+        }
+        case "withdraw" /* Withdraw */:
+            return (t2.type === "WITHDRAW" /* Withdraw */ &&
+                !!t1.expectedAmount &&
+                Amounts.cmp(t1.expectedAmount, Amounts.parseOrThrow(t2.amount)) === 0);
+        case "recoup" /* Recoup */: {
+            return (t2.type === "RECOUP" /* Recoup */ &&
+                !!t1.expectedAmount &&
+                Amounts.cmp(t1.expectedAmount, Amounts.parseOrThrow(t2.amount)) === 0);
+        }
+    }
+    return false;
+}
+exports.isLocalRemoteHistoryMatch = isLocalRemoteHistoryMatch;
+/**
+ * Compute totals for the wallet's view of the reserve history.
+ */
+function summarizeReserveHistory(localHistory, currency) {
+    const posAmounts = [];
+    const negAmounts = [];
+    const expectedPosAmounts = [];
+    const expectedNegAmounts = [];
+    const withdrawnAmounts = [];
+    for (const item of localHistory) {
+        switch (item.type) {
+            case "credit" /* Credit */:
+                if (item.matchedExchangeTransaction) {
+                    posAmounts.push(Amounts.parseOrThrow(item.matchedExchangeTransaction.amount));
+                }
+                else if (item.expectedAmount) {
+                    expectedPosAmounts.push(item.expectedAmount);
+                }
+                break;
+            case "recoup" /* Recoup */:
+                if (item.matchedExchangeTransaction) {
+                    if (item.matchedExchangeTransaction) {
+                        posAmounts.push(Amounts.parseOrThrow(item.matchedExchangeTransaction.amount));
+                    }
+                    else if (item.expectedAmount) {
+                        expectedPosAmounts.push(item.expectedAmount);
+                    }
+                    else {
+                        throw Error("invariant failed");
+                    }
+                }
+                break;
+            case "closing" /* Closing */:
+                if (item.matchedExchangeTransaction) {
+                    negAmounts.push(Amounts.parseOrThrow(item.matchedExchangeTransaction.amount));
+                }
+                else {
+                    throw Error("invariant failed");
+                }
+                break;
+            case "withdraw" /* Withdraw */:
+                if (item.matchedExchangeTransaction) {
+                    negAmounts.push(Amounts.parseOrThrow(item.matchedExchangeTransaction.amount));
+                    withdrawnAmounts.push(Amounts.parseOrThrow(item.matchedExchangeTransaction.amount));
+                }
+                else if (item.expectedAmount) {
+                    expectedNegAmounts.push(item.expectedAmount);
+                }
+                else {
+                    throw Error("invariant failed");
+                }
+                break;
+        }
+    }
+    const z = Amounts.getZero(currency);
+    const computedBalance = Amounts.sub(Amounts.add(z, ...posAmounts).amount, ...negAmounts).amount;
+    const unclaimedReserveAmount = Amounts.sub(Amounts.add(z, ...posAmounts).amount, ...negAmounts, ...expectedNegAmounts).amount;
+    const awaitedReserveAmount = Amounts.sub(Amounts.add(z, ...expectedPosAmounts).amount, ...expectedNegAmounts).amount;
+    const withdrawnAmount = Amounts.add(z, ...withdrawnAmounts).amount;
+    return {
+        computedReserveBalance: computedBalance,
+        unclaimedReserveAmount: unclaimedReserveAmount,
+        awaitedReserveAmount: awaitedReserveAmount,
+        withdrawnAmount,
+    };
+}
+exports.summarizeReserveHistory = summarizeReserveHistory;
+/**
+ * Reconcile the wallet's local model of the reserve history
+ * with the reserve history of the exchange.
+ */
+function reconcileReserveHistory(localHistory, remoteHistory) {
+    const updatedLocalHistory = helpers.deepCopy(localHistory);
+    const newMatchedItems = [];
+    const newAddedItems = [];
+    const remoteMatched = remoteHistory.map(() => false);
+    const localMatched = localHistory.map(() => false);
+    // Take care of deposits
+    // First, see which pairs are already a definite match.
+    for (let remoteIndex = 0; remoteIndex < remoteHistory.length; remoteIndex++) {
+        const rhi = remoteHistory[remoteIndex];
+        for (let localIndex = 0; localIndex < localHistory.length; localIndex++) {
+            if (localMatched[localIndex]) {
+                continue;
+            }
+            const lhi = localHistory[localIndex];
+            if (!lhi.matchedExchangeTransaction) {
+                continue;
+            }
+            if (isRemoteHistoryMatch(rhi, lhi.matchedExchangeTransaction)) {
+                localMatched[localIndex] = true;
+                remoteMatched[remoteIndex] = true;
+                break;
+            }
+        }
+    }
+    // Check that all previously matched items are still matched
+    for (let localIndex = 0; localIndex < localHistory.length; localIndex++) {
+        if (localMatched[localIndex]) {
+            continue;
+        }
+        const lhi = localHistory[localIndex];
+        if (lhi.matchedExchangeTransaction) {
+            // Don't use for further matching
+            localMatched[localIndex] = true;
+            // FIXME: emit some error here!
+            throw Error("previously matched reserve history item now unmatched");
+        }
+    }
+    // Next, find out if there are any exact new matches between local and remote
+    // history items
+    for (let localIndex = 0; localIndex < localHistory.length; localIndex++) {
+        if (localMatched[localIndex]) {
+            continue;
+        }
+        const lhi = localHistory[localIndex];
+        for (let remoteIndex = 0; remoteIndex < remoteHistory.length; remoteIndex++) {
+            const rhi = remoteHistory[remoteIndex];
+            if (remoteMatched[remoteIndex]) {
+                continue;
+            }
+            if (isLocalRemoteHistoryMatch(lhi, rhi)) {
+                localMatched[localIndex] = true;
+                remoteMatched[remoteIndex] = true;
+                updatedLocalHistory[localIndex].matchedExchangeTransaction = rhi;
+                newMatchedItems.push(lhi);
+                break;
+            }
+        }
+    }
+    // Finally we add new history items
+    for (let remoteIndex = 0; remoteIndex < remoteHistory.length; remoteIndex++) {
+        if (remoteMatched[remoteIndex]) {
+            continue;
+        }
+        const rhi = remoteHistory[remoteIndex];
+        let newItem;
+        switch (rhi.type) {
+            case "CLOSING" /* Closing */: {
+                newItem = {
+                    type: "closing" /* Closing */,
+                    matchedExchangeTransaction: rhi,
+                };
+                break;
+            }
+            case "CREDIT" /* Credit */: {
+                newItem = {
+                    type: "credit" /* Credit */,
+                    matchedExchangeTransaction: rhi,
+                };
+                break;
+            }
+            case "RECOUP" /* Recoup */: {
+                newItem = {
+                    type: "recoup" /* Recoup */,
+                    matchedExchangeTransaction: rhi,
+                };
+                break;
+            }
+            case "WITHDRAW" /* Withdraw */: {
+                newItem = {
+                    type: "withdraw" /* Withdraw */,
+                    matchedExchangeTransaction: rhi,
+                };
+                break;
+            }
+        }
+        updatedLocalHistory.push(newItem);
+        newAddedItems.push(newItem);
+    }
+    return {
+        updatedLocalHistory,
+        newAddedItems,
+        newMatchedItems,
+    };
+}
+exports.reconcileReserveHistory = reconcileReserveHistory;
+
+});
+
+unwrapExports(reserveHistoryUtil);
+var reserveHistoryUtil_1 = reserveHistoryUtil.isLocalRemoteHistoryMatch;
+var reserveHistoryUtil_2 = reserveHistoryUtil.summarizeReserveHistory;
+var reserveHistoryUtil_3 = reserveHistoryUtil.reconcileReserveHistory;
+
+var reserves = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2019 GNUnet e.V.
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const logger = new logging.Logger("reserves.ts");
+function resetReserveRetry(ws, reservePub) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.reserves, reservePub, (x) => {
+            if (x.retryInfo.active) {
+                x.retryInfo = dbTypes.initRetryInfo();
+            }
+            return x;
+        });
+    });
+}
+/**
+ * Create a reserve, but do not flag it as confirmed yet.
+ *
+ * Adds the corresponding exchange as a trusted exchange if it is neither
+ * audited nor trusted already.
+ */
+function createReserve(ws, req) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const keypair = yield ws.cryptoApi.createEddsaKeypair();
+        const now = time.getTimestampNow();
+        const canonExchange = helpers.canonicalizeBaseUrl(req.exchange);
+        let reserveStatus;
+        if (req.bankWithdrawStatusUrl) {
+            reserveStatus = dbTypes.ReserveRecordStatus.REGISTERING_BANK;
+        }
+        else {
+            reserveStatus = dbTypes.ReserveRecordStatus.UNCONFIRMED;
+        }
+        const reserveRecord = {
+            timestampCreated: now,
+            exchangeBaseUrl: canonExchange,
+            reservePriv: keypair.priv,
+            reservePub: keypair.pub,
+            senderWire: req.senderWire,
+            timestampConfirmed: undefined,
+            timestampReserveInfoPosted: undefined,
+            bankWithdrawStatusUrl: req.bankWithdrawStatusUrl,
+            exchangeWire: req.exchangeWire,
+            reserveStatus,
+            lastSuccessfulStatusQuery: undefined,
+            retryInfo: dbTypes.initRetryInfo(),
+            lastError: undefined,
+            reserveTransactions: [],
+            currency: req.amount.currency,
+        };
+        reserveRecord.reserveTransactions.push({
+            type: "credit" /* Credit */,
+            expectedAmount: req.amount,
+        });
+        const senderWire = req.senderWire;
+        if (senderWire) {
+            const rec = {
+                paytoUri: senderWire,
+            };
+            yield ws.db.put(dbTypes.Stores.senderWires, rec);
+        }
+        const exchangeInfo = yield exchanges.updateExchangeFromUrl(ws, req.exchange);
+        const exchangeDetails = exchangeInfo.details;
+        if (!exchangeDetails) {
+            console.log(exchangeDetails);
+            throw Error("exchange not updated");
+        }
+        const { isAudited, isTrusted } = yield exchanges.getExchangeTrust(ws, exchangeInfo);
+        let currencyRecord = yield ws.db.get(dbTypes.Stores.currencies, exchangeDetails.currency);
+        if (!currencyRecord) {
+            currencyRecord = {
+                auditors: [],
+                exchanges: [],
+                fractionalDigits: 2,
+                name: exchangeDetails.currency,
+            };
+        }
+        if (!isAudited && !isTrusted) {
+            currencyRecord.exchanges.push({
+                baseUrl: req.exchange,
+                exchangePub: exchangeDetails.masterPublicKey,
+            });
+        }
+        const cr = currencyRecord;
+        const resp = yield ws.db.runWithWriteTransaction([dbTypes.Stores.currencies, dbTypes.Stores.reserves, dbTypes.Stores.bankWithdrawUris], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            // Check if we have already created a reserve for that bankWithdrawStatusUrl
+            if (reserveRecord.bankWithdrawStatusUrl) {
+                const bwi = yield tx.get(dbTypes.Stores.bankWithdrawUris, reserveRecord.bankWithdrawStatusUrl);
+                if (bwi) {
+                    const otherReserve = yield tx.get(dbTypes.Stores.reserves, bwi.reservePub);
+                    if (otherReserve) {
+                        logger.trace("returning existing reserve for bankWithdrawStatusUri");
+                        return {
+                            exchange: otherReserve.exchangeBaseUrl,
+                            reservePub: otherReserve.reservePub,
+                        };
+                    }
+                }
+                yield tx.put(dbTypes.Stores.bankWithdrawUris, {
+                    reservePub: reserveRecord.reservePub,
+                    talerWithdrawUri: reserveRecord.bankWithdrawStatusUrl,
+                });
+            }
+            yield tx.put(dbTypes.Stores.currencies, cr);
+            yield tx.put(dbTypes.Stores.reserves, reserveRecord);
+            const r = {
+                exchange: canonExchange,
+                reservePub: keypair.pub,
+            };
+            return r;
+        }));
+        ws.notify({ type: "reserve-created" /* ReserveCreated */ });
+        // Asynchronously process the reserve, but return
+        // to the caller already.
+        processReserve(ws, resp.reservePub, true).catch((e) => {
+            console.error("Processing reserve (after createReserve) failed:", e);
+        });
+        return resp;
+    });
+}
+exports.createReserve = createReserve;
+/**
+ * Re-query the status of a reserve.
+ */
+function forceQueryReserve(ws, reservePub) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.reserves], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const reserve = yield tx.get(dbTypes.Stores.reserves, reservePub);
+            if (!reserve) {
+                return;
+            }
+            // Only force status query where it makes sense
+            switch (reserve.reserveStatus) {
+                case dbTypes.ReserveRecordStatus.DORMANT:
+                case dbTypes.ReserveRecordStatus.WITHDRAWING:
+                case dbTypes.ReserveRecordStatus.QUERYING_STATUS:
+                    break;
+                default:
+                    return;
+            }
+            reserve.reserveStatus = dbTypes.ReserveRecordStatus.QUERYING_STATUS;
+            reserve.retryInfo = dbTypes.initRetryInfo();
+            yield tx.put(dbTypes.Stores.reserves, reserve);
+        }));
+        yield processReserve(ws, reservePub, true);
+    });
+}
+exports.forceQueryReserve = forceQueryReserve;
+/**
+ * First fetch information requred to withdraw from the reserve,
+ * then deplete the reserve, withdrawing coins until it is empty.
+ *
+ * The returned promise resolves once the reserve is set to the
+ * state DORMANT.
+ */
+function processReserve(ws, reservePub, forceNow = false) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        return ws.memoProcessReserve.memo(reservePub, () => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const onOpError = (err) => incrementReserveRetry(ws, reservePub, err);
+            yield errors.guardOperationException(() => processReserveImpl(ws, reservePub, forceNow), onOpError);
+        }));
+    });
+}
+exports.processReserve = processReserve;
+function registerReserveWithBank(ws, reservePub) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
+        switch (reserve === null || reserve === void 0 ? void 0 : reserve.reserveStatus) {
+            case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
+            case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
+                break;
+            default:
+                return;
+        }
+        const bankStatusUrl = reserve.bankWithdrawStatusUrl;
+        if (!bankStatusUrl) {
+            return;
+        }
+        console.log("making selection");
+        if (reserve.timestampReserveInfoPosted) {
+            throw Error("bank claims that reserve info selection is not done");
+        }
+        // FIXME: parse bank response
+        yield ws.http.postJson(bankStatusUrl, {
+            reserve_pub: reservePub,
+            selected_exchange: reserve.exchangeWire,
+        });
+        yield ws.db.mutate(dbTypes.Stores.reserves, reservePub, (r) => {
+            switch (r.reserveStatus) {
+                case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
+                case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
+                    break;
+                default:
+                    return;
+            }
+            r.timestampReserveInfoPosted = time.getTimestampNow();
+            r.reserveStatus = dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK;
+            r.retryInfo = dbTypes.initRetryInfo();
+            return r;
+        });
+        ws.notify({ type: "wildcard" /* Wildcard */ });
+        return processReserveBankStatus(ws, reservePub);
+    });
+}
+function processReserveBankStatus(ws, reservePub) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const onOpError = (err) => incrementReserveRetry(ws, reservePub, err);
+        yield errors.guardOperationException(() => processReserveBankStatusImpl(ws, reservePub), onOpError);
+    });
+}
+exports.processReserveBankStatus = processReserveBankStatus;
+function processReserveBankStatusImpl(ws, reservePub) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
+        switch (reserve === null || reserve === void 0 ? void 0 : reserve.reserveStatus) {
+            case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
+            case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
+                break;
+            default:
+                return;
+        }
+        const bankStatusUrl = reserve.bankWithdrawStatusUrl;
+        if (!bankStatusUrl) {
+            return;
+        }
+        const statusResp = yield ws.http.get(bankStatusUrl);
+        if (statusResp.status !== 200) {
+            throw Error(`unexpected status ${statusResp.status} for bank status query`);
+        }
+        const status = talerTypes.codecForWithdrawOperationStatusResponse().decode(yield statusResp.json());
+        ws.notify({ type: "wildcard" /* Wildcard */ });
+        if (status.selection_done) {
+            if (reserve.reserveStatus === dbTypes.ReserveRecordStatus.REGISTERING_BANK) {
+                yield registerReserveWithBank(ws, reservePub);
+                return yield processReserveBankStatus(ws, reservePub);
+            }
+        }
+        else {
+            yield registerReserveWithBank(ws, reservePub);
+            return yield processReserveBankStatus(ws, reservePub);
+        }
+        if (status.transfer_done) {
+            yield ws.db.mutate(dbTypes.Stores.reserves, reservePub, (r) => {
+                switch (r.reserveStatus) {
+                    case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
+                    case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
+                        break;
+                    default:
+                        return;
+                }
+                const now = time.getTimestampNow();
+                r.timestampConfirmed = now;
+                r.reserveStatus = dbTypes.ReserveRecordStatus.QUERYING_STATUS;
+                r.retryInfo = dbTypes.initRetryInfo();
+                return r;
+            });
+            yield processReserveImpl(ws, reservePub, true);
+        }
+        else {
+            yield ws.db.mutate(dbTypes.Stores.reserves, reservePub, (r) => {
+                switch (r.reserveStatus) {
+                    case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
+                        break;
+                    default:
+                        return;
+                }
+                r.bankWithdrawConfirmUrl = status.confirm_transfer_url;
+                return r;
+            });
+            yield incrementReserveRetry(ws, reservePub, undefined);
+        }
+        ws.notify({ type: "wildcard" /* Wildcard */ });
+    });
+}
+function incrementReserveRetry(ws, reservePub, err) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.reserves], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const r = yield tx.get(dbTypes.Stores.reserves, reservePub);
+            if (!r) {
+                return;
+            }
+            if (!r.retryInfo) {
+                return;
+            }
+            console.log("updating retry info");
+            console.log("before", r.retryInfo);
+            r.retryInfo.retryCounter++;
+            dbTypes.updateRetryInfoTimeout(r.retryInfo);
+            console.log("after", r.retryInfo);
+            r.lastError = err;
+            yield tx.put(dbTypes.Stores.reserves, r);
+        }));
+        if (err) {
+            ws.notify({
+                type: "reserve-error" /* ReserveOperationError */,
+                operationError: err,
+            });
+        }
+    });
+}
+/**
+ * Update the information about a reserve that is stored in the wallet
+ * by quering the reserve's exchange.
+ */
+function updateReserve(ws, reservePub) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
+        if (!reserve) {
+            throw Error("reserve not in db");
+        }
+        if (reserve.timestampConfirmed === undefined) {
+            throw Error("reserve not confirmed yet");
+        }
+        if (reserve.reserveStatus !== dbTypes.ReserveRecordStatus.QUERYING_STATUS) {
+            return;
+        }
+        const reqUrl = new URL(`reserves/${reservePub}`, reserve.exchangeBaseUrl);
+        let resp;
+        try {
+            resp = yield ws.http.get(reqUrl.href);
+            console.log("got reserves/${RESERVE_PUB} response", yield resp.json());
+            if (resp.status === 404) {
+                const m = "reserve not known to the exchange yet";
+                throw new errors.OperationFailedError({
+                    type: "waiting",
+                    message: m,
+                    details: {},
+                });
+            }
+            if (resp.status !== 200) {
+                throw Error(`unexpected status code ${resp.status} for reserve/status`);
+            }
+        }
+        catch (e) {
+            logger.trace("caught exception for reserve/status");
+            const m = e.message;
+            const opErr = {
+                type: "network",
+                details: {},
+                message: m,
+            };
+            yield incrementReserveRetry(ws, reservePub, opErr);
+            throw new errors.OperationFailedAndReportedError(opErr);
+        }
+        const respJson = yield resp.json();
+        const reserveInfo = ReserveStatus.codecForReserveStatus().decode(respJson);
+        const balance = amounts.Amounts.parseOrThrow(reserveInfo.balance);
+        const currency = balance.currency;
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.reserves, dbTypes.Stores.reserveUpdatedEvents], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const r = yield tx.get(dbTypes.Stores.reserves, reservePub);
+            if (!r) {
+                return;
+            }
+            if (r.reserveStatus !== dbTypes.ReserveRecordStatus.QUERYING_STATUS) {
+                return;
+            }
+            const newHistoryTransactions = reserveInfo.history.slice(r.reserveTransactions.length);
+            const reserveUpdateId = talerCrypto.encodeCrock(talerCrypto.getRandomBytes(32));
+            const reconciled = reserveHistoryUtil.reconcileReserveHistory(r.reserveTransactions, reserveInfo.history);
+            console.log("reconciled history:", JSON.stringify(reconciled, undefined, 2));
+            const summary = reserveHistoryUtil.summarizeReserveHistory(reconciled.updatedLocalHistory, currency);
+            console.log("summary", summary);
+            if (reconciled.newAddedItems.length + reconciled.newMatchedItems.length !=
+                0) {
+                const reserveUpdate = {
+                    reservePub: r.reservePub,
+                    timestamp: time.getTimestampNow(),
+                    amountReserveBalance: amounts.Amounts.stringify(balance),
+                    amountExpected: amounts.Amounts.stringify(summary.awaitedReserveAmount),
+                    newHistoryTransactions,
+                    reserveUpdateId,
+                };
+                yield tx.put(dbTypes.Stores.reserveUpdatedEvents, reserveUpdate);
+                r.reserveStatus = dbTypes.ReserveRecordStatus.WITHDRAWING;
+                r.retryInfo = dbTypes.initRetryInfo();
+            }
+            else {
+                r.reserveStatus = dbTypes.ReserveRecordStatus.DORMANT;
+                r.retryInfo = dbTypes.initRetryInfo(false);
+            }
+            r.lastSuccessfulStatusQuery = time.getTimestampNow();
+            r.reserveTransactions = reconciled.updatedLocalHistory;
+            r.lastError = undefined;
+            yield tx.put(dbTypes.Stores.reserves, r);
+        }));
+        ws.notify({ type: "reserve-updated" /* ReserveUpdated */ });
+    });
+}
+function processReserveImpl(ws, reservePub, forceNow = false) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
+        if (!reserve) {
+            console.log("not processing reserve: reserve does not exist");
+            return;
+        }
+        if (!forceNow) {
+            const now = time.getTimestampNow();
+            if (reserve.retryInfo.nextRetry.t_ms > now.t_ms) {
+                logger.trace("processReserve retry not due yet");
+                return;
+            }
+        }
+        else {
+            yield resetReserveRetry(ws, reservePub);
+        }
+        logger.trace(`Processing reserve ${reservePub} with status ${reserve.reserveStatus}`);
+        switch (reserve.reserveStatus) {
+            case dbTypes.ReserveRecordStatus.UNCONFIRMED:
+                // nothing to do
+                break;
+            case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
+                yield processReserveBankStatus(ws, reservePub);
+                return yield processReserveImpl(ws, reservePub, true);
+            case dbTypes.ReserveRecordStatus.QUERYING_STATUS:
+                yield updateReserve(ws, reservePub);
+                return yield processReserveImpl(ws, reservePub, true);
+            case dbTypes.ReserveRecordStatus.WITHDRAWING:
+                yield depleteReserve(ws, reservePub);
+                break;
+            case dbTypes.ReserveRecordStatus.DORMANT:
+                // nothing to do
+                break;
+            case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
+                yield processReserveBankStatus(ws, reservePub);
+                break;
+            default:
+                console.warn("unknown reserve record status:", reserve.reserveStatus);
+                assertUnreachable_1.assertUnreachable(reserve.reserveStatus);
+                break;
+        }
+    });
+}
+function confirmReserve(ws, req) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const now = time.getTimestampNow();
+        yield ws.db.mutate(dbTypes.Stores.reserves, req.reservePub, (reserve) => {
+            if (reserve.reserveStatus !== dbTypes.ReserveRecordStatus.UNCONFIRMED) {
+                return;
+            }
+            reserve.timestampConfirmed = now;
+            reserve.reserveStatus = dbTypes.ReserveRecordStatus.QUERYING_STATUS;
+            reserve.retryInfo = dbTypes.initRetryInfo();
+            return reserve;
+        });
+        ws.notify({ type: "reserve-updated" /* ReserveUpdated */ });
+        processReserve(ws, req.reservePub, true).catch((e) => {
+            console.log("processing reserve (after confirmReserve) failed:", e);
+        });
+    });
+}
+exports.confirmReserve = confirmReserve;
+function makePlanchet(ws, reserve, denom) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const r = yield ws.cryptoApi.createPlanchet({
+            denomPub: denom.denomPub,
+            feeWithdraw: denom.feeWithdraw,
+            reservePriv: reserve.reservePriv,
+            reservePub: reserve.reservePub,
+            value: denom.value,
+        });
+        return {
+            blindingKey: r.blindingKey,
+            coinEv: r.coinEv,
+            coinPriv: r.coinPriv,
+            coinPub: r.coinPub,
+            coinValue: r.coinValue,
+            denomPub: r.denomPub,
+            denomPubHash: r.denomPubHash,
+            isFromTip: false,
+            reservePub: r.reservePub,
+            withdrawSig: r.withdrawSig,
+            coinEvHash: r.coinEvHash,
+        };
+    });
+}
+/**
+ * Withdraw coins from a reserve until it is empty.
+ *
+ * When finished, marks the reserve as depleted by setting
+ * the depleted timestamp.
+ */
+function depleteReserve(ws, reservePub) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
+        if (!reserve) {
+            return;
+        }
+        if (reserve.reserveStatus !== dbTypes.ReserveRecordStatus.WITHDRAWING) {
+            return;
+        }
+        logger.trace(`depleting reserve ${reservePub}`);
+        const summary = reserveHistoryUtil.summarizeReserveHistory(reserve.reserveTransactions, reserve.currency);
+        const withdrawAmount = summary.unclaimedReserveAmount;
+        logger.trace(`getting denom list`);
+        const denomsForWithdraw = yield withdraw.getVerifiedWithdrawDenomList(ws, reserve.exchangeBaseUrl, withdrawAmount);
+        logger.trace(`got denom list`);
+        if (denomsForWithdraw.length === 0) {
+            // Only complain about inability to withdraw if we
+            // didn't withdraw before.
+            if (amounts.Amounts.isZero(summary.withdrawnAmount)) {
+                const m = `Unable to withdraw from reserve, no denominations are available to withdraw.`;
+                const opErr = {
+                    type: "internal",
+                    message: m,
+                    details: {},
+                };
+                yield incrementReserveRetry(ws, reserve.reservePub, opErr);
+                console.log(m);
+                throw new errors.OperationFailedAndReportedError(opErr);
+            }
+            return;
+        }
+        logger.trace("selected denominations");
+        const withdrawalGroupId = talerCrypto.encodeCrock(naclFast.randomBytes(32));
+        const totalCoinValue = amounts.Amounts.sum(denomsForWithdraw.map((x) => x.value))
+            .amount;
+        const planchets = [];
+        for (const d of denomsForWithdraw) {
+            const p = yield makePlanchet(ws, reserve, d);
+            planchets.push(p);
+        }
+        const withdrawalRecord = {
+            withdrawalGroupId: withdrawalGroupId,
+            exchangeBaseUrl: reserve.exchangeBaseUrl,
+            source: {
+                type: "reserve" /* Reserve */,
+                reservePub: reserve.reservePub,
+            },
+            rawWithdrawalAmount: withdrawAmount,
+            timestampStart: time.getTimestampNow(),
+            denoms: denomsForWithdraw.map((x) => x.denomPub),
+            withdrawn: denomsForWithdraw.map((x) => false),
+            planchets,
+            totalCoinValue,
+            retryInfo: dbTypes.initRetryInfo(),
+            lastErrorPerCoin: {},
+            lastError: undefined,
+        };
+        const totalCoinWithdrawFee = amounts.Amounts.sum(denomsForWithdraw.map((x) => x.feeWithdraw)).amount;
+        const totalWithdrawAmount = amounts.Amounts.add(totalCoinValue, totalCoinWithdrawFee)
+            .amount;
+        const success = yield ws.db.runWithWriteTransaction([dbTypes.Stores.withdrawalGroups, dbTypes.Stores.reserves], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const newReserve = yield tx.get(dbTypes.Stores.reserves, reservePub);
+            if (!newReserve) {
+                return false;
+            }
+            if (newReserve.reserveStatus !== dbTypes.ReserveRecordStatus.WITHDRAWING) {
+                return false;
+            }
+            const newSummary = reserveHistoryUtil.summarizeReserveHistory(newReserve.reserveTransactions, newReserve.currency);
+            if (amounts.Amounts.cmp(newSummary.unclaimedReserveAmount, totalWithdrawAmount) < 0) {
+                // Something must have happened concurrently!
+                logger.error("aborting withdrawal session, likely concurrent withdrawal happened");
+                return false;
+            }
+            for (let i = 0; i < planchets.length; i++) {
+                const amt = amounts.Amounts.add(denomsForWithdraw[i].value, denomsForWithdraw[i].feeWithdraw).amount;
+                newReserve.reserveTransactions.push({
+                    type: "withdraw" /* Withdraw */,
+                    expectedAmount: amt,
+                });
+            }
+            newReserve.reserveStatus = dbTypes.ReserveRecordStatus.DORMANT;
+            newReserve.retryInfo = dbTypes.initRetryInfo(false);
+            yield tx.put(dbTypes.Stores.reserves, newReserve);
+            yield tx.put(dbTypes.Stores.withdrawalGroups, withdrawalRecord);
+            return true;
+        }));
+        if (success) {
+            console.log("processing new withdraw group");
+            ws.notify({
+                type: "withdraw-group-created" /* WithdrawGroupCreated */,
+                withdrawalGroupId: withdrawalGroupId,
+            });
+            yield withdraw.processWithdrawGroup(ws, withdrawalGroupId);
+        }
+        else {
+            console.trace("withdraw session already existed");
+        }
+    });
+}
+function createTalerWithdrawReserve(ws, talerWithdrawUri, selectedExchange) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const withdrawInfo = yield withdraw.getBankWithdrawalInfo(ws, talerWithdrawUri);
+        const exchangeWire = yield exchanges.getExchangePaytoUri(ws, selectedExchange, withdrawInfo.wireTypes);
+        const reserve = yield createReserve(ws, {
+            amount: withdrawInfo.amount,
+            bankWithdrawStatusUrl: withdrawInfo.extractedStatusUrl,
+            exchange: selectedExchange,
+            senderWire: withdrawInfo.senderWire,
+            exchangeWire: exchangeWire,
+        });
+        // We do this here, as the reserve should be registered before we return,
+        // so that we can redirect the user to the bank's status page.
+        yield processReserveBankStatus(ws, reserve.reservePub);
+        console.log("acceptWithdrawal: returning");
+        return {
+            reservePub: reserve.reservePub,
+            confirmTransferUrl: withdrawInfo.confirmTransferUrl,
+        };
+    });
+}
+exports.createTalerWithdrawReserve = createTalerWithdrawReserve;
+
+});
+
+unwrapExports(reserves);
+var reserves_1 = reserves.createReserve;
+var reserves_2 = reserves.forceQueryReserve;
+var reserves_3 = reserves.processReserve;
+var reserves_4 = reserves.processReserveBankStatus;
+var reserves_5 = reserves.confirmReserve;
+var reserves_6 = reserves.createTalerWithdrawReserve;
+
 var refresh = createCommonjsModule(function (module, exports) {
 /*
  This file is part of GNU Taler
@@ -8390,24 +7958,9 @@ var refresh = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Amounts = __importStar(amounts);
+
+
 
 
 
@@ -8429,11 +7982,11 @@ const logger = new logging.Logger("refresh.ts");
  * to refresh.
  */
 function getTotalRefreshCost(denoms, refreshedDenom, amountLeft) {
-    const withdrawAmount = Amounts.sub(amountLeft, refreshedDenom.feeRefresh)
+    const withdrawAmount = amounts.Amounts.sub(amountLeft, refreshedDenom.feeRefresh)
         .amount;
     const withdrawDenoms = withdraw.getWithdrawDenomList(withdrawAmount, denoms);
-    const resultingAmount = Amounts.add(Amounts.getZero(withdrawAmount.currency), ...withdrawDenoms.map(d => d.value)).amount;
-    const totalCost = Amounts.sub(amountLeft, resultingAmount).amount;
+    const resultingAmount = amounts.Amounts.add(amounts.Amounts.getZero(withdrawAmount.currency), ...withdrawDenoms.map((d) => d.value)).amount;
+    const totalCost = amounts.Amounts.sub(amountLeft, resultingAmount).amount;
     logger.trace("total refresh cost for", helpers.amountToPretty(amountLeft), "is", helpers.amountToPretty(totalCost));
     return totalCost;
 }
@@ -8442,7 +7995,7 @@ exports.getTotalRefreshCost = getTotalRefreshCost;
  * Create a refresh session inside a refresh group.
  */
 function refreshCreateSession(ws, refreshGroupId, coinIndex) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         logger.trace(`creating refresh session for coin ${coinIndex} in refresh group ${refreshGroupId}`);
         const refreshGroup = yield ws.db.get(dbTypes.Stores.refreshGroups, refreshGroupId);
         if (!refreshGroup) {
@@ -8474,17 +8027,16 @@ function refreshCreateSession(ws, refreshGroupId, coinIndex) {
         const availableDenoms = yield ws.db
             .iterIndex(dbTypes.Stores.denominations.exchangeBaseUrlIndex, exchange.baseUrl)
             .toArray();
-        const availableAmount = Amounts.sub(coin.currentAmount, oldDenom.feeRefresh)
+        const availableAmount = amounts.Amounts.sub(coin.currentAmount, oldDenom.feeRefresh)
             .amount;
         const newCoinDenoms = withdraw.getWithdrawDenomList(availableAmount, availableDenoms);
         if (newCoinDenoms.length === 0) {
             logger.trace(`not refreshing, available amount ${helpers.amountToPretty(availableAmount)} too small`);
-            yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.refreshGroups], (tx) => __awaiter(this, void 0, void 0, function* () {
+            yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.refreshGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 const rg = yield tx.get(dbTypes.Stores.refreshGroups, refreshGroupId);
                 if (!rg) {
                     return;
                 }
-                rg.finishedPerCoin[coinIndex] = true;
                 rg.finishedPerCoin[coinIndex] = true;
                 let allDone = true;
                 for (const f of rg.finishedPerCoin) {
@@ -8505,18 +8057,18 @@ function refreshCreateSession(ws, refreshGroupId, coinIndex) {
         const refreshSession = yield ws.cryptoApi.createRefreshSession(exchange.baseUrl, 3, coin, newCoinDenoms, oldDenom.feeRefresh);
         // Store refresh session and subtract refreshed amount from
         // coin in the same transaction.
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.refreshGroups, dbTypes.Stores.coins], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.refreshGroups, dbTypes.Stores.coins], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const c = yield tx.get(dbTypes.Stores.coins, coin.coinPub);
             if (!c) {
                 throw Error("coin not found, but marked for refresh");
             }
-            const r = Amounts.sub(c.currentAmount, refreshSession.amountRefreshInput);
+            const r = amounts.Amounts.sub(c.currentAmount, refreshSession.amountRefreshInput);
             if (r.saturated) {
                 console.log("can't refresh coin, no amount left");
                 return;
             }
             c.currentAmount = r.amount;
-            c.status = dbTypes.CoinStatus.Dormant;
+            c.status = "dormant" /* Dormant */;
             const rg = yield tx.get(dbTypes.Stores.refreshGroups, refreshGroupId);
             if (!rg) {
                 return;
@@ -8533,7 +8085,7 @@ function refreshCreateSession(ws, refreshGroupId, coinIndex) {
     });
 }
 function refreshMelt(ws, refreshGroupId, coinIndex) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const refreshGroup = yield ws.db.get(dbTypes.Stores.refreshGroups, refreshGroupId);
         if (!refreshGroup) {
             return;
@@ -8550,14 +8102,14 @@ function refreshMelt(ws, refreshGroupId, coinIndex) {
             console.error("can't melt coin, it does not exist");
             return;
         }
-        const reqUrl = new URL("refresh/melt", refreshSession.exchangeBaseUrl);
+        const reqUrl = new URL(`coins/${coin.coinPub}/melt`, refreshSession.exchangeBaseUrl);
         const meltReq = {
             coin_pub: coin.coinPub,
             confirm_sig: refreshSession.confirmSig,
             denom_pub_hash: coin.denomPubHash,
             denom_sig: coin.denomSig,
             rc: refreshSession.hash,
-            value_with_fee: Amounts.toString(refreshSession.amountRefreshInput),
+            value_with_fee: amounts.Amounts.stringify(refreshSession.amountRefreshInput),
         };
         logger.trace(`melt request for coin:`, meltReq);
         const resp = yield ws.http.postJson(reqUrl.href, meltReq);
@@ -8583,7 +8135,7 @@ function refreshMelt(ws, refreshGroupId, coinIndex) {
             throw Error("invalid response");
         }
         refreshSession.norevealIndex = norevealIndex;
-        yield ws.db.mutate(dbTypes.Stores.refreshGroups, refreshGroupId, rg => {
+        yield ws.db.mutate(dbTypes.Stores.refreshGroups, refreshGroupId, (rg) => {
             const rs = rg.refreshSessionPerCoin[coinIndex];
             if (!rs) {
                 return;
@@ -8603,7 +8155,7 @@ function refreshMelt(ws, refreshGroupId, coinIndex) {
     });
 }
 function refreshReveal(ws, refreshGroupId, coinIndex) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const refreshGroup = yield ws.db.get(dbTypes.Stores.refreshGroups, refreshGroupId);
         if (!refreshGroup) {
             return;
@@ -8640,7 +8192,7 @@ function refreshReveal(ws, refreshGroupId, coinIndex) {
             transfer_pub: refreshSession.transferPubs[norevealIndex],
             link_sigs: linkSigs,
         };
-        const reqUrl = new URL("refresh/reveal", refreshSession.exchangeBaseUrl);
+        const reqUrl = new URL(`refreshes/${refreshSession.hash}/reveal`, refreshSession.exchangeBaseUrl);
         logger.trace("reveal request:", req);
         let resp;
         try {
@@ -8672,7 +8224,7 @@ function refreshReveal(ws, refreshGroupId, coinIndex) {
                 console.error("denom not found");
                 continue;
             }
-            const pc = refreshSession.planchetsForGammas[refreshSession.norevealIndex][i];
+            const pc = refreshSession.planchetsForGammas[norevealIndex][i];
             const denomSig = yield ws.cryptoApi.rsaUnblind(respJson.ev_sigs[i].ev_sig, pc.blindingKey, denom.denomPub);
             const coin = {
                 blindingKey: pc.blindingKey,
@@ -8683,14 +8235,16 @@ function refreshReveal(ws, refreshGroupId, coinIndex) {
                 denomPubHash: denom.denomPubHash,
                 denomSig,
                 exchangeBaseUrl: refreshSession.exchangeBaseUrl,
-                reservePub: undefined,
-                status: dbTypes.CoinStatus.Fresh,
-                coinIndex: -1,
-                withdrawSessionId: "",
+                status: "fresh" /* Fresh */,
+                coinSource: {
+                    type: "refresh" /* Refresh */,
+                    oldCoinPub: refreshSession.meltCoinPub,
+                },
+                suspended: false,
             };
             coins.push(coin);
         }
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.refreshGroups], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.refreshGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const rg = yield tx.get(dbTypes.Stores.refreshGroups, refreshGroupId);
             if (!rg) {
                 console.log("no refresh session found");
@@ -8717,7 +8271,7 @@ function refreshReveal(ws, refreshGroupId, coinIndex) {
                 rg.timestampFinished = time.getTimestampNow();
                 rg.retryInfo = dbTypes.initRetryInfo(false);
             }
-            for (let coin of coins) {
+            for (const coin of coins) {
                 yield tx.put(dbTypes.Stores.coins, coin);
             }
             yield tx.put(dbTypes.Stores.refreshGroups, rg);
@@ -8729,8 +8283,8 @@ function refreshReveal(ws, refreshGroupId, coinIndex) {
     });
 }
 function incrementRefreshRetry(ws, refreshGroupId, err) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.refreshGroups], (tx) => __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.refreshGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const r = yield tx.get(dbTypes.Stores.refreshGroups, refreshGroupId);
             if (!r) {
                 return;
@@ -8747,17 +8301,17 @@ function incrementRefreshRetry(ws, refreshGroupId, err) {
     });
 }
 function processRefreshGroup(ws, refreshGroupId, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.memoProcessRefresh.memo(refreshGroupId, () => __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.memoProcessRefresh.memo(refreshGroupId, () => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const onOpErr = (e) => incrementRefreshRetry(ws, refreshGroupId, e);
-            return yield errors.guardOperationException(() => __awaiter(this, void 0, void 0, function* () { return yield processRefreshGroupImpl(ws, refreshGroupId, forceNow); }), onOpErr);
+            return yield errors.guardOperationException(() => tslib_1.__awaiter(this, void 0, void 0, function* () { return yield processRefreshGroupImpl(ws, refreshGroupId, forceNow); }), onOpErr);
         }));
     });
 }
 exports.processRefreshGroup = processRefreshGroup;
 function resetRefreshGroupRetry(ws, refreshSessionId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.mutate(dbTypes.Stores.refreshGroups, refreshSessionId, x => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.refreshGroups, refreshSessionId, (x) => {
             if (x.retryInfo.active) {
                 x.retryInfo = dbTypes.initRetryInfo();
             }
@@ -8766,7 +8320,7 @@ function resetRefreshGroupRetry(ws, refreshSessionId) {
     });
 }
 function processRefreshGroupImpl(ws, refreshGroupId, forceNow) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (forceNow) {
             yield resetRefreshGroupRetry(ws, refreshGroupId);
         }
@@ -8783,7 +8337,7 @@ function processRefreshGroupImpl(ws, refreshGroupId, forceNow) {
     });
 }
 function processRefreshSession(ws, refreshGroupId, coinIndex) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         logger.trace(`processing refresh session for coin ${coinIndex} of group ${refreshGroupId}`);
         let refreshGroup = yield ws.db.get(dbTypes.Stores.refreshGroups, refreshGroupId);
         if (!refreshGroup) {
@@ -8816,17 +8370,17 @@ function processRefreshSession(ws, refreshGroupId, coinIndex) {
  * Create a refresh group for a list of coins.
  */
 function createRefreshGroup(tx, oldCoinPubs, reason) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const refreshGroupId = talerCrypto.encodeCrock(talerCrypto.getRandomBytes(32));
         const refreshGroup = {
             timestampFinished: undefined,
-            finishedPerCoin: oldCoinPubs.map(x => false),
+            finishedPerCoin: oldCoinPubs.map((x) => false),
             lastError: undefined,
             lastErrorPerCoin: {},
-            oldCoinPubs: oldCoinPubs.map(x => x.coinPub),
+            oldCoinPubs: oldCoinPubs.map((x) => x.coinPub),
             reason,
             refreshGroupId,
-            refreshSessionPerCoin: oldCoinPubs.map(x => undefined),
+            refreshSessionPerCoin: oldCoinPubs.map((x) => undefined),
             retryInfo: dbTypes.initRetryInfo(),
         };
         yield tx.put(dbTypes.Stores.refreshGroups, refreshGroup);
@@ -8844,6 +8398,1232 @@ var refresh_1 = refresh.getTotalRefreshCost;
 var refresh_2 = refresh.processRefreshGroup;
 var refresh_3 = refresh.createRefreshGroup;
 
+var recoup = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2019-2020 Taler Systems SA
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+
+
+
+
+
+
+function incrementRecoupRetry(ws, recoupGroupId, err) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.recoupGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const r = yield tx.get(dbTypes.Stores.recoupGroups, recoupGroupId);
+            if (!r) {
+                return;
+            }
+            if (!r.retryInfo) {
+                return;
+            }
+            r.retryInfo.retryCounter++;
+            dbTypes.updateRetryInfoTimeout(r.retryInfo);
+            r.lastError = err;
+            yield tx.put(dbTypes.Stores.recoupGroups, r);
+        }));
+        ws.notify({ type: "recoup-operation-error" /* RecoupOperationError */ });
+    });
+}
+function putGroupAsFinished(ws, tx, recoupGroup, coinIdx) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        if (recoupGroup.timestampFinished) {
+            return;
+        }
+        recoupGroup.recoupFinishedPerCoin[coinIdx] = true;
+        let allFinished = true;
+        for (const b of recoupGroup.recoupFinishedPerCoin) {
+            if (!b) {
+                allFinished = false;
+            }
+        }
+        if (allFinished) {
+            recoupGroup.timestampFinished = time.getTimestampNow();
+            recoupGroup.retryInfo = dbTypes.initRetryInfo(false);
+            recoupGroup.lastError = undefined;
+            if (recoupGroup.scheduleRefreshCoins.length > 0) {
+                const refreshGroupId = yield refresh.createRefreshGroup(tx, recoupGroup.scheduleRefreshCoins.map((x) => ({ coinPub: x })), "recoup" /* Recoup */);
+                refresh.processRefreshGroup(ws, refreshGroupId.refreshGroupId).then((e) => {
+                    console.error("error while refreshing after recoup", e);
+                });
+            }
+        }
+        yield tx.put(dbTypes.Stores.recoupGroups, recoupGroup);
+    });
+}
+function recoupTipCoin(ws, recoupGroupId, coinIdx, coin) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        // We can't really recoup a coin we got via tipping.
+        // Thus we just put the coin to sleep.
+        // FIXME: somehow report this to the user
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.recoupGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const recoupGroup = yield tx.get(dbTypes.Stores.recoupGroups, recoupGroupId);
+            if (!recoupGroup) {
+                return;
+            }
+            if (recoupGroup.recoupFinishedPerCoin[coinIdx]) {
+                return;
+            }
+            yield putGroupAsFinished(ws, tx, recoupGroup, coinIdx);
+        }));
+    });
+}
+function recoupWithdrawCoin(ws, recoupGroupId, coinIdx, coin, cs) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const reservePub = cs.reservePub;
+        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
+        if (!reserve) {
+            // FIXME:  We should at least emit some pending operation / warning for this?
+            return;
+        }
+        ws.notify({
+            type: "recoup-started" /* RecoupStarted */,
+        });
+        const recoupRequest = yield ws.cryptoApi.createRecoupRequest(coin);
+        const reqUrl = new URL(`/coins/${coin.coinPub}/recoup`, coin.exchangeBaseUrl);
+        const resp = yield ws.http.postJson(reqUrl.href, recoupRequest);
+        const recoupConfirmation = yield errors.scrutinizeTalerJsonResponse(resp, talerTypes.codecForRecoupConfirmation());
+        if (recoupConfirmation.reserve_pub !== reservePub) {
+            throw Error(`Coin's reserve doesn't match reserve on recoup`);
+        }
+        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, coin.exchangeBaseUrl);
+        if (!exchange) {
+            // FIXME: report inconsistency?
+            return;
+        }
+        const exchangeDetails = exchange.details;
+        if (!exchangeDetails) {
+            // FIXME: report inconsistency?
+            return;
+        }
+        // FIXME: verify that our expectations about the amount match
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.reserves, dbTypes.Stores.recoupGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const recoupGroup = yield tx.get(dbTypes.Stores.recoupGroups, recoupGroupId);
+            if (!recoupGroup) {
+                return;
+            }
+            if (recoupGroup.recoupFinishedPerCoin[coinIdx]) {
+                return;
+            }
+            const updatedCoin = yield tx.get(dbTypes.Stores.coins, coin.coinPub);
+            if (!updatedCoin) {
+                return;
+            }
+            const updatedReserve = yield tx.get(dbTypes.Stores.reserves, reserve.reservePub);
+            if (!updatedReserve) {
+                return;
+            }
+            updatedCoin.status = "dormant" /* Dormant */;
+            const currency = updatedCoin.currentAmount.currency;
+            updatedCoin.currentAmount = amounts.Amounts.getZero(currency);
+            updatedReserve.reserveStatus = dbTypes.ReserveRecordStatus.QUERYING_STATUS;
+            yield tx.put(dbTypes.Stores.coins, updatedCoin);
+            yield tx.put(dbTypes.Stores.reserves, updatedReserve);
+            yield putGroupAsFinished(ws, tx, recoupGroup, coinIdx);
+        }));
+        ws.notify({
+            type: "recoup-finished" /* RecoupFinished */,
+        });
+        reserves.forceQueryReserve(ws, reserve.reservePub).catch((e) => {
+            console.log("re-querying reserve after recoup failed:", e);
+        });
+    });
+}
+function recoupRefreshCoin(ws, recoupGroupId, coinIdx, coin, cs) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        ws.notify({
+            type: "recoup-started" /* RecoupStarted */,
+        });
+        const recoupRequest = yield ws.cryptoApi.createRecoupRequest(coin);
+        const reqUrl = new URL(`/coins/${coin.coinPub}/recoup`, coin.exchangeBaseUrl);
+        console.log("making recoup request");
+        const resp = yield ws.http.postJson(reqUrl.href, recoupRequest);
+        const recoupConfirmation = yield errors.scrutinizeTalerJsonResponse(resp, talerTypes.codecForRecoupConfirmation());
+        if (recoupConfirmation.old_coin_pub != cs.oldCoinPub) {
+            throw Error(`Coin's oldCoinPub doesn't match reserve on recoup`);
+        }
+        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, coin.exchangeBaseUrl);
+        if (!exchange) {
+            // FIXME: report inconsistency?
+            return;
+        }
+        const exchangeDetails = exchange.details;
+        if (!exchangeDetails) {
+            // FIXME: report inconsistency?
+            return;
+        }
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.reserves, dbTypes.Stores.recoupGroups, dbTypes.Stores.refreshGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const recoupGroup = yield tx.get(dbTypes.Stores.recoupGroups, recoupGroupId);
+            if (!recoupGroup) {
+                return;
+            }
+            if (recoupGroup.recoupFinishedPerCoin[coinIdx]) {
+                return;
+            }
+            const oldCoin = yield tx.get(dbTypes.Stores.coins, cs.oldCoinPub);
+            const revokedCoin = yield tx.get(dbTypes.Stores.coins, coin.coinPub);
+            if (!revokedCoin) {
+                return;
+            }
+            if (!oldCoin) {
+                return;
+            }
+            revokedCoin.status = "dormant" /* Dormant */;
+            oldCoin.currentAmount = amounts.Amounts.add(oldCoin.currentAmount, recoupGroup.oldAmountPerCoin[coinIdx]).amount;
+            console.log("recoup: setting old coin amount to", amounts.Amounts.stringify(oldCoin.currentAmount));
+            recoupGroup.scheduleRefreshCoins.push(oldCoin.coinPub);
+            yield tx.put(dbTypes.Stores.coins, revokedCoin);
+            yield tx.put(dbTypes.Stores.coins, oldCoin);
+            yield putGroupAsFinished(ws, tx, recoupGroup, coinIdx);
+        }));
+    });
+}
+function resetRecoupGroupRetry(ws, recoupGroupId) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.recoupGroups, recoupGroupId, (x) => {
+            if (x.retryInfo.active) {
+                x.retryInfo = dbTypes.initRetryInfo();
+            }
+            return x;
+        });
+    });
+}
+function processRecoupGroup(ws, recoupGroupId, forceNow = false) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.memoProcessRecoup.memo(recoupGroupId, () => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const onOpErr = (e) => incrementRecoupRetry(ws, recoupGroupId, e);
+            return yield errors.guardOperationException(() => tslib_1.__awaiter(this, void 0, void 0, function* () { return yield processRecoupGroupImpl(ws, recoupGroupId, forceNow); }), onOpErr);
+        }));
+    });
+}
+exports.processRecoupGroup = processRecoupGroup;
+function processRecoupGroupImpl(ws, recoupGroupId, forceNow = false) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        if (forceNow) {
+            yield resetRecoupGroupRetry(ws, recoupGroupId);
+        }
+        console.log("in processRecoupGroupImpl");
+        const recoupGroup = yield ws.db.get(dbTypes.Stores.recoupGroups, recoupGroupId);
+        if (!recoupGroup) {
+            return;
+        }
+        console.log(recoupGroup);
+        if (recoupGroup.timestampFinished) {
+            console.log("recoup group finished");
+            return;
+        }
+        const ps = recoupGroup.coinPubs.map((x, i) => processRecoup(ws, recoupGroupId, i));
+        yield Promise.all(ps);
+    });
+}
+function createRecoupGroup(ws, tx, coinPubs) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const recoupGroupId = talerCrypto.encodeCrock(talerCrypto.getRandomBytes(32));
+        const recoupGroup = {
+            recoupGroupId,
+            coinPubs: coinPubs,
+            lastError: undefined,
+            timestampFinished: undefined,
+            timestampStarted: time.getTimestampNow(),
+            retryInfo: dbTypes.initRetryInfo(),
+            recoupFinishedPerCoin: coinPubs.map(() => false),
+            // Will be populated later
+            oldAmountPerCoin: [],
+            scheduleRefreshCoins: [],
+        };
+        for (let coinIdx = 0; coinIdx < coinPubs.length; coinIdx++) {
+            const coinPub = coinPubs[coinIdx];
+            const coin = yield tx.get(dbTypes.Stores.coins, coinPub);
+            if (!coin) {
+                yield putGroupAsFinished(ws, tx, recoupGroup, coinIdx);
+                continue;
+            }
+            if (amounts.Amounts.isZero(coin.currentAmount)) {
+                yield putGroupAsFinished(ws, tx, recoupGroup, coinIdx);
+                continue;
+            }
+            recoupGroup.oldAmountPerCoin[coinIdx] = coin.currentAmount;
+            coin.currentAmount = amounts.Amounts.getZero(coin.currentAmount.currency);
+            yield tx.put(dbTypes.Stores.coins, coin);
+        }
+        yield tx.put(dbTypes.Stores.recoupGroups, recoupGroup);
+        return recoupGroupId;
+    });
+}
+exports.createRecoupGroup = createRecoupGroup;
+function processRecoup(ws, recoupGroupId, coinIdx) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const recoupGroup = yield ws.db.get(dbTypes.Stores.recoupGroups, recoupGroupId);
+        if (!recoupGroup) {
+            return;
+        }
+        if (recoupGroup.timestampFinished) {
+            return;
+        }
+        if (recoupGroup.recoupFinishedPerCoin[coinIdx]) {
+            return;
+        }
+        const coinPub = recoupGroup.coinPubs[coinIdx];
+        const coin = yield ws.db.get(dbTypes.Stores.coins, coinPub);
+        if (!coin) {
+            throw Error(`Coin ${coinPub} not found, can't request payback`);
+        }
+        const cs = coin.coinSource;
+        switch (cs.type) {
+            case "tip" /* Tip */:
+                return recoupTipCoin(ws, recoupGroupId, coinIdx);
+            case "refresh" /* Refresh */:
+                return recoupRefreshCoin(ws, recoupGroupId, coinIdx, coin, cs);
+            case "withdraw" /* Withdraw */:
+                return recoupWithdrawCoin(ws, recoupGroupId, coinIdx, coin, cs);
+            default:
+                throw Error("unknown coin source type");
+        }
+    });
+}
+
+});
+
+unwrapExports(recoup);
+var recoup_1 = recoup.processRecoupGroup;
+var recoup_2 = recoup.createRecoupGroup;
+
+var exchanges = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2019 GNUnet e.V.
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+
+const Amounts = tslib_1.__importStar(amounts);
+
+
+
+
+
+
+function denominationRecordFromKeys(ws, exchangeBaseUrl, denomIn) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const denomPubHash = yield ws.cryptoApi.hashEncoded(denomIn.denom_pub);
+        const d = {
+            denomPub: denomIn.denom_pub,
+            denomPubHash,
+            exchangeBaseUrl,
+            feeDeposit: Amounts.parseOrThrow(denomIn.fee_deposit),
+            feeRefresh: Amounts.parseOrThrow(denomIn.fee_refresh),
+            feeRefund: Amounts.parseOrThrow(denomIn.fee_refund),
+            feeWithdraw: Amounts.parseOrThrow(denomIn.fee_withdraw),
+            isOffered: true,
+            isRevoked: false,
+            masterSig: denomIn.master_sig,
+            stampExpireDeposit: denomIn.stamp_expire_deposit,
+            stampExpireLegal: denomIn.stamp_expire_legal,
+            stampExpireWithdraw: denomIn.stamp_expire_withdraw,
+            stampStart: denomIn.stamp_start,
+            status: dbTypes.DenominationStatus.Unverified,
+            value: Amounts.parseOrThrow(denomIn.value),
+        };
+        return d;
+    });
+}
+function setExchangeError(ws, baseUrl, err) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        console.log(`last error for exchange ${baseUrl}:`, err);
+        const mut = (exchange) => {
+            exchange.lastError = err;
+            return exchange;
+        };
+        yield ws.db.mutate(dbTypes.Stores.exchanges, baseUrl, mut);
+    });
+}
+/**
+ * Fetch the exchange's /keys and update our database accordingly.
+ *
+ * Exceptions thrown in this method must be caught and reported
+ * in the pending operations.
+ */
+function updateExchangeWithKeys(ws, baseUrl) {
+    var _a;
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const existingExchangeRecord = yield ws.db.get(dbTypes.Stores.exchanges, baseUrl);
+        if ((existingExchangeRecord === null || existingExchangeRecord === void 0 ? void 0 : existingExchangeRecord.updateStatus) != "fetch-keys" /* FetchKeys */) {
+            return;
+        }
+        const keysUrl = new URL("keys", baseUrl);
+        keysUrl.searchParams.set("cacheBreaker", versions.WALLET_CACHE_BREAKER_CLIENT_VERSION);
+        let keysResp;
+        try {
+            const r = yield ws.http.get(keysUrl.href);
+            if (r.status !== 200) {
+                throw Error(`unexpected status for keys: ${r.status}`);
+            }
+            keysResp = yield r.json();
+        }
+        catch (e) {
+            const m = `Fetching keys failed: ${e.message}`;
+            const opErr = {
+                type: "network",
+                details: {
+                    requestUrl: (_a = e.config) === null || _a === void 0 ? void 0 : _a.url,
+                },
+                message: m,
+            };
+            yield setExchangeError(ws, baseUrl, opErr);
+            throw new errors.OperationFailedAndReportedError(opErr);
+        }
+        let exchangeKeysJson;
+        try {
+            exchangeKeysJson = talerTypes.codecForExchangeKeysJson().decode(keysResp);
+        }
+        catch (e) {
+            const m = `Parsing /keys response failed: ${e.message}`;
+            const opErr = {
+                type: "protocol-violation",
+                details: {},
+                message: m,
+            };
+            yield setExchangeError(ws, baseUrl, opErr);
+            throw new errors.OperationFailedAndReportedError(opErr);
+        }
+        const lastUpdateTimestamp = exchangeKeysJson.list_issue_date;
+        if (!lastUpdateTimestamp) {
+            const m = `Parsing /keys response failed: invalid list_issue_date.`;
+            const opErr = {
+                type: "protocol-violation",
+                details: {},
+                message: m,
+            };
+            yield setExchangeError(ws, baseUrl, opErr);
+            throw new errors.OperationFailedAndReportedError(opErr);
+        }
+        if (exchangeKeysJson.denoms.length === 0) {
+            const m = "exchange doesn't offer any denominations";
+            const opErr = {
+                type: "protocol-violation",
+                details: {},
+                message: m,
+            };
+            yield setExchangeError(ws, baseUrl, opErr);
+            throw new errors.OperationFailedAndReportedError(opErr);
+        }
+        const protocolVersion = exchangeKeysJson.version;
+        if (!protocolVersion) {
+            const m = "outdate exchange, no version in /keys response";
+            const opErr = {
+                type: "protocol-violation",
+                details: {},
+                message: m,
+            };
+            yield setExchangeError(ws, baseUrl, opErr);
+            throw new errors.OperationFailedAndReportedError(opErr);
+        }
+        const versionRes = libtoolVersion.compare(versions.WALLET_EXCHANGE_PROTOCOL_VERSION, protocolVersion);
+        if ((versionRes === null || versionRes === void 0 ? void 0 : versionRes.compatible) != true) {
+            const m = "exchange protocol version not compatible with wallet";
+            const opErr = {
+                type: "protocol-incompatible",
+                details: {
+                    exchangeProtocolVersion: protocolVersion,
+                    walletProtocolVersion: versions.WALLET_EXCHANGE_PROTOCOL_VERSION,
+                },
+                message: m,
+            };
+            yield setExchangeError(ws, baseUrl, opErr);
+            throw new errors.OperationFailedAndReportedError(opErr);
+        }
+        const currency = Amounts.parseOrThrow(exchangeKeysJson.denoms[0].value)
+            .currency;
+        const newDenominations = yield Promise.all(exchangeKeysJson.denoms.map((d) => denominationRecordFromKeys(ws, baseUrl, d)));
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges, dbTypes.Stores.denominations, dbTypes.Stores.recoupGroups, dbTypes.Stores.coins], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            var _b;
+            const r = yield tx.get(dbTypes.Stores.exchanges, baseUrl);
+            if (!r) {
+                console.warn(`exchange ${baseUrl} no longer present`);
+                return;
+            }
+            if (r.details) ;
+            // FIXME: validate signing keys and merge with old set
+            r.details = {
+                auditors: exchangeKeysJson.auditors,
+                currency: currency,
+                lastUpdateTime: lastUpdateTimestamp,
+                masterPublicKey: exchangeKeysJson.master_public_key,
+                protocolVersion: protocolVersion,
+                signingKeys: exchangeKeysJson.signkeys,
+            };
+            r.updateStatus = "fetch-wire" /* FetchWire */;
+            r.lastError = undefined;
+            yield tx.put(dbTypes.Stores.exchanges, r);
+            for (const newDenom of newDenominations) {
+                const oldDenom = yield tx.get(dbTypes.Stores.denominations, [
+                    baseUrl,
+                    newDenom.denomPub,
+                ]);
+                if (oldDenom) ;
+                else {
+                    yield tx.put(dbTypes.Stores.denominations, newDenom);
+                }
+            }
+            // Handle recoup
+            const recoupDenomList = (_b = exchangeKeysJson.recoup) !== null && _b !== void 0 ? _b : [];
+            const newlyRevokedCoinPubs = [];
+            console.log("recoup list from exchange", recoupDenomList);
+            for (const recoupInfo of recoupDenomList) {
+                const oldDenom = yield tx.getIndexed(dbTypes.Stores.denominations.denomPubHashIndex, recoupInfo.h_denom_pub);
+                if (!oldDenom) {
+                    // We never even knew about the revoked denomination, all good.
+                    continue;
+                }
+                if (oldDenom.isRevoked) {
+                    // We already marked the denomination as revoked,
+                    // this implies we revoked all coins
+                    console.log("denom already revoked");
+                    continue;
+                }
+                console.log("revoking denom", recoupInfo.h_denom_pub);
+                oldDenom.isRevoked = true;
+                yield tx.put(dbTypes.Stores.denominations, oldDenom);
+                const affectedCoins = yield tx
+                    .iterIndexed(dbTypes.Stores.coins.denomPubHashIndex, recoupInfo.h_denom_pub)
+                    .toArray();
+                for (const ac of affectedCoins) {
+                    newlyRevokedCoinPubs.push(ac.coinPub);
+                }
+            }
+            if (newlyRevokedCoinPubs.length != 0) {
+                console.log("recouping coins", newlyRevokedCoinPubs);
+                yield recoup.createRecoupGroup(ws, tx, newlyRevokedCoinPubs);
+            }
+        }));
+    });
+}
+function updateExchangeFinalize(ws, exchangeBaseUrl) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
+        if (!exchange) {
+            return;
+        }
+        if (exchange.updateStatus != "finalize-update" /* FinalizeUpdate */) {
+            return;
+        }
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges, dbTypes.Stores.exchangeUpdatedEvents], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const r = yield tx.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
+            if (!r) {
+                return;
+            }
+            if (r.updateStatus != "finalize-update" /* FinalizeUpdate */) {
+                return;
+            }
+            r.updateStatus = "finished" /* Finished */;
+            yield tx.put(dbTypes.Stores.exchanges, r);
+            const updateEvent = {
+                exchangeBaseUrl: exchange.baseUrl,
+                timestamp: time.getTimestampNow(),
+            };
+            yield tx.put(dbTypes.Stores.exchangeUpdatedEvents, updateEvent);
+        }));
+    });
+}
+function updateExchangeWithTermsOfService(ws, exchangeBaseUrl) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
+        if (!exchange) {
+            return;
+        }
+        if (exchange.updateStatus != "fetch-terms" /* FetchTerms */) {
+            return;
+        }
+        const reqUrl = new URL("terms", exchangeBaseUrl);
+        reqUrl.searchParams.set("cacheBreaker", versions.WALLET_CACHE_BREAKER_CLIENT_VERSION);
+        const headers = {
+            Accept: "text/plain",
+        };
+        const resp = yield ws.http.get(reqUrl.href, { headers });
+        if (resp.status !== 200) {
+            throw Error(`/terms response has unexpected status code (${resp.status})`);
+        }
+        const tosText = yield resp.text();
+        const tosEtag = resp.headers.get("etag") || undefined;
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const r = yield tx.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
+            if (!r) {
+                return;
+            }
+            if (r.updateStatus != "fetch-terms" /* FetchTerms */) {
+                return;
+            }
+            r.termsOfServiceText = tosText;
+            r.termsOfServiceLastEtag = tosEtag;
+            r.updateStatus = "finalize-update" /* FinalizeUpdate */;
+            yield tx.put(dbTypes.Stores.exchanges, r);
+        }));
+    });
+}
+function acceptExchangeTermsOfService(ws, exchangeBaseUrl, etag) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const r = yield tx.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
+            if (!r) {
+                return;
+            }
+            r.termsOfServiceAcceptedEtag = etag;
+            r.termsOfServiceAcceptedTimestamp = time.getTimestampNow();
+            yield tx.put(dbTypes.Stores.exchanges, r);
+        }));
+    });
+}
+exports.acceptExchangeTermsOfService = acceptExchangeTermsOfService;
+/**
+ * Fetch wire information for an exchange and store it in the database.
+ *
+ * @param exchangeBaseUrl Exchange base URL, assumed to be already normalized.
+ */
+function updateExchangeWithWireInfo(ws, exchangeBaseUrl) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
+        if (!exchange) {
+            return;
+        }
+        if (exchange.updateStatus != "fetch-wire" /* FetchWire */) {
+            return;
+        }
+        const details = exchange.details;
+        if (!details) {
+            throw Error("invalid exchange state");
+        }
+        const reqUrl = new URL("wire", exchangeBaseUrl);
+        reqUrl.searchParams.set("cacheBreaker", versions.WALLET_CACHE_BREAKER_CLIENT_VERSION);
+        const resp = yield ws.http.get(reqUrl.href);
+        if (resp.status !== 200) {
+            throw Error(`/wire response has unexpected status code (${resp.status})`);
+        }
+        const wiJson = yield resp.json();
+        if (!wiJson) {
+            throw Error("/wire response malformed");
+        }
+        const wireInfo = talerTypes.codecForExchangeWireJson().decode(wiJson);
+        for (const a of wireInfo.accounts) {
+            console.log("validating exchange acct");
+            const isValid = yield ws.cryptoApi.isValidWireAccount(a.payto_uri, a.master_sig, details.masterPublicKey);
+            if (!isValid) {
+                throw Error("exchange acct signature invalid");
+            }
+        }
+        const feesForType = {};
+        for (const wireMethod of Object.keys(wireInfo.fees)) {
+            const feeList = [];
+            for (const x of wireInfo.fees[wireMethod]) {
+                const startStamp = x.start_date;
+                const endStamp = x.end_date;
+                const fee = {
+                    closingFee: Amounts.parseOrThrow(x.closing_fee),
+                    endStamp,
+                    sig: x.sig,
+                    startStamp,
+                    wireFee: Amounts.parseOrThrow(x.wire_fee),
+                };
+                const isValid = yield ws.cryptoApi.isValidWireFee(wireMethod, fee, details.masterPublicKey);
+                if (!isValid) {
+                    throw Error("exchange wire fee signature invalid");
+                }
+                feeList.push(fee);
+            }
+            feesForType[wireMethod] = feeList;
+        }
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const r = yield tx.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
+            if (!r) {
+                return;
+            }
+            if (r.updateStatus != "fetch-wire" /* FetchWire */) {
+                return;
+            }
+            r.wireInfo = {
+                accounts: wireInfo.accounts,
+                feesForType: feesForType,
+            };
+            r.updateStatus = "fetch-terms" /* FetchTerms */;
+            r.lastError = undefined;
+            yield tx.put(dbTypes.Stores.exchanges, r);
+        }));
+    });
+}
+function updateExchangeFromUrl(ws, baseUrl, forceNow = false) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const onOpErr = (e) => setExchangeError(ws, baseUrl, e);
+        return yield errors.guardOperationException(() => updateExchangeFromUrlImpl(ws, baseUrl, forceNow), onOpErr);
+    });
+}
+exports.updateExchangeFromUrl = updateExchangeFromUrl;
+/**
+ * Update or add exchange DB entry by fetching the /keys and /wire information.
+ * Optionally link the reserve entry to the new or existing
+ * exchange entry in then DB.
+ */
+function updateExchangeFromUrlImpl(ws, baseUrl, forceNow = false) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const now = time.getTimestampNow();
+        baseUrl = helpers.canonicalizeBaseUrl(baseUrl);
+        const r = yield ws.db.get(dbTypes.Stores.exchanges, baseUrl);
+        if (!r) {
+            const newExchangeRecord = {
+                builtIn: false,
+                baseUrl: baseUrl,
+                details: undefined,
+                wireInfo: undefined,
+                updateStatus: "fetch-keys" /* FetchKeys */,
+                updateStarted: now,
+                updateReason: "initial" /* Initial */,
+                timestampAdded: time.getTimestampNow(),
+                termsOfServiceAcceptedEtag: undefined,
+                termsOfServiceAcceptedTimestamp: undefined,
+                termsOfServiceLastEtag: undefined,
+                termsOfServiceText: undefined,
+                updateDiff: undefined,
+            };
+            yield ws.db.put(dbTypes.Stores.exchanges, newExchangeRecord);
+        }
+        else {
+            yield ws.db.runWithWriteTransaction([dbTypes.Stores.exchanges], (t) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                const rec = yield t.get(dbTypes.Stores.exchanges, baseUrl);
+                if (!rec) {
+                    return;
+                }
+                if (rec.updateStatus != "fetch-keys" /* FetchKeys */ && !forceNow) {
+                    return;
+                }
+                if (rec.updateStatus != "fetch-keys" /* FetchKeys */ && forceNow) {
+                    rec.updateReason = "forced" /* Forced */;
+                }
+                rec.updateStarted = now;
+                rec.updateStatus = "fetch-keys" /* FetchKeys */;
+                rec.lastError = undefined;
+                t.put(dbTypes.Stores.exchanges, rec);
+            }));
+        }
+        yield updateExchangeWithKeys(ws, baseUrl);
+        yield updateExchangeWithWireInfo(ws, baseUrl);
+        yield updateExchangeWithTermsOfService(ws, baseUrl);
+        yield updateExchangeFinalize(ws, baseUrl);
+        const updatedExchange = yield ws.db.get(dbTypes.Stores.exchanges, baseUrl);
+        if (!updatedExchange) {
+            // This should practically never happen
+            throw Error("exchange not found");
+        }
+        return updatedExchange;
+    });
+}
+/**
+ * Check if and how an exchange is trusted and/or audited.
+ */
+function getExchangeTrust(ws, exchangeInfo) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        let isTrusted = false;
+        let isAudited = false;
+        const exchangeDetails = exchangeInfo.details;
+        if (!exchangeDetails) {
+            throw Error(`exchange ${exchangeInfo.baseUrl} details not available`);
+        }
+        const currencyRecord = yield ws.db.get(dbTypes.Stores.currencies, exchangeDetails.currency);
+        if (currencyRecord) {
+            for (const trustedExchange of currencyRecord.exchanges) {
+                if (trustedExchange.exchangePub === exchangeDetails.masterPublicKey) {
+                    isTrusted = true;
+                    break;
+                }
+            }
+            for (const trustedAuditor of currencyRecord.auditors) {
+                for (const exchangeAuditor of exchangeDetails.auditors) {
+                    if (trustedAuditor.auditorPub === exchangeAuditor.auditor_pub) {
+                        isAudited = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return { isTrusted, isAudited };
+    });
+}
+exports.getExchangeTrust = getExchangeTrust;
+function getExchangePaytoUri(ws, exchangeBaseUrl, supportedTargetTypes) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        // We do the update here, since the exchange might not even exist
+        // yet in our database.
+        const exchangeRecord = yield updateExchangeFromUrl(ws, exchangeBaseUrl);
+        if (!exchangeRecord) {
+            throw Error(`Exchange '${exchangeBaseUrl}' not found.`);
+        }
+        const exchangeWireInfo = exchangeRecord.wireInfo;
+        if (!exchangeWireInfo) {
+            throw Error(`Exchange wire info for '${exchangeBaseUrl}' not found.`);
+        }
+        for (const account of exchangeWireInfo.accounts) {
+            const res = payto.parsePaytoUri(account.payto_uri);
+            if (!res) {
+                continue;
+            }
+            if (supportedTargetTypes.includes(res.targetType)) {
+                return account.payto_uri;
+            }
+        }
+        throw Error("no matching exchange account found");
+    });
+}
+exports.getExchangePaytoUri = getExchangePaytoUri;
+
+});
+
+unwrapExports(exchanges);
+var exchanges_1 = exchanges.acceptExchangeTermsOfService;
+var exchanges_2 = exchanges.updateExchangeFromUrl;
+var exchanges_3 = exchanges.getExchangeTrust;
+var exchanges_4 = exchanges.getExchangePaytoUri;
+
+var withdraw = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2019-2029 Taler Systems SA
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+const Amounts = tslib_1.__importStar(amounts);
+
+
+
+
+
+const LibtoolVersion = tslib_1.__importStar(libtoolVersion);
+
+
+const logger = new logging.Logger("withdraw.ts");
+function isWithdrawableDenom(d) {
+    const now = time.getTimestampNow();
+    const started = time.timestampCmp(now, d.stampStart) >= 0;
+    const lastPossibleWithdraw = time.timestampSubtractDuraction(d.stampExpireWithdraw, { d_ms: 50 * 1000 });
+    const remaining = time.getDurationRemaining(lastPossibleWithdraw, now);
+    const stillOkay = remaining.d_ms !== 0;
+    return started && stillOkay && !d.isRevoked;
+}
+/**
+ * Get a list of denominations (with repetitions possible)
+ * whose total value is as close as possible to the available
+ * amount, but never larger.
+ */
+function getWithdrawDenomList(amountAvailable, denoms) {
+    let remaining = Amounts.copy(amountAvailable);
+    const ds = [];
+    denoms = denoms.filter(isWithdrawableDenom);
+    denoms.sort((d1, d2) => Amounts.cmp(d2.value, d1.value));
+    // This is an arbitrary number of coins
+    // we can withdraw in one go.  It's not clear if this limit
+    // is useful ...
+    for (let i = 0; i < 1000; i++) {
+        let found = false;
+        for (const d of denoms) {
+            const cost = Amounts.add(d.value, d.feeWithdraw).amount;
+            if (Amounts.cmp(remaining, cost) < 0) {
+                continue;
+            }
+            found = true;
+            remaining = Amounts.sub(remaining, cost).amount;
+            ds.push(d);
+            break;
+        }
+        if (!found) {
+            break;
+        }
+    }
+    return ds;
+}
+exports.getWithdrawDenomList = getWithdrawDenomList;
+/**
+ * Get information about a withdrawal from
+ * a taler://withdraw URI by asking the bank.
+ */
+function getBankWithdrawalInfo(ws, talerWithdrawUri) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const uriResult = taleruri.parseWithdrawUri(talerWithdrawUri);
+        if (!uriResult) {
+            throw Error(`can't parse URL ${talerWithdrawUri}`);
+        }
+        const resp = yield ws.http.get(uriResult.statusUrl);
+        if (resp.status !== 200) {
+            throw Error(`unexpected status (${resp.status}) from bank for ${uriResult.statusUrl}`);
+        }
+        const respJson = yield resp.json();
+        console.log("resp:", respJson);
+        const status = talerTypes.codecForWithdrawOperationStatusResponse().decode(respJson);
+        return {
+            amount: Amounts.parseOrThrow(status.amount),
+            confirmTransferUrl: status.confirm_transfer_url,
+            extractedStatusUrl: uriResult.statusUrl,
+            selectionDone: status.selection_done,
+            senderWire: status.sender_wire,
+            suggestedExchange: status.suggested_exchange,
+            transferDone: status.transfer_done,
+            wireTypes: status.wire_types,
+        };
+    });
+}
+exports.getBankWithdrawalInfo = getBankWithdrawalInfo;
+function getPossibleDenoms(ws, exchangeBaseUrl) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        return yield ws.db
+            .iterIndex(dbTypes.Stores.denominations.exchangeBaseUrlIndex, exchangeBaseUrl)
+            .filter((d) => {
+            return ((d.status === dbTypes.DenominationStatus.Unverified ||
+                d.status === dbTypes.DenominationStatus.VerifiedGood) &&
+                !d.isRevoked);
+        });
+    });
+}
+/**
+ * Given a planchet, withdraw a coin from the exchange.
+ */
+function processPlanchet(ws, withdrawalGroupId, coinIdx) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const withdrawalGroup = yield ws.db.get(dbTypes.Stores.withdrawalGroups, withdrawalGroupId);
+        if (!withdrawalGroup) {
+            return;
+        }
+        if (withdrawalGroup.withdrawn[coinIdx]) {
+            return;
+        }
+        const planchet = withdrawalGroup.planchets[coinIdx];
+        if (!planchet) {
+            console.log("processPlanchet: planchet not found");
+            return;
+        }
+        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, withdrawalGroup.exchangeBaseUrl);
+        if (!exchange) {
+            console.error("db inconsistent: exchange for planchet not found");
+            return;
+        }
+        const denom = yield ws.db.get(dbTypes.Stores.denominations, [
+            withdrawalGroup.exchangeBaseUrl,
+            planchet.denomPub,
+        ]);
+        if (!denom) {
+            console.error("db inconsistent: denom for planchet not found");
+            return;
+        }
+        const wd = {};
+        wd.denom_pub_hash = planchet.denomPubHash;
+        wd.reserve_pub = planchet.reservePub;
+        wd.reserve_sig = planchet.withdrawSig;
+        wd.coin_ev = planchet.coinEv;
+        const reqUrl = new URL(`reserves/${planchet.reservePub}/withdraw`, exchange.baseUrl).href;
+        const resp = yield ws.http.postJson(reqUrl, wd);
+        const r = yield errors.scrutinizeTalerJsonResponse(resp, talerTypes.codecForWithdrawResponse());
+        const denomSig = yield ws.cryptoApi.rsaUnblind(r.ev_sig, planchet.blindingKey, planchet.denomPub);
+        const isValid = yield ws.cryptoApi.rsaVerify(planchet.coinPub, denomSig, planchet.denomPub);
+        if (!isValid) {
+            throw Error("invalid RSA signature by the exchange");
+        }
+        const coin = {
+            blindingKey: planchet.blindingKey,
+            coinPriv: planchet.coinPriv,
+            coinPub: planchet.coinPub,
+            currentAmount: planchet.coinValue,
+            denomPub: planchet.denomPub,
+            denomPubHash: planchet.denomPubHash,
+            denomSig,
+            exchangeBaseUrl: withdrawalGroup.exchangeBaseUrl,
+            status: "fresh" /* Fresh */,
+            coinSource: {
+                type: "withdraw" /* Withdraw */,
+                coinIndex: coinIdx,
+                reservePub: planchet.reservePub,
+                withdrawalGroupId: withdrawalGroupId,
+            },
+            suspended: false,
+        };
+        let withdrawalGroupFinished = false;
+        const success = yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.withdrawalGroups, dbTypes.Stores.reserves], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const ws = yield tx.get(dbTypes.Stores.withdrawalGroups, withdrawalGroupId);
+            if (!ws) {
+                return false;
+            }
+            if (ws.withdrawn[coinIdx]) {
+                // Already withdrawn
+                return false;
+            }
+            ws.withdrawn[coinIdx] = true;
+            delete ws.lastErrorPerCoin[coinIdx];
+            let numDone = 0;
+            for (let i = 0; i < ws.withdrawn.length; i++) {
+                if (ws.withdrawn[i]) {
+                    numDone++;
+                }
+            }
+            if (numDone === ws.denoms.length) {
+                ws.timestampFinish = time.getTimestampNow();
+                ws.lastError = undefined;
+                ws.retryInfo = dbTypes.initRetryInfo(false);
+                withdrawalGroupFinished = true;
+            }
+            yield tx.put(dbTypes.Stores.withdrawalGroups, ws);
+            yield tx.add(dbTypes.Stores.coins, coin);
+            return true;
+        }));
+        if (success) {
+            ws.notify({
+                type: "coin-withdrawn" /* CoinWithdrawn */,
+            });
+        }
+        if (withdrawalGroupFinished) {
+            ws.notify({
+                type: "withdraw-group-finished" /* WithdrawGroupFinished */,
+                withdrawalSource: withdrawalGroup.source,
+            });
+        }
+    });
+}
+/**
+ * Get a list of denominations to withdraw from the given exchange for the
+ * given amount, making sure that all denominations' signatures are verified.
+ *
+ * Writes to the DB in order to record the result from verifying
+ * denominations.
+ */
+function getVerifiedWithdrawDenomList(ws, exchangeBaseUrl, amount) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const exchange = yield ws.db.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
+        if (!exchange) {
+            console.log("exchange not found");
+            throw Error(`exchange ${exchangeBaseUrl} not found`);
+        }
+        const exchangeDetails = exchange.details;
+        if (!exchangeDetails) {
+            console.log("exchange details not available");
+            throw Error(`exchange ${exchangeBaseUrl} details not available`);
+        }
+        console.log("getting possible denoms");
+        const possibleDenoms = yield getPossibleDenoms(ws, exchange.baseUrl);
+        console.log("got possible denoms");
+        let allValid = false;
+        let selectedDenoms;
+        do {
+            allValid = true;
+            selectedDenoms = getWithdrawDenomList(amount, possibleDenoms);
+            console.log("got withdraw denom list");
+            for (const denom of selectedDenoms || []) {
+                if (denom.status === dbTypes.DenominationStatus.Unverified) {
+                    console.log("checking validity", denom, exchangeDetails.masterPublicKey);
+                    const valid = yield ws.cryptoApi.isValidDenom(denom, exchangeDetails.masterPublicKey);
+                    console.log("done checking validity");
+                    if (!valid) {
+                        denom.status = dbTypes.DenominationStatus.VerifiedBad;
+                        allValid = false;
+                    }
+                    else {
+                        denom.status = dbTypes.DenominationStatus.VerifiedGood;
+                    }
+                    yield ws.db.put(dbTypes.Stores.denominations, denom);
+                }
+            }
+        } while (selectedDenoms.length > 0 && !allValid);
+        console.log("returning denoms");
+        return selectedDenoms;
+    });
+}
+exports.getVerifiedWithdrawDenomList = getVerifiedWithdrawDenomList;
+function incrementWithdrawalRetry(ws, withdrawalGroupId, err) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.withdrawalGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const wsr = yield tx.get(dbTypes.Stores.withdrawalGroups, withdrawalGroupId);
+            if (!wsr) {
+                return;
+            }
+            if (!wsr.retryInfo) {
+                return;
+            }
+            wsr.retryInfo.retryCounter++;
+            dbTypes.updateRetryInfoTimeout(wsr.retryInfo);
+            wsr.lastError = err;
+            yield tx.put(dbTypes.Stores.withdrawalGroups, wsr);
+        }));
+        ws.notify({ type: "withdraw-error" /* WithdrawOperationError */ });
+    });
+}
+function processWithdrawGroup(ws, withdrawalGroupId, forceNow = false) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const onOpErr = (e) => incrementWithdrawalRetry(ws, withdrawalGroupId, e);
+        yield errors.guardOperationException(() => processWithdrawGroupImpl(ws, withdrawalGroupId, forceNow), onOpErr);
+    });
+}
+exports.processWithdrawGroup = processWithdrawGroup;
+function resetWithdrawalGroupRetry(ws, withdrawalGroupId) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.withdrawalGroups, withdrawalGroupId, (x) => {
+            if (x.retryInfo.active) {
+                x.retryInfo = dbTypes.initRetryInfo();
+            }
+            return x;
+        });
+    });
+}
+function processWithdrawGroupImpl(ws, withdrawalGroupId, forceNow) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        logger.trace("processing withdraw group", withdrawalGroupId);
+        if (forceNow) {
+            yield resetWithdrawalGroupRetry(ws, withdrawalGroupId);
+        }
+        const withdrawalGroup = yield ws.db.get(dbTypes.Stores.withdrawalGroups, withdrawalGroupId);
+        if (!withdrawalGroup) {
+            logger.trace("withdraw session doesn't exist");
+            return;
+        }
+        const ps = withdrawalGroup.denoms.map((d, i) => processPlanchet(ws, withdrawalGroupId, i));
+        yield Promise.all(ps);
+        return;
+    });
+}
+function getExchangeWithdrawalInfo(ws, baseUrl, amount) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const exchangeInfo = yield exchanges.updateExchangeFromUrl(ws, baseUrl);
+        const exchangeDetails = exchangeInfo.details;
+        if (!exchangeDetails) {
+            throw Error(`exchange ${exchangeInfo.baseUrl} details not available`);
+        }
+        const exchangeWireInfo = exchangeInfo.wireInfo;
+        if (!exchangeWireInfo) {
+            throw Error(`exchange ${exchangeInfo.baseUrl} wire details not available`);
+        }
+        const selectedDenoms = yield getVerifiedWithdrawDenomList(ws, baseUrl, amount);
+        let acc = Amounts.getZero(amount.currency);
+        for (const d of selectedDenoms) {
+            acc = Amounts.add(acc, d.feeWithdraw).amount;
+        }
+        const actualCoinCost = selectedDenoms
+            .map((d) => Amounts.add(d.value, d.feeWithdraw).amount)
+            .reduce((a, b) => Amounts.add(a, b).amount);
+        const exchangeWireAccounts = [];
+        for (const account of exchangeWireInfo.accounts) {
+            exchangeWireAccounts.push(account.payto_uri);
+        }
+        const { isTrusted, isAudited } = yield exchanges.getExchangeTrust(ws, exchangeInfo);
+        let earliestDepositExpiration = selectedDenoms[0].stampExpireDeposit;
+        for (let i = 1; i < selectedDenoms.length; i++) {
+            const expireDeposit = selectedDenoms[i].stampExpireDeposit;
+            if (expireDeposit.t_ms < earliestDepositExpiration.t_ms) {
+                earliestDepositExpiration = expireDeposit;
+            }
+        }
+        const possibleDenoms = yield ws.db
+            .iterIndex(dbTypes.Stores.denominations.exchangeBaseUrlIndex, baseUrl)
+            .filter((d) => d.isOffered);
+        const trustedAuditorPubs = [];
+        const currencyRecord = yield ws.db.get(dbTypes.Stores.currencies, amount.currency);
+        if (currencyRecord) {
+            trustedAuditorPubs.push(...currencyRecord.auditors.map((a) => a.auditorPub));
+        }
+        let versionMatch;
+        if (exchangeDetails.protocolVersion) {
+            versionMatch = LibtoolVersion.compare(versions.WALLET_EXCHANGE_PROTOCOL_VERSION, exchangeDetails.protocolVersion);
+            if (versionMatch &&
+                !versionMatch.compatible &&
+                versionMatch.currentCmp === -1) {
+                console.warn(`wallet's support for exchange protocol version ${versions.WALLET_EXCHANGE_PROTOCOL_VERSION} might be outdated ` +
+                    `(exchange has ${exchangeDetails.protocolVersion}), checking for updates`);
+            }
+        }
+        let tosAccepted = false;
+        if (exchangeInfo.termsOfServiceAcceptedTimestamp) {
+            if (exchangeInfo.termsOfServiceAcceptedEtag ==
+                exchangeInfo.termsOfServiceLastEtag) {
+                tosAccepted = true;
+            }
+        }
+        const ret = {
+            earliestDepositExpiration,
+            exchangeInfo,
+            exchangeWireAccounts,
+            exchangeVersion: exchangeDetails.protocolVersion || "unknown",
+            isAudited,
+            isTrusted,
+            numOfferedDenoms: possibleDenoms.length,
+            overhead: Amounts.sub(amount, actualCoinCost).amount,
+            selectedDenoms,
+            trustedAuditorPubs,
+            versionMatch,
+            walletVersion: versions.WALLET_EXCHANGE_PROTOCOL_VERSION,
+            wireFees: exchangeWireInfo,
+            withdrawFee: acc,
+            termsOfServiceAccepted: tosAccepted,
+        };
+        return ret;
+    });
+}
+exports.getExchangeWithdrawalInfo = getExchangeWithdrawalInfo;
+function getWithdrawDetailsForUri(ws, talerWithdrawUri, maybeSelectedExchange) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const info = yield getBankWithdrawalInfo(ws, talerWithdrawUri);
+        let rci = undefined;
+        if (maybeSelectedExchange) {
+            rci = yield getExchangeWithdrawalInfo(ws, maybeSelectedExchange, info.amount);
+        }
+        return {
+            bankWithdrawDetails: info,
+            exchangeWithdrawDetails: rci,
+        };
+    });
+}
+exports.getWithdrawDetailsForUri = getWithdrawDetailsForUri;
+
+});
+
+unwrapExports(withdraw);
+var withdraw_1 = withdraw.getWithdrawDenomList;
+var withdraw_2 = withdraw.getBankWithdrawalInfo;
+var withdraw_3 = withdraw.getVerifiedWithdrawDenomList;
+var withdraw_4 = withdraw.processWithdrawGroup;
+var withdraw_5 = withdraw.getExchangeWithdrawalInfo;
+var withdraw_6 = withdraw.getWithdrawDetailsForUri;
+
 var http = createCommonjsModule(function (module, exports) {
 /*
  This file is part of TALER
@@ -8860,16 +9640,8 @@ var http = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  TALER; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+
 var HttpResponseStatus;
 (function (HttpResponseStatus) {
     HttpResponseStatus[HttpResponseStatus["Ok"] = 200] = "Ok";
@@ -8908,10 +9680,9 @@ exports.Headers = Headers;
 class BrowserHttpLib {
     req(method, url, requestBody, options) {
         return new Promise((resolve, reject) => {
-            var _a;
             const myRequest = new XMLHttpRequest();
             myRequest.open(method, url);
-            if ((_a = options) === null || _a === void 0 ? void 0 : _a.headers) {
+            if (options === null || options === void 0 ? void 0 : options.headers) {
                 for (const headerName in options.headers) {
                     myRequest.setRequestHeader(headerName, options.headers[headerName]);
                 }
@@ -8922,17 +9693,17 @@ class BrowserHttpLib {
             else {
                 myRequest.send();
             }
-            myRequest.onerror = e => {
+            myRequest.onerror = (e) => {
                 console.error("http request error");
                 reject(Error("could not make XMLHttpRequest"));
             };
-            myRequest.addEventListener("readystatechange", e => {
+            myRequest.addEventListener("readystatechange", (e) => {
                 if (myRequest.readyState === XMLHttpRequest.DONE) {
                     if (myRequest.status === 0) {
                         reject(Error("HTTP Request failed (status code 0, maybe URI scheme is wrong?)"));
                         return;
                     }
-                    const makeJson = () => __awaiter(this, void 0, void 0, function* () {
+                    const makeJson = () => tslib_1.__awaiter(this, void 0, void 0, function* () {
                         let responseJson;
                         try {
                             responseJson = JSON.parse(myRequest.responseText);
@@ -8951,15 +9722,19 @@ class BrowserHttpLib {
                     const headerMap = new Headers();
                     arr.forEach(function (line) {
                         const parts = line.split(": ");
-                        const header = parts.shift();
+                        const headerName = parts.shift();
+                        if (!headerName) {
+                            console.error("invalid header");
+                            return;
+                        }
                         const value = parts.join(": ");
-                        headerMap.set(header, value);
+                        headerMap.set(headerName, value);
                     });
                     const resp = {
                         status: myRequest.status,
                         headers: headerMap,
                         json: makeJson,
-                        text: () => __awaiter(this, void 0, void 0, function* () { return myRequest.responseText; }),
+                        text: () => tslib_1.__awaiter(this, void 0, void 0, function* () { return myRequest.responseText; }),
                     };
                     resolve(resp);
                 }
@@ -9001,27 +9776,12 @@ var refund = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 
 
 
-const Amounts = __importStar(amounts);
+
+
 
 
 
@@ -9031,9 +9791,9 @@ const Amounts = __importStar(amounts);
 
 const logger = new logging.Logger("refund.ts");
 function incrementPurchaseQueryRefundRetry(ws, proposalId, err) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         console.log("incrementing purchase refund query retry with error", err);
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const pr = yield tx.get(dbTypes.Stores.purchases, proposalId);
             if (!pr) {
                 return;
@@ -9050,9 +9810,9 @@ function incrementPurchaseQueryRefundRetry(ws, proposalId, err) {
     });
 }
 function incrementPurchaseApplyRefundRetry(ws, proposalId, err) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         console.log("incrementing purchase refund apply retry with error", err);
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const pr = yield tx.get(dbTypes.Stores.purchases, proposalId);
             if (!pr) {
                 return;
@@ -9069,7 +9829,7 @@ function incrementPurchaseApplyRefundRetry(ws, proposalId, err) {
     });
 }
 function getFullRefundFees(ws, refundPermissions) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (refundPermissions.length === 0) {
             throw Error("no refunds given");
         }
@@ -9077,7 +9837,7 @@ function getFullRefundFees(ws, refundPermissions) {
         if (!coin0) {
             throw Error("coin not found");
         }
-        let feeAcc = Amounts.getZero(Amounts.parseOrThrow(refundPermissions[0].refund_amount).currency);
+        let feeAcc = amounts.Amounts.getZero(amounts.Amounts.parseOrThrow(refundPermissions[0].refund_amount).currency);
         const denoms = yield ws.db
             .iterIndex(dbTypes.Stores.denominations.exchangeBaseUrlIndex, coin0.exchangeBaseUrl)
             .toArray();
@@ -9097,21 +9857,21 @@ function getFullRefundFees(ws, refundPermissions) {
             // When it hasn't, the refresh cost is inaccurate.  To fix this,
             // we need introduce a flag to tell if a coin was refunded or
             // refreshed normally (and what about incremental refunds?)
-            const refundAmount = Amounts.parseOrThrow(rp.refund_amount);
-            const refundFee = Amounts.parseOrThrow(rp.refund_fee);
-            const refreshCost = refresh.getTotalRefreshCost(denoms, denom, Amounts.sub(refundAmount, refundFee).amount);
-            feeAcc = Amounts.add(feeAcc, refreshCost, refundFee).amount;
+            const refundAmount = amounts.Amounts.parseOrThrow(rp.refund_amount);
+            const refundFee = amounts.Amounts.parseOrThrow(rp.refund_fee);
+            const refreshCost = refresh.getTotalRefreshCost(denoms, denom, amounts.Amounts.sub(refundAmount, refundFee).amount);
+            feeAcc = amounts.Amounts.add(feeAcc, refreshCost, refundFee).amount;
         }
         return feeAcc;
     });
 }
 exports.getFullRefundFees = getFullRefundFees;
 function acceptRefundResponse(ws, proposalId, refundResponse, reason) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const refundPermissions = refundResponse.refund_permissions;
         let numNewRefunds = 0;
         const refundGroupId = talerCrypto.encodeCrock(naclFast.randomBytes(32));
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const p = yield tx.get(dbTypes.Stores.purchases, proposalId);
             if (!p) {
                 console.error("purchase not found, not adding refunds");
@@ -9176,8 +9936,8 @@ function acceptRefundResponse(ws, proposalId, refundResponse, reason) {
 }
 exports.acceptRefundResponse = acceptRefundResponse;
 function startRefundQuery(ws, proposalId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const success = yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const success = yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const p = yield tx.get(dbTypes.Stores.purchases, proposalId);
             if (!p) {
                 console.log("no purchase found for refund URL");
@@ -9203,7 +9963,7 @@ function startRefundQuery(ws, proposalId) {
  * that was involved in the refund.
  */
 function applyRefund(ws, talerRefundUri) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const parseResult = taleruri.parseRefundUri(talerRefundUri);
         console.log("applying refund", parseResult);
         if (!parseResult) {
@@ -9216,22 +9976,22 @@ function applyRefund(ws, talerRefundUri) {
         if (!purchase) {
             throw Error(`no purchase for the taler://refund/ URI (${talerRefundUri}) was found`);
         }
-        console.log("processing purchase for refund");
+        logger.info("processing purchase for refund");
         yield startRefundQuery(ws, purchase.proposalId);
-        return purchase.contractData.contractTermsHash;
+        return { contractTermsHash: purchase.contractData.contractTermsHash };
     });
 }
 exports.applyRefund = applyRefund;
 function processPurchaseQueryRefund(ws, proposalId, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const onOpErr = (e) => incrementPurchaseQueryRefundRetry(ws, proposalId, e);
         yield errors.guardOperationException(() => processPurchaseQueryRefundImpl(ws, proposalId, forceNow), onOpErr);
     });
 }
 exports.processPurchaseQueryRefund = processPurchaseQueryRefund;
 function resetPurchaseQueryRefundRetry(ws, proposalId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.mutate(dbTypes.Stores.purchases, proposalId, x => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.purchases, proposalId, (x) => {
             if (x.refundStatusRetryInfo.active) {
                 x.refundStatusRetryInfo = dbTypes.initRetryInfo();
             }
@@ -9240,7 +10000,7 @@ function resetPurchaseQueryRefundRetry(ws, proposalId) {
     });
 }
 function processPurchaseQueryRefundImpl(ws, proposalId, forceNow) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (forceNow) {
             yield resetPurchaseQueryRefundRetry(ws, proposalId);
         }
@@ -9270,15 +10030,15 @@ function processPurchaseQueryRefundImpl(ws, proposalId, forceNow) {
     });
 }
 function processPurchaseApplyRefund(ws, proposalId, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const onOpErr = (e) => incrementPurchaseApplyRefundRetry(ws, proposalId, e);
         yield errors.guardOperationException(() => processPurchaseApplyRefundImpl(ws, proposalId, forceNow), onOpErr);
     });
 }
 exports.processPurchaseApplyRefund = processPurchaseApplyRefund;
 function resetPurchaseApplyRefundRetry(ws, proposalId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.mutate(dbTypes.Stores.purchases, proposalId, x => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.purchases, proposalId, (x) => {
             if (x.refundApplyRetryInfo.active) {
                 x.refundApplyRetryInfo = dbTypes.initRetryInfo();
             }
@@ -9287,7 +10047,7 @@ function resetPurchaseApplyRefundRetry(ws, proposalId) {
     });
 }
 function processPurchaseApplyRefundImpl(ws, proposalId, forceNow) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (forceNow) {
             yield resetPurchaseApplyRefundRetry(ws, proposalId);
         }
@@ -9318,7 +10078,7 @@ function processPurchaseApplyRefundImpl(ws, proposalId, forceNow) {
             console.log("sending refund permission", perm);
             // FIXME: not correct once we support multiple exchanges per payment
             const exchangeUrl = purchase.payReq.coins[0].exchange_url;
-            const reqUrl = new URL("refund", exchangeUrl);
+            const reqUrl = new URL(`coins/${perm.coin_pub}/refund`, exchangeUrl);
             const resp = yield ws.http.postJson(reqUrl.href, req);
             console.log("sent refund permission");
             switch (resp.status) {
@@ -9329,33 +10089,32 @@ function processPurchaseApplyRefundImpl(ws, proposalId, forceNow) {
                     // We're too late, refund is expired.
                     newRefundsFailed[pk] = info;
                     break;
-                default:
+                default: {
                     let body = null;
-                    try {
-                        body = yield resp.json();
-                    }
-                    catch (_a) { }
+                    // FIXME: error handling!
+                    body = yield resp.json();
                     const m = "refund request (at exchange) failed";
-                    throw new errors.OperationFailedError(m, {
+                    throw new errors.OperationFailedError({
                         message: m,
                         type: "network",
                         details: {
                             body,
                         },
                     });
+                }
             }
         }
         let allRefundsProcessed = false;
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases, dbTypes.Stores.coins, dbTypes.Stores.refreshGroups, dbTypes.Stores.refundEvents], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases, dbTypes.Stores.coins, dbTypes.Stores.refreshGroups, dbTypes.Stores.refundEvents], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const p = yield tx.get(dbTypes.Stores.purchases, proposalId);
             if (!p) {
                 return;
             }
             // Groups that failed/succeeded
-            let groups = {};
+            const groups = {};
             // Avoid duplicates
             const refreshCoinsMap = {};
-            const modCoin = (perm) => __awaiter(this, void 0, void 0, function* () {
+            const modCoin = (perm) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 const c = yield tx.get(dbTypes.Stores.coins, perm.coin_pub);
                 if (!c) {
                     console.warn("coin not found, can't apply refund");
@@ -9363,15 +10122,15 @@ function processPurchaseApplyRefundImpl(ws, proposalId, forceNow) {
                 }
                 refreshCoinsMap[c.coinPub] = { coinPub: c.coinPub };
                 logger.trace(`commiting refund ${perm.merchant_sig} to coin ${c.coinPub}`);
-                logger.trace(`coin amount before is ${Amounts.toString(c.currentAmount)}`);
+                logger.trace(`coin amount before is ${amounts.Amounts.stringify(c.currentAmount)}`);
                 logger.trace(`refund amount (via merchant) is ${perm.refund_amount}`);
                 logger.trace(`refund fee (via merchant) is ${perm.refund_fee}`);
-                const refundAmount = Amounts.parseOrThrow(perm.refund_amount);
-                const refundFee = Amounts.parseOrThrow(perm.refund_fee);
-                c.status = dbTypes.CoinStatus.Dormant;
-                c.currentAmount = Amounts.add(c.currentAmount, refundAmount).amount;
-                c.currentAmount = Amounts.sub(c.currentAmount, refundFee).amount;
-                logger.trace(`coin amount after is ${Amounts.toString(c.currentAmount)}`);
+                const refundAmount = amounts.Amounts.parseOrThrow(perm.refund_amount);
+                const refundFee = amounts.Amounts.parseOrThrow(perm.refund_fee);
+                c.status = "dormant" /* Dormant */;
+                c.currentAmount = amounts.Amounts.add(c.currentAmount, refundAmount).amount;
+                c.currentAmount = amounts.Amounts.sub(c.currentAmount, refundFee).amount;
+                logger.trace(`coin amount after is ${amounts.Amounts.stringify(c.currentAmount)}`);
                 yield tx.put(dbTypes.Stores.coins, c);
             });
             for (const pk of Object.keys(newRefundsFailed)) {
@@ -9461,23 +10220,8 @@ var pay = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+
 /**
  * Implementation of the payment operation, including downloading and
  * claiming of proposals.
@@ -9490,7 +10234,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 
 
-const Amounts = __importStar(amounts);
+const Amounts = tslib_1.__importStar(amounts);
 
 
 
@@ -9510,7 +10254,7 @@ const logger = new logging.Logger("pay.ts");
  * of coins that are too small to spend.
  */
 function getTotalPaymentCost(ws, pcs) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const costs = [
             pcs.paymentAmount,
             pcs.customerDepositFees,
@@ -9562,8 +10306,8 @@ function selectPayCoins(acis, paymentAmount, depositFeeLimit) {
     let totalFees = Amounts.getZero(currency);
     let amountPayRemaining = paymentAmount;
     let amountDepositFeeLimitRemaining = depositFeeLimit;
-    let customerWireFees = Amounts.getZero(currency);
-    let customerDepositFees = Amounts.getZero(currency);
+    const customerWireFees = Amounts.getZero(currency);
+    const customerDepositFees = Amounts.getZero(currency);
     for (const aci of acis) {
         // Don't use this coin if depositing it is more expensive than
         // the amount it would give the merchant.
@@ -9586,12 +10330,18 @@ function selectPayCoins(acis, paymentAmount, depositFeeLimit) {
         let coinSpend;
         const amountActualAvailable = Amounts.sub(aci.availableAmount, depositFeeSpend).amount;
         if (Amounts.cmp(amountActualAvailable, amountPayRemaining) > 0) {
-            // Partial spending
+            // Partial spending, as the coin is worth more than the remaining
+            // amount to pay.
             coinSpend = Amounts.add(amountPayRemaining, depositFeeSpend).amount;
+            // Make sure we contribute at least the deposit fee, otherwise
+            // contributing this coin would cause a loss for the merchant.
+            if (Amounts.cmp(coinSpend, aci.feeDeposit) < 0) {
+                coinSpend = aci.feeDeposit;
+            }
             amountPayRemaining = Amounts.getZero(currency);
         }
         else {
-            // Spend the full remaining amount
+            // Spend the full remaining amount on the coin
             coinSpend = aci.availableAmount;
             amountPayRemaining = Amounts.add(amountPayRemaining, depositFeeSpend)
                 .amount;
@@ -9621,7 +10371,7 @@ exports.selectPayCoins = selectPayCoins;
  * If payment is impossible, undefined is returned.
  */
 function getCoinsForPayment(ws, contractData) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         let remainingAmount = contractData.amount;
         const exchanges = yield ws.db.iter(dbTypes.Stores.exchanges).toArray();
         for (const exchange of exchanges) {
@@ -9661,9 +10411,6 @@ function getCoinsForPayment(ws, contractData) {
             const coins = yield ws.db
                 .iterIndex(dbTypes.Stores.coins.exchangeBaseUrlIndex, exchange.baseUrl)
                 .toArray();
-            const denoms = yield ws.db
-                .iterIndex(dbTypes.Stores.denominations.exchangeBaseUrlIndex, exchange.baseUrl)
-                .toArray();
             if (!coins || coins.length === 0) {
                 continue;
             }
@@ -9693,7 +10440,7 @@ function getCoinsForPayment(ws, contractData) {
                 if (coin.suspended) {
                     continue;
                 }
-                if (coin.status !== dbTypes.CoinStatus.Fresh) {
+                if (coin.status !== "fresh" /* Fresh */) {
                     continue;
                 }
                 acis.push({
@@ -9733,7 +10480,7 @@ function getCoinsForPayment(ws, contractData) {
  * pay for a proposal in the wallet's database.
  */
 function recordConfirmPay(ws, proposal, coinSelection, coinDepositPermissions, sessionIdOverride) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const d = proposal.download;
         if (!d) {
             throw Error("proposal is in invalid state");
@@ -9779,7 +10526,7 @@ function recordConfirmPay(ws, proposal, coinSelection, coinDepositPermissions, s
                 refundsPending: {},
             },
         };
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.purchases, dbTypes.Stores.proposals, dbTypes.Stores.refreshGroups], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.purchases, dbTypes.Stores.proposals, dbTypes.Stores.refreshGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const p = yield tx.get(dbTypes.Stores.proposals, proposal.proposalId);
             if (p) {
                 p.proposalStatus = "accepted" /* ACCEPTED */;
@@ -9793,7 +10540,7 @@ function recordConfirmPay(ws, proposal, coinSelection, coinDepositPermissions, s
                 if (!coin) {
                     throw Error("coin allocated for payment doesn't exist anymore");
                 }
-                coin.status = dbTypes.CoinStatus.Dormant;
+                coin.status = "dormant" /* Dormant */;
                 const remaining = Amounts.sub(coin.currentAmount, coinSelection.coinContributions[i]);
                 if (remaining.saturated) {
                     throw Error("not enough remaining balance on coin for payment");
@@ -9801,7 +10548,9 @@ function recordConfirmPay(ws, proposal, coinSelection, coinDepositPermissions, s
                 coin.currentAmount = remaining.amount;
                 yield tx.put(dbTypes.Stores.coins, coin);
             }
-            const refreshCoinPubs = coinSelection.coinPubs.map(x => ({ coinPub: x }));
+            const refreshCoinPubs = coinSelection.coinPubs.map((x) => ({
+                coinPub: x,
+            }));
             yield refresh.createRefreshGroup(tx, refreshCoinPubs, "pay" /* Pay */);
         }));
         ws.notify({
@@ -9823,7 +10572,7 @@ function getNextUrl(contractData) {
     }
 }
 function abortFailedPayment(ws, proposalId) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const purchase = yield ws.db.get(dbTypes.Stores.purchases, proposalId);
         if (!purchase) {
             throw Error("Purchase not found, unable to abort with refund");
@@ -9856,7 +10605,7 @@ function abortFailedPayment(ws, proposalId) {
         }
         const refundResponse = talerTypes.codecForMerchantRefundResponse().decode(yield resp.json());
         yield refund.acceptRefundResponse(ws, purchase.proposalId, refundResponse, "abort-refund" /* AbortRefund */);
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const p = yield tx.get(dbTypes.Stores.purchases, proposalId);
             if (!p) {
                 return;
@@ -9868,8 +10617,8 @@ function abortFailedPayment(ws, proposalId) {
 }
 exports.abortFailedPayment = abortFailedPayment;
 function incrementProposalRetry(ws, proposalId, err) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.proposals], (tx) => __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.proposals], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const pr = yield tx.get(dbTypes.Stores.proposals, proposalId);
             if (!pr) {
                 return;
@@ -9886,9 +10635,9 @@ function incrementProposalRetry(ws, proposalId, err) {
     });
 }
 function incrementPurchasePayRetry(ws, proposalId, err) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         console.log("incrementing purchase pay retry with error", err);
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const pr = yield tx.get(dbTypes.Stores.purchases, proposalId);
             if (!pr) {
                 return;
@@ -9905,15 +10654,15 @@ function incrementPurchasePayRetry(ws, proposalId, err) {
     });
 }
 function processDownloadProposal(ws, proposalId, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const onOpErr = (err) => incrementProposalRetry(ws, proposalId, err);
         yield errors.guardOperationException(() => processDownloadProposalImpl(ws, proposalId, forceNow), onOpErr);
     });
 }
 exports.processDownloadProposal = processDownloadProposal;
 function resetDownloadProposalRetry(ws, proposalId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.mutate(dbTypes.Stores.proposals, proposalId, x => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.proposals, proposalId, (x) => {
             if (x.retryInfo.active) {
                 x.retryInfo = dbTypes.initRetryInfo();
             }
@@ -9922,7 +10671,7 @@ function resetDownloadProposalRetry(ws, proposalId) {
     });
 }
 function processDownloadProposalImpl(ws, proposalId, forceNow) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (forceNow) {
             yield resetDownloadProposalRetry(ws, proposalId);
         }
@@ -9952,7 +10701,7 @@ function processDownloadProposalImpl(ws, proposalId, forceNow) {
         const contractTermsHash = yield ws.cryptoApi.hashString(helpers.canonicalJson(proposalResp.contract_terms));
         const parsedContractTerms = talerTypes.codecForContractTerms().decode(proposalResp.contract_terms);
         const fulfillmentUrl = parsedContractTerms.fulfillment_url;
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.proposals, dbTypes.Stores.purchases], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.proposals, dbTypes.Stores.purchases], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const p = yield tx.get(dbTypes.Stores.proposals, proposalId);
             if (!p) {
                 return;
@@ -9983,11 +10732,11 @@ function processDownloadProposalImpl(ws, proposalId, forceNow) {
                     payDeadline: parsedContractTerms.pay_deadline,
                     refundDeadline: parsedContractTerms.refund_deadline,
                     wireFeeAmortization: parsedContractTerms.wire_fee_amortization || 1,
-                    allowedAuditors: parsedContractTerms.auditors.map(x => ({
+                    allowedAuditors: parsedContractTerms.auditors.map((x) => ({
                         auditorBaseUrl: x.url,
                         auditorPub: x.master_pub,
                     })),
-                    allowedExchanges: parsedContractTerms.exchanges.map(x => ({
+                    allowedExchanges: parsedContractTerms.exchanges.map((x) => ({
                         exchangeBaseUrl: x.url,
                         exchangePub: x.master_pub,
                     })),
@@ -10026,7 +10775,7 @@ function processDownloadProposalImpl(ws, proposalId, forceNow) {
  *  downloaded in the context of a session ID.
  */
 function startDownloadProposal(ws, merchantBaseUrl, orderId, sessionId) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const oldProposal = yield ws.db.getIndexed(dbTypes.Stores.proposals.urlAndOrderIdIndex, [merchantBaseUrl, orderId]);
         if (oldProposal) {
             yield processDownloadProposal(ws, oldProposal.proposalId);
@@ -10048,7 +10797,7 @@ function startDownloadProposal(ws, merchantBaseUrl, orderId, sessionId) {
             lastError: undefined,
             downloadSessionId: sessionId,
         };
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.proposals], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.proposals], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const existingRecord = yield tx.getIndexed(dbTypes.Stores.proposals.urlAndOrderIdIndex, [merchantBaseUrl, orderId]);
             if (existingRecord) {
                 // Created concurrently
@@ -10061,7 +10810,7 @@ function startDownloadProposal(ws, merchantBaseUrl, orderId, sessionId) {
     });
 }
 function submitPay(ws, proposalId) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const purchase = yield ws.db.get(dbTypes.Stores.purchases, proposalId);
         if (!purchase) {
             throw Error("Purchase not found: " + proposalId);
@@ -10112,7 +10861,7 @@ function submitPay(ws, proposalId) {
                 purchase.autoRefundDeadline = time.timestampAddDuration(now, ar);
             }
         }
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases, dbTypes.Stores.payEvents], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases, dbTypes.Stores.payEvents], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield tx.put(dbTypes.Stores.purchases, purchase);
             const payEvent = {
                 proposalId,
@@ -10138,7 +10887,7 @@ exports.submitPay = submitPay;
  * yet send to the merchant.
  */
 function preparePayForUri(ws, talerPayUri) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const uriResult = taleruri.parsePayUri(talerPayUri);
         if (!uriResult) {
             return {
@@ -10197,7 +10946,7 @@ function preparePayForUri(ws, talerPayUri) {
         }
         if (uriResult.sessionId && purchase.lastSessionId !== uriResult.sessionId) {
             console.log("automatically re-submitting payment with different session ID");
-            yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => __awaiter(this, void 0, void 0, function* () {
+            yield ws.db.runWithWriteTransaction([dbTypes.Stores.purchases], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 const p = yield tx.get(dbTypes.Stores.purchases, proposalId);
                 if (!p) {
                     return;
@@ -10219,7 +10968,7 @@ exports.preparePayForUri = preparePayForUri;
  * Add a contract to the wallet and sign coins, and send them.
  */
 function confirmPay(ws, proposalId, sessionIdOverride) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         logger.trace(`executing confirmPay with proposalId ${proposalId} and sessionIdOverride ${sessionIdOverride}`);
         const proposal = yield ws.db.get(dbTypes.Stores.proposals, proposalId);
         if (!proposal) {
@@ -10234,7 +10983,7 @@ function confirmPay(ws, proposalId, sessionIdOverride) {
             if (sessionIdOverride !== undefined &&
                 sessionIdOverride != purchase.lastSessionId) {
                 logger.trace(`changing session ID to ${sessionIdOverride}`);
-                yield ws.db.mutate(dbTypes.Stores.purchases, purchase.proposalId, x => {
+                yield ws.db.mutate(dbTypes.Stores.purchases, purchase.proposalId, (x) => {
                     x.lastSessionId = sessionIdOverride;
                     x.paymentSubmitPending = true;
                     return x;
@@ -10288,15 +11037,15 @@ function confirmPay(ws, proposalId, sessionIdOverride) {
 }
 exports.confirmPay = confirmPay;
 function processPurchasePay(ws, proposalId, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const onOpErr = (e) => incrementPurchasePayRetry(ws, proposalId, e);
         yield errors.guardOperationException(() => processPurchasePayImpl(ws, proposalId, forceNow), onOpErr);
     });
 }
 exports.processPurchasePay = processPurchasePay;
 function resetPurchasePayRetry(ws, proposalId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.mutate(dbTypes.Stores.purchases, proposalId, x => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.purchases, proposalId, (x) => {
             if (x.payRetryInfo.active) {
                 x.payRetryInfo = dbTypes.initRetryInfo();
             }
@@ -10305,7 +11054,7 @@ function resetPurchasePayRetry(ws, proposalId) {
     });
 }
 function processPurchasePayImpl(ws, proposalId, forceNow) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (forceNow) {
             yield resetPurchasePayRetry(ws, proposalId);
         }
@@ -10321,8 +11070,8 @@ function processPurchasePayImpl(ws, proposalId, forceNow) {
     });
 }
 function refuseProposal(ws, proposalId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const success = yield ws.db.runWithWriteTransaction([dbTypes.Stores.proposals], (tx) => __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        const success = yield ws.db.runWithWriteTransaction([dbTypes.Stores.proposals], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const proposal = yield tx.get(dbTypes.Stores.proposals, proposalId);
             if (!proposal) {
                 logger.trace(`proposal ${proposalId} not found, won't refuse proposal`);
@@ -10357,762 +11106,22 @@ var pay_7 = pay.confirmPay;
 var pay_8 = pay.processPurchasePay;
 var pay_9 = pay.refuseProposal;
 
-var assertUnreachable_1 = createCommonjsModule(function (module, exports) {
-/*
- This file is part of GNU Taler
- (C) 2019 GNUnet e.V.
-
- GNU Taler is free software; you can redistribute it and/or modify it under the
- terms of the GNU General Public License as published by the Free Software
- Foundation; either version 3, or (at your option) any later version.
-
- GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along with
- GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-function assertUnreachable(x) {
-    throw new Error("Didn't expect to get here");
-}
-exports.assertUnreachable = assertUnreachable;
-
-});
-
-unwrapExports(assertUnreachable_1);
-var assertUnreachable_2 = assertUnreachable_1.assertUnreachable;
-
-var ReserveTransaction = createCommonjsModule(function (module, exports) {
-/*
- This file is part of GNU Taler
- (C) 2019 Taler Systems S.A.
-
- GNU Taler is free software; you can redistribute it and/or modify it under the
- terms of the GNU General Public License as published by the Free Software
- Foundation; either version 3, or (at your option) any later version.
-
- GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along with
- GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * @author Florian Dold <dold@taler.net>
- */
-/**
- * Imports.
- */
-
-
-exports.codecForReserveWithdrawTransaction = () => codec.typecheckedCodec(codec.makeCodecForObject()
-    .property("amount", codec.codecForString)
-    .property("h_coin_envelope", codec.codecForString)
-    .property("h_denom_pub", codec.codecForString)
-    .property("reserve_sig", codec.codecForString)
-    .property("type", codec.makeCodecForConstString("WITHDRAW" /* Withdraw */))
-    .property("withdraw_fee", codec.codecForString)
-    .build("ReserveWithdrawTransaction"));
-exports.codecForReserveDepositTransaction = () => codec.typecheckedCodec(codec.makeCodecForObject()
-    .property("amount", codec.codecForString)
-    .property("sender_account_url", codec.codecForString)
-    .property("timestamp", time.codecForTimestamp)
-    .property("wire_reference", codec.codecForString)
-    .property("type", codec.makeCodecForConstString("DEPOSIT" /* Deposit */))
-    .build("ReserveDepositTransaction"));
-exports.codecForReserveClosingTransaction = () => codec.typecheckedCodec(codec.makeCodecForObject()
-    .property("amount", codec.codecForString)
-    .property("closing_fee", codec.codecForString)
-    .property("exchange_pub", codec.codecForString)
-    .property("exchange_sig", codec.codecForString)
-    .property("h_wire", codec.codecForString)
-    .property("timestamp", time.codecForTimestamp)
-    .property("type", codec.makeCodecForConstString("CLOSING" /* Closing */))
-    .property("wtid", codec.codecForString)
-    .build("ReserveClosingTransaction"));
-exports.codecForReservePaybackTransaction = () => codec.typecheckedCodec(codec.makeCodecForObject()
-    .property("amount", codec.codecForString)
-    .property("coin_pub", codec.codecForString)
-    .property("exchange_pub", codec.codecForString)
-    .property("exchange_sig", codec.codecForString)
-    .property("receiver_account_details", codec.codecForString)
-    .property("timestamp", time.codecForTimestamp)
-    .property("type", codec.makeCodecForConstString("PAYBACK" /* Payback */))
-    .property("wire_transfer", codec.codecForString)
-    .build("ReservePaybackTransaction"));
-exports.codecForReserveTransaction = () => codec.typecheckedCodec(codec.makeCodecForUnion()
-    .discriminateOn("type")
-    .alternative("WITHDRAW" /* Withdraw */, exports.codecForReserveWithdrawTransaction())
-    .alternative("CLOSING" /* Closing */, exports.codecForReserveClosingTransaction())
-    .alternative("PAYBACK" /* Payback */, exports.codecForReservePaybackTransaction())
-    .alternative("DEPOSIT" /* Deposit */, exports.codecForReserveDepositTransaction())
-    .build("ReserveTransaction"));
-
-});
-
-unwrapExports(ReserveTransaction);
-var ReserveTransaction_1 = ReserveTransaction.codecForReserveWithdrawTransaction;
-var ReserveTransaction_2 = ReserveTransaction.codecForReserveDepositTransaction;
-var ReserveTransaction_3 = ReserveTransaction.codecForReserveClosingTransaction;
-var ReserveTransaction_4 = ReserveTransaction.codecForReservePaybackTransaction;
-var ReserveTransaction_5 = ReserveTransaction.codecForReserveTransaction;
-
-var ReserveStatus = createCommonjsModule(function (module, exports) {
-/*
- This file is part of GNU Taler
- (C) 2019 Taler Systems S.A.
-
- GNU Taler is free software; you can redistribute it and/or modify it under the
- terms of the GNU General Public License as published by the Free Software
- Foundation; either version 3, or (at your option) any later version.
-
- GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along with
- GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * @author Florian Dold <dold@taler.net>
- */
-/**
- * Imports.
- */
-
-
-exports.codecForReserveStatus = () => codec.typecheckedCodec(codec.makeCodecForObject()
-    .property("balance", codec.codecForString)
-    .property("history", codec.makeCodecForList(ReserveTransaction.codecForReserveTransaction()))
-    .build("ReserveStatus"));
-
-});
-
-unwrapExports(ReserveStatus);
-var ReserveStatus_1 = ReserveStatus.codecForReserveStatus;
-
-var reserves = createCommonjsModule(function (module, exports) {
-/*
- This file is part of GNU Taler
- (C) 2019 GNUnet e.V.
-
- GNU Taler is free software; you can redistribute it and/or modify it under the
- terms of the GNU General Public License as published by the Free Software
- Foundation; either version 3, or (at your option) any later version.
-
- GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along with
- GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
- */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-
-const Amounts = __importStar(amounts);
-
-
-
-
-
-
-
-
-
-const logger = new logging.Logger("reserves.ts");
-function resetReserveRetry(ws, reservePub) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.mutate(dbTypes.Stores.reserves, reservePub, x => {
-            if (x.retryInfo.active) {
-                x.retryInfo = dbTypes.initRetryInfo();
-            }
-            return x;
-        });
-    });
-}
-/**
- * Create a reserve, but do not flag it as confirmed yet.
- *
- * Adds the corresponding exchange as a trusted exchange if it is neither
- * audited nor trusted already.
- */
-function createReserve(ws, req) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const keypair = yield ws.cryptoApi.createEddsaKeypair();
-        const now = time.getTimestampNow();
-        const canonExchange = helpers.canonicalizeBaseUrl(req.exchange);
-        let reserveStatus;
-        if (req.bankWithdrawStatusUrl) {
-            reserveStatus = dbTypes.ReserveRecordStatus.REGISTERING_BANK;
-        }
-        else {
-            reserveStatus = dbTypes.ReserveRecordStatus.UNCONFIRMED;
-        }
-        const currency = req.amount.currency;
-        const reserveRecord = {
-            timestampCreated: now,
-            amountWithdrawAllocated: Amounts.getZero(currency),
-            amountWithdrawCompleted: Amounts.getZero(currency),
-            amountWithdrawRemaining: Amounts.getZero(currency),
-            exchangeBaseUrl: canonExchange,
-            hasPayback: false,
-            amountInitiallyRequested: req.amount,
-            reservePriv: keypair.priv,
-            reservePub: keypair.pub,
-            senderWire: req.senderWire,
-            timestampConfirmed: undefined,
-            timestampReserveInfoPosted: undefined,
-            bankWithdrawStatusUrl: req.bankWithdrawStatusUrl,
-            exchangeWire: req.exchangeWire,
-            reserveStatus,
-            lastSuccessfulStatusQuery: undefined,
-            retryInfo: dbTypes.initRetryInfo(),
-            lastError: undefined,
-            reserveTransactions: [],
-        };
-        const senderWire = req.senderWire;
-        if (senderWire) {
-            const rec = {
-                paytoUri: senderWire,
-            };
-            yield ws.db.put(dbTypes.Stores.senderWires, rec);
-        }
-        const exchangeInfo = yield exchanges.updateExchangeFromUrl(ws, req.exchange);
-        const exchangeDetails = exchangeInfo.details;
-        if (!exchangeDetails) {
-            console.log(exchangeDetails);
-            throw Error("exchange not updated");
-        }
-        const { isAudited, isTrusted } = yield exchanges.getExchangeTrust(ws, exchangeInfo);
-        let currencyRecord = yield ws.db.get(dbTypes.Stores.currencies, exchangeDetails.currency);
-        if (!currencyRecord) {
-            currencyRecord = {
-                auditors: [],
-                exchanges: [],
-                fractionalDigits: 2,
-                name: exchangeDetails.currency,
-            };
-        }
-        if (!isAudited && !isTrusted) {
-            currencyRecord.exchanges.push({
-                baseUrl: req.exchange,
-                exchangePub: exchangeDetails.masterPublicKey,
-            });
-        }
-        const cr = currencyRecord;
-        const resp = yield ws.db.runWithWriteTransaction([dbTypes.Stores.currencies, dbTypes.Stores.reserves, dbTypes.Stores.bankWithdrawUris], (tx) => __awaiter(this, void 0, void 0, function* () {
-            // Check if we have already created a reserve for that bankWithdrawStatusUrl
-            if (reserveRecord.bankWithdrawStatusUrl) {
-                const bwi = yield tx.get(dbTypes.Stores.bankWithdrawUris, reserveRecord.bankWithdrawStatusUrl);
-                if (bwi) {
-                    const otherReserve = yield tx.get(dbTypes.Stores.reserves, bwi.reservePub);
-                    if (otherReserve) {
-                        logger.trace("returning existing reserve for bankWithdrawStatusUri");
-                        return {
-                            exchange: otherReserve.exchangeBaseUrl,
-                            reservePub: otherReserve.reservePub,
-                        };
-                    }
-                }
-                yield tx.put(dbTypes.Stores.bankWithdrawUris, {
-                    reservePub: reserveRecord.reservePub,
-                    talerWithdrawUri: reserveRecord.bankWithdrawStatusUrl,
-                });
-            }
-            yield tx.put(dbTypes.Stores.currencies, cr);
-            yield tx.put(dbTypes.Stores.reserves, reserveRecord);
-            const r = {
-                exchange: canonExchange,
-                reservePub: keypair.pub,
-            };
-            return r;
-        }));
-        ws.notify({ type: "reserve-created" /* ReserveCreated */ });
-        // Asynchronously process the reserve, but return
-        // to the caller already.
-        processReserve(ws, resp.reservePub, true).catch(e => {
-            console.error("Processing reserve failed:", e);
-        });
-        return resp;
-    });
-}
-exports.createReserve = createReserve;
-/**
- * First fetch information requred to withdraw from the reserve,
- * then deplete the reserve, withdrawing coins until it is empty.
- *
- * The returned promise resolves once the reserve is set to the
- * state DORMANT.
- */
-function processReserve(ws, reservePub, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return ws.memoProcessReserve.memo(reservePub, () => __awaiter(this, void 0, void 0, function* () {
-            const onOpError = (err) => incrementReserveRetry(ws, reservePub, err);
-            yield errors.guardOperationException(() => processReserveImpl(ws, reservePub, forceNow), onOpError);
-        }));
-    });
-}
-exports.processReserve = processReserve;
-function registerReserveWithBank(ws, reservePub) {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        let reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
-        switch ((_a = reserve) === null || _a === void 0 ? void 0 : _a.reserveStatus) {
-            case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
-            case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
-                break;
-            default:
-                return;
-        }
-        const bankStatusUrl = reserve.bankWithdrawStatusUrl;
-        if (!bankStatusUrl) {
-            return;
-        }
-        console.log("making selection");
-        if (reserve.timestampReserveInfoPosted) {
-            throw Error("bank claims that reserve info selection is not done");
-        }
-        const bankResp = yield ws.http.postJson(bankStatusUrl, {
-            reserve_pub: reservePub,
-            selected_exchange: reserve.exchangeWire,
-        });
-        yield ws.db.mutate(dbTypes.Stores.reserves, reservePub, r => {
-            switch (r.reserveStatus) {
-                case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
-                case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
-                    break;
-                default:
-                    return;
-            }
-            r.timestampReserveInfoPosted = time.getTimestampNow();
-            r.reserveStatus = dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK;
-            r.retryInfo = dbTypes.initRetryInfo();
-            return r;
-        });
-        ws.notify({ type: "wildcard" /* Wildcard */ });
-        return processReserveBankStatus(ws, reservePub);
-    });
-}
-function processReserveBankStatus(ws, reservePub) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const onOpError = (err) => incrementReserveRetry(ws, reservePub, err);
-        yield errors.guardOperationException(() => processReserveBankStatusImpl(ws, reservePub), onOpError);
-    });
-}
-exports.processReserveBankStatus = processReserveBankStatus;
-function processReserveBankStatusImpl(ws, reservePub) {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        let reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
-        switch ((_a = reserve) === null || _a === void 0 ? void 0 : _a.reserveStatus) {
-            case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
-            case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
-                break;
-            default:
-                return;
-        }
-        const bankStatusUrl = reserve.bankWithdrawStatusUrl;
-        if (!bankStatusUrl) {
-            return;
-        }
-        let status;
-        try {
-            const statusResp = yield ws.http.get(bankStatusUrl);
-            if (statusResp.status !== 200) {
-                throw Error(`unexpected status ${statusResp.status} for bank status query`);
-            }
-            status = talerTypes.codecForWithdrawOperationStatusResponse().decode(yield statusResp.json());
-        }
-        catch (e) {
-            throw e;
-        }
-        ws.notify({ type: "wildcard" /* Wildcard */ });
-        if (status.selection_done) {
-            if (reserve.reserveStatus === dbTypes.ReserveRecordStatus.REGISTERING_BANK) {
-                yield registerReserveWithBank(ws, reservePub);
-                return yield processReserveBankStatus(ws, reservePub);
-            }
-        }
-        else {
-            yield registerReserveWithBank(ws, reservePub);
-            return yield processReserveBankStatus(ws, reservePub);
-        }
-        if (status.transfer_done) {
-            yield ws.db.mutate(dbTypes.Stores.reserves, reservePub, r => {
-                switch (r.reserveStatus) {
-                    case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
-                    case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
-                        break;
-                    default:
-                        return;
-                }
-                const now = time.getTimestampNow();
-                r.timestampConfirmed = now;
-                r.reserveStatus = dbTypes.ReserveRecordStatus.QUERYING_STATUS;
-                r.retryInfo = dbTypes.initRetryInfo();
-                return r;
-            });
-            yield processReserveImpl(ws, reservePub, true);
-        }
-        else {
-            yield ws.db.mutate(dbTypes.Stores.reserves, reservePub, r => {
-                switch (r.reserveStatus) {
-                    case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
-                        break;
-                    default:
-                        return;
-                }
-                r.bankWithdrawConfirmUrl = status.confirm_transfer_url;
-                return r;
-            });
-            yield incrementReserveRetry(ws, reservePub, undefined);
-        }
-        ws.notify({ type: "wildcard" /* Wildcard */ });
-    });
-}
-function incrementReserveRetry(ws, reservePub, err) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.reserves], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const r = yield tx.get(dbTypes.Stores.reserves, reservePub);
-            if (!r) {
-                return;
-            }
-            if (!r.retryInfo) {
-                return;
-            }
-            console.log("updating retry info");
-            console.log("before", r.retryInfo);
-            r.retryInfo.retryCounter++;
-            dbTypes.updateRetryInfoTimeout(r.retryInfo);
-            console.log("after", r.retryInfo);
-            r.lastError = err;
-            yield tx.put(dbTypes.Stores.reserves, r);
-        }));
-        if (err) {
-            ws.notify({
-                type: "reserve-error" /* ReserveOperationError */,
-                operationError: err,
-            });
-        }
-    });
-}
-/**
- * Update the information about a reserve that is stored in the wallet
- * by quering the reserve's exchange.
- */
-function updateReserve(ws, reservePub) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
-        if (!reserve) {
-            throw Error("reserve not in db");
-        }
-        if (reserve.timestampConfirmed === undefined) {
-            throw Error("reserve not confirmed yet");
-        }
-        if (reserve.reserveStatus !== dbTypes.ReserveRecordStatus.QUERYING_STATUS) {
-            return;
-        }
-        const reqUrl = new URL("reserve/status", reserve.exchangeBaseUrl);
-        reqUrl.searchParams.set("reserve_pub", reservePub);
-        let resp;
-        try {
-            resp = yield ws.http.get(reqUrl.href);
-            console.log("got reserve/status response", yield resp.json());
-            if (resp.status === 404) {
-                const m = "reserve not known to the exchange yet";
-                throw new errors.OperationFailedError(m, {
-                    type: "waiting",
-                    message: m,
-                    details: {},
-                });
-            }
-            if (resp.status !== 200) {
-                throw Error(`unexpected status code ${resp.status} for reserve/status`);
-            }
-        }
-        catch (e) {
-            logger.trace("caught exception for reserve/status");
-            const m = e.message;
-            yield incrementReserveRetry(ws, reservePub, {
-                type: "network",
-                details: {},
-                message: m,
-            });
-            throw new errors.OperationFailedAndReportedError(m);
-        }
-        const respJson = yield resp.json();
-        const reserveInfo = ReserveStatus.codecForReserveStatus().decode(respJson);
-        const balance = Amounts.parseOrThrow(reserveInfo.balance);
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.reserves, dbTypes.Stores.reserveUpdatedEvents], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const r = yield tx.get(dbTypes.Stores.reserves, reservePub);
-            if (!r) {
-                return;
-            }
-            if (r.reserveStatus !== dbTypes.ReserveRecordStatus.QUERYING_STATUS) {
-                return;
-            }
-            const newHistoryTransactions = reserveInfo.history.slice(r.reserveTransactions.length);
-            const reserveUpdateId = talerCrypto.encodeCrock(talerCrypto.getRandomBytes(32));
-            // FIXME: check / compare history!
-            if (!r.lastSuccessfulStatusQuery) {
-                // FIXME: check if this matches initial expectations
-                r.amountWithdrawRemaining = balance;
-                const reserveUpdate = {
-                    reservePub: r.reservePub,
-                    timestamp: time.getTimestampNow(),
-                    amountReserveBalance: Amounts.toString(balance),
-                    amountExpected: Amounts.toString(reserve.amountInitiallyRequested),
-                    newHistoryTransactions,
-                    reserveUpdateId,
-                };
-                yield tx.put(dbTypes.Stores.reserveUpdatedEvents, reserveUpdate);
-            }
-            else {
-                const expectedBalance = Amounts.sub(r.amountWithdrawAllocated, r.amountWithdrawCompleted);
-                const cmp = Amounts.cmp(balance, expectedBalance.amount);
-                if (cmp == 0) {
-                    // Nothing changed.
-                    return;
-                }
-                if (cmp > 0) {
-                    const extra = Amounts.sub(balance, expectedBalance.amount).amount;
-                    r.amountWithdrawRemaining = Amounts.add(r.amountWithdrawRemaining, extra).amount;
-                }
-                const reserveUpdate = {
-                    reservePub: r.reservePub,
-                    timestamp: time.getTimestampNow(),
-                    amountReserveBalance: Amounts.toString(balance),
-                    amountExpected: Amounts.toString(expectedBalance.amount),
-                    newHistoryTransactions,
-                    reserveUpdateId,
-                };
-                yield tx.put(dbTypes.Stores.reserveUpdatedEvents, reserveUpdate);
-            }
-            r.lastSuccessfulStatusQuery = time.getTimestampNow();
-            r.reserveStatus = dbTypes.ReserveRecordStatus.WITHDRAWING;
-            r.retryInfo = dbTypes.initRetryInfo();
-            r.reserveTransactions = reserveInfo.history;
-            yield tx.put(dbTypes.Stores.reserves, r);
-        }));
-        ws.notify({ type: "reserve-updated" /* ReserveUpdated */ });
-    });
-}
-function processReserveImpl(ws, reservePub, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
-        if (!reserve) {
-            console.log("not processing reserve: reserve does not exist");
-            return;
-        }
-        if (!forceNow) {
-            const now = time.getTimestampNow();
-            if (reserve.retryInfo.nextRetry.t_ms > now.t_ms) {
-                logger.trace("processReserve retry not due yet");
-                return;
-            }
-        }
-        else {
-            yield resetReserveRetry(ws, reservePub);
-        }
-        logger.trace(`Processing reserve ${reservePub} with status ${reserve.reserveStatus}`);
-        switch (reserve.reserveStatus) {
-            case dbTypes.ReserveRecordStatus.UNCONFIRMED:
-                // nothing to do
-                break;
-            case dbTypes.ReserveRecordStatus.REGISTERING_BANK:
-                yield processReserveBankStatus(ws, reservePub);
-                return yield processReserveImpl(ws, reservePub, true);
-            case dbTypes.ReserveRecordStatus.QUERYING_STATUS:
-                yield updateReserve(ws, reservePub);
-                return yield processReserveImpl(ws, reservePub, true);
-            case dbTypes.ReserveRecordStatus.WITHDRAWING:
-                yield depleteReserve(ws, reservePub);
-                break;
-            case dbTypes.ReserveRecordStatus.DORMANT:
-                // nothing to do
-                break;
-            case dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK:
-                yield processReserveBankStatus(ws, reservePub);
-                break;
-            default:
-                console.warn("unknown reserve record status:", reserve.reserveStatus);
-                assertUnreachable_1.assertUnreachable(reserve.reserveStatus);
-                break;
-        }
-    });
-}
-function confirmReserve(ws, req) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const now = time.getTimestampNow();
-        yield ws.db.mutate(dbTypes.Stores.reserves, req.reservePub, reserve => {
-            if (reserve.reserveStatus !== dbTypes.ReserveRecordStatus.UNCONFIRMED) {
-                return;
-            }
-            reserve.timestampConfirmed = now;
-            reserve.reserveStatus = dbTypes.ReserveRecordStatus.QUERYING_STATUS;
-            reserve.retryInfo = dbTypes.initRetryInfo();
-            return reserve;
-        });
-        ws.notify({ type: "reserve-updated" /* ReserveUpdated */ });
-        processReserve(ws, req.reservePub, true).catch(e => {
-            console.log("processing reserve failed:", e);
-        });
-    });
-}
-exports.confirmReserve = confirmReserve;
-/**
- * Withdraw coins from a reserve until it is empty.
- *
- * When finished, marks the reserve as depleted by setting
- * the depleted timestamp.
- */
-function depleteReserve(ws, reservePub) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
-        if (!reserve) {
-            return;
-        }
-        if (reserve.reserveStatus !== dbTypes.ReserveRecordStatus.WITHDRAWING) {
-            return;
-        }
-        logger.trace(`depleting reserve ${reservePub}`);
-        const withdrawAmount = reserve.amountWithdrawRemaining;
-        logger.trace(`getting denom list`);
-        const denomsForWithdraw = yield withdraw.getVerifiedWithdrawDenomList(ws, reserve.exchangeBaseUrl, withdrawAmount);
-        logger.trace(`got denom list`);
-        if (denomsForWithdraw.length === 0) {
-            const m = `Unable to withdraw from reserve, no denominations are available to withdraw.`;
-            yield incrementReserveRetry(ws, reserve.reservePub, {
-                type: "internal",
-                message: m,
-                details: {},
-            });
-            console.log(m);
-            throw new errors.OperationFailedAndReportedError(m);
-        }
-        logger.trace("selected denominations");
-        const withdrawalSessionId = talerCrypto.encodeCrock(naclFast.randomBytes(32));
-        const totalCoinValue = Amounts.sum(denomsForWithdraw.map(x => x.value))
-            .amount;
-        const withdrawalRecord = {
-            withdrawSessionId: withdrawalSessionId,
-            exchangeBaseUrl: reserve.exchangeBaseUrl,
-            source: {
-                type: "reserve",
-                reservePub: reserve.reservePub,
-            },
-            rawWithdrawalAmount: withdrawAmount,
-            timestampStart: time.getTimestampNow(),
-            denoms: denomsForWithdraw.map(x => x.denomPub),
-            withdrawn: denomsForWithdraw.map(x => false),
-            planchets: denomsForWithdraw.map(x => undefined),
-            totalCoinValue,
-            retryInfo: dbTypes.initRetryInfo(),
-            lastErrorPerCoin: {},
-            lastError: undefined,
-        };
-        const totalCoinWithdrawFee = Amounts.sum(denomsForWithdraw.map(x => x.feeWithdraw)).amount;
-        const totalWithdrawAmount = Amounts.add(totalCoinValue, totalCoinWithdrawFee)
-            .amount;
-        function mutateReserve(r) {
-            const remaining = Amounts.sub(r.amountWithdrawRemaining, totalWithdrawAmount);
-            if (remaining.saturated) {
-                console.error("can't create planchets, saturated");
-                throw query.TransactionAbort;
-            }
-            const allocated = Amounts.add(r.amountWithdrawAllocated, totalWithdrawAmount);
-            if (allocated.saturated) {
-                console.error("can't create planchets, saturated");
-                throw query.TransactionAbort;
-            }
-            r.amountWithdrawRemaining = remaining.amount;
-            r.amountWithdrawAllocated = allocated.amount;
-            r.reserveStatus = dbTypes.ReserveRecordStatus.DORMANT;
-            r.retryInfo = dbTypes.initRetryInfo(false);
-            return r;
-        }
-        const success = yield ws.db.runWithWriteTransaction([dbTypes.Stores.withdrawalSession, dbTypes.Stores.reserves], (tx) => __awaiter(this, void 0, void 0, function* () {
-            const myReserve = yield tx.get(dbTypes.Stores.reserves, reservePub);
-            if (!myReserve) {
-                return false;
-            }
-            if (myReserve.reserveStatus !== dbTypes.ReserveRecordStatus.WITHDRAWING) {
-                return false;
-            }
-            yield tx.mutate(dbTypes.Stores.reserves, reserve.reservePub, mutateReserve);
-            yield tx.put(dbTypes.Stores.withdrawalSession, withdrawalRecord);
-            return true;
-        }));
-        if (success) {
-            console.log("processing new withdraw session");
-            ws.notify({
-                type: "withdraw-session-created" /* WithdrawSessionCreated */,
-                withdrawSessionId: withdrawalSessionId,
-            });
-            yield withdraw.processWithdrawSession(ws, withdrawalSessionId);
-        }
-        else {
-            console.trace("withdraw session already existed");
-        }
-    });
-}
-function createTalerWithdrawReserve(ws, talerWithdrawUri, selectedExchange) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const withdrawInfo = yield withdraw.getBankWithdrawalInfo(ws, talerWithdrawUri);
-        const exchangeWire = yield exchanges.getExchangePaytoUri(ws, selectedExchange, withdrawInfo.wireTypes);
-        const reserve = yield createReserve(ws, {
-            amount: withdrawInfo.amount,
-            bankWithdrawStatusUrl: withdrawInfo.extractedStatusUrl,
-            exchange: selectedExchange,
-            senderWire: withdrawInfo.senderWire,
-            exchangeWire: exchangeWire,
-        });
-        // We do this here, as the reserve should be registered before we return,
-        // so that we can redirect the user to the bank's status page.
-        yield processReserveBankStatus(ws, reserve.reservePub);
-        console.log("acceptWithdrawal: returning");
-        return {
-            reservePub: reserve.reservePub,
-            confirmTransferUrl: withdrawInfo.confirmTransferUrl,
-        };
-    });
-}
-exports.createTalerWithdrawReserve = createTalerWithdrawReserve;
-
-});
-
-unwrapExports(reserves);
-var reserves_1 = reserves.createReserve;
-var reserves_2 = reserves.processReserve;
-var reserves_3 = reserves.processReserveBankStatus;
-var reserves_4 = reserves.confirmReserve;
-var reserves_5 = reserves.createTalerWithdrawReserve;
-
 var timer = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2017-2019 Taler Systems S.A.
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 class IntervalHandle {
     constructor(h) {
@@ -11140,8 +11149,11 @@ exports.performanceNow = (() => {
             return t[0] * 1e9 + t[1];
         };
     }
-    else {
+    else if (typeof performance !== "undefined") {
         return () => performance.now();
+    }
+    else {
+        return () => 0;
     }
 })();
 /**
@@ -11251,15 +11263,9 @@ var cryptoApi = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  TALER; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const timer$1 = __importStar(timer);
+
+const timer$1 = tslib_1.__importStar(timer);
 /**
  * Number of different priorities. Each priority p
  * must be 0 <= p < NUM_PRIO.
@@ -11268,7 +11274,7 @@ const NUM_PRIO = 5;
 class BrowserCryptoWorkerFactory {
     startWorker() {
         const workerCtor = Worker;
-        const workerPath = "/dist/cryptoWorker-bundle.js";
+        const workerPath = "/dist/webextension/browserWorkerEntry.js";
         return new workerCtor(workerPath);
     }
     getConcurrency() {
@@ -11319,7 +11325,7 @@ class CryptoApi {
      * Terminate all worker threads.
      */
     terminateWorkers() {
-        for (let worker of this.workers) {
+        for (const worker of this.workers) {
             if (worker.w) {
                 CryptoApi.enableTracing && console.log("terminating worker");
                 worker.w.terminate();
@@ -11354,11 +11360,15 @@ class CryptoApi {
         }
         ws.currentWorkItem = work;
         this.numBusy++;
+        let worker;
         if (!ws.w) {
-            const w = this.workerFactory.startWorker();
-            w.onmessage = (m) => this.handleWorkerMessage(ws, m);
-            w.onerror = (e) => this.handleWorkerError(ws, e);
-            ws.w = w;
+            worker = this.workerFactory.startWorker();
+            worker.onmessage = (m) => this.handleWorkerMessage(ws, m);
+            worker.onerror = (e) => this.handleWorkerError(ws, e);
+            ws.w = worker;
+        }
+        else {
+            worker = ws.w;
         }
         const msg = {
             args: work.args,
@@ -11367,7 +11377,7 @@ class CryptoApi {
         };
         this.resetWorkerTimeout(ws);
         work.startTime = timer$1.performanceNow();
-        setImmediate(() => ws.w.postMessage(msg));
+        setTimeout(() => worker.postMessage(msg), 0);
     }
     resetWorkerTimeout(ws) {
         if (ws.terminationTimerHandle !== null) {
@@ -11392,8 +11402,10 @@ class CryptoApi {
         }
         console.error(e.message);
         try {
-            ws.w.terminate();
-            ws.w = null;
+            if (ws.w) {
+                ws.w.terminate();
+                ws.w = null;
+            }
         }
         catch (e) {
             console.error(e);
@@ -11411,6 +11423,9 @@ class CryptoApi {
             const q = this.workQueues[NUM_PRIO - i - 1];
             if (q.length !== 0) {
                 const work = q.shift();
+                if (!work) {
+                    continue;
+                }
                 this.wake(ws, work);
                 return;
             }
@@ -11435,8 +11450,7 @@ class CryptoApi {
             return;
         }
         CryptoApi.enableTracing &&
-            console.log(`rpc ${currentWorkItem.operation} took ${timer$1.performanceNow() -
-                currentWorkItem.startTime}ms`);
+            console.log(`rpc ${currentWorkItem.operation} took ${timer$1.performanceNow() - currentWorkItem.startTime}ms`);
         currentWorkItem.resolve(msg.data.result);
     }
     doRpc(operation, priority, ...args) {
@@ -11478,8 +11492,8 @@ class CryptoApi {
     hashString(str) {
         return this.doRpc("hashString", 1, str);
     }
-    hashDenomPub(denomPub) {
-        return this.doRpc("hashDenomPub", 1, denomPub);
+    hashEncoded(encodedBytes) {
+        return this.doRpc("hashEncoded", 1, encodedBytes);
     }
     isValidDenom(denom, masterPub) {
         return this.doRpc("isValidDenom", 2, denom, masterPub);
@@ -11505,8 +11519,8 @@ class CryptoApi {
     isValidWireAccount(paytoUri, sig, masterPub) {
         return this.doRpc("isValidWireAccount", 4, paytoUri, sig, masterPub);
     }
-    createPaybackRequest(coin) {
-        return this.doRpc("createPaybackRequest", 1, coin);
+    createRecoupRequest(coin) {
+        return this.doRpc("createRecoupRequest", 1, coin);
     }
     createRefreshSession(exchangeBaseUrl, kappa, meltCoin, newCoinDenoms, meltFee) {
         return this.doRpc("createRefreshSession", 4, exchangeBaseUrl, kappa, meltCoin, newCoinDenoms, meltFee);
@@ -11647,6 +11661,7 @@ class InternalWalletState {
         this.memoGetPending = new asyncMemo.AsyncOpMemoSingle();
         this.memoGetBalance = new asyncMemo.AsyncOpMemoSingle();
         this.memoProcessRefresh = new asyncMemo.AsyncOpMemoMap();
+        this.memoProcessRecoup = new asyncMemo.AsyncOpMemoMap();
         this.listeners = [];
         this.cryptoApi = new cryptoApi.CryptoApi(cryptoWorkerFactory);
     }
@@ -11654,9 +11669,9 @@ class InternalWalletState {
         logger.trace("Notification", n);
         for (const l of this.listeners) {
             const nc = JSON.parse(JSON.stringify(n));
-            setImmediate(() => {
+            setTimeout(() => {
                 l(nc);
-            });
+            }, 0);
         }
     }
     addNotificationListener(f) {
@@ -11686,32 +11701,18 @@ var history = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 
-const Amounts = __importStar(amounts);
+
+
+
 
 
 /**
  * Create an event ID from the type and the primary key for the event.
  */
 function makeEventId(type, ...args) {
-    return type + ";" + args.map(x => encodeURIComponent(x)).join(";");
+    return type + ";" + args.map((x) => encodeURIComponent(x)).join(";");
 }
 function getOrderShortInfo(proposal) {
     const download = proposal.download;
@@ -11719,7 +11720,7 @@ function getOrderShortInfo(proposal) {
         return undefined;
     }
     return {
-        amount: Amounts.toString(download.contractData.amount),
+        amount: amounts.Amounts.stringify(download.contractData.amount),
         fulfillmentUrl: download.contractData.fulfillmentUrl,
         orderId: download.contractData.orderId,
         merchantBaseUrl: download.contractData.merchantBaseUrl,
@@ -11728,8 +11729,8 @@ function getOrderShortInfo(proposal) {
     };
 }
 function collectProposalHistory(tx, history, historyQuery) {
-    return __awaiter(this, void 0, void 0, function* () {
-        tx.iter(dbTypes.Stores.proposals).forEachAsync((proposal) => __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        tx.iter(dbTypes.Stores.proposals).forEachAsync((proposal) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const status = proposal.proposalStatus;
             switch (status) {
                 case "accepted" /* ACCEPTED */:
@@ -11797,7 +11798,7 @@ function collectProposalHistory(tx, history, historyQuery) {
  * Retrive the full event history for this wallet.
  */
 function getHistory(ws, historyQuery) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const history = [];
         // FIXME: do pagination instead of generating the full history
         // We uniquely identify history rows via their timestamp.
@@ -11814,12 +11815,13 @@ function getHistory(ws, historyQuery) {
             dbTypes.Stores.refreshGroups,
             dbTypes.Stores.reserves,
             dbTypes.Stores.tips,
-            dbTypes.Stores.withdrawalSession,
+            dbTypes.Stores.withdrawalGroups,
             dbTypes.Stores.payEvents,
             dbTypes.Stores.refundEvents,
             dbTypes.Stores.reserveUpdatedEvents,
-        ], (tx) => __awaiter(this, void 0, void 0, function* () {
-            tx.iter(dbTypes.Stores.exchanges).forEach(exchange => {
+            dbTypes.Stores.recoupGroups,
+        ], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            tx.iter(dbTypes.Stores.exchanges).forEach((exchange) => {
                 history.push({
                     type: "exchange-added" /* ExchangeAdded */,
                     builtIn: false,
@@ -11828,7 +11830,7 @@ function getHistory(ws, historyQuery) {
                     timestamp: exchange.timestampAdded,
                 });
             });
-            tx.iter(dbTypes.Stores.exchangeUpdatedEvents).forEach(eu => {
+            tx.iter(dbTypes.Stores.exchangeUpdatedEvents).forEach((eu) => {
                 history.push({
                     type: "exchange-updated" /* ExchangeUpdated */,
                     eventId: makeEventId("exchange-updated" /* ExchangeUpdated */, eu.exchangeBaseUrl),
@@ -11836,8 +11838,7 @@ function getHistory(ws, historyQuery) {
                     timestamp: eu.timestamp,
                 });
             });
-            tx.iter(dbTypes.Stores.withdrawalSession).forEach(wsr => {
-                var _a;
+            tx.iter(dbTypes.Stores.withdrawalGroups).forEach((wsr) => {
                 if (wsr.timestampFinish) {
                     const cs = [];
                     wsr.planchets.forEach((x) => {
@@ -11846,20 +11847,20 @@ function getHistory(ws, historyQuery) {
                         }
                     });
                     let verboseDetails = undefined;
-                    if ((_a = historyQuery) === null || _a === void 0 ? void 0 : _a.verboseDetails) {
+                    if (historyQuery === null || historyQuery === void 0 ? void 0 : historyQuery.extraDebug) {
                         verboseDetails = {
                             coins: cs.map((x) => ({
-                                value: Amounts.toString(x.coinValue),
+                                value: amounts.Amounts.stringify(x.coinValue),
                                 denomPub: x.denomPub,
                             })),
                         };
                     }
                     history.push({
                         type: "withdrawn" /* Withdrawn */,
-                        withdrawSessionId: wsr.withdrawSessionId,
-                        eventId: makeEventId("withdrawn" /* Withdrawn */, wsr.withdrawSessionId),
-                        amountWithdrawnEffective: Amounts.toString(wsr.totalCoinValue),
-                        amountWithdrawnRaw: Amounts.toString(wsr.rawWithdrawalAmount),
+                        withdrawalGroupId: wsr.withdrawalGroupId,
+                        eventId: makeEventId("withdrawn" /* Withdrawn */, wsr.withdrawalGroupId),
+                        amountWithdrawnEffective: amounts.Amounts.stringify(wsr.totalCoinValue),
+                        amountWithdrawnRaw: amounts.Amounts.stringify(wsr.rawWithdrawalAmount),
                         exchangeBaseUrl: wsr.exchangeBaseUrl,
                         timestamp: wsr.timestampFinish,
                         withdrawalSource: wsr.source,
@@ -11868,8 +11869,7 @@ function getHistory(ws, historyQuery) {
                 }
             });
             yield collectProposalHistory(tx, history);
-            yield tx.iter(dbTypes.Stores.payEvents).forEachAsync((pe) => __awaiter(this, void 0, void 0, function* () {
-                var _a;
+            yield tx.iter(dbTypes.Stores.payEvents).forEachAsync((pe) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 const proposal = yield tx.get(dbTypes.Stores.proposals, pe.proposalId);
                 if (!proposal) {
                     return;
@@ -11883,7 +11883,7 @@ function getHistory(ws, historyQuery) {
                     return;
                 }
                 let verboseDetails = undefined;
-                if ((_a = historyQuery) === null || _a === void 0 ? void 0 : _a.verboseDetails) {
+                if (historyQuery === null || historyQuery === void 0 ? void 0 : historyQuery.extraDebug) {
                     const coins = [];
                     for (const x of purchase.payReq.coins) {
                         const c = yield tx.get(dbTypes.Stores.coins, x.coin_pub);
@@ -11891,7 +11891,10 @@ function getHistory(ws, historyQuery) {
                             // FIXME: what to do here??
                             continue;
                         }
-                        const d = yield tx.get(dbTypes.Stores.denominations, [c.exchangeBaseUrl, c.denomPub]);
+                        const d = yield tx.get(dbTypes.Stores.denominations, [
+                            c.exchangeBaseUrl,
+                            c.denomPub,
+                        ]);
                         if (!d) {
                             // FIXME: what to do here??
                             continue;
@@ -11899,12 +11902,12 @@ function getHistory(ws, historyQuery) {
                         coins.push({
                             contribution: x.contribution,
                             denomPub: c.denomPub,
-                            value: Amounts.toString(d.value),
+                            value: amounts.Amounts.stringify(d.value),
                         });
                     }
                     verboseDetails = { coins };
                 }
-                const amountPaidWithFees = Amounts.sum(purchase.payReq.coins.map(x => Amounts.parseOrThrow(x.contribution))).amount;
+                const amountPaidWithFees = amounts.Amounts.sum(purchase.payReq.coins.map((x) => amounts.Amounts.parseOrThrow(x.contribution))).amount;
                 history.push({
                     type: "payment-sent" /* PaymentSent */,
                     eventId: makeEventId("payment-sent" /* PaymentSent */, pe.proposalId),
@@ -11913,12 +11916,11 @@ function getHistory(ws, historyQuery) {
                     sessionId: pe.sessionId,
                     timestamp: pe.timestamp,
                     numCoins: purchase.payReq.coins.length,
-                    amountPaidWithFees: Amounts.toString(amountPaidWithFees),
+                    amountPaidWithFees: amounts.Amounts.stringify(amountPaidWithFees),
                     verboseDetails,
                 });
             }));
-            yield tx.iter(dbTypes.Stores.refreshGroups).forEachAsync((rg) => __awaiter(this, void 0, void 0, function* () {
-                var _b;
+            yield tx.iter(dbTypes.Stores.refreshGroups).forEachAsync((rg) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 if (!rg.timestampFinished) {
                     return;
                 }
@@ -11945,16 +11947,16 @@ function getHistory(ws, historyQuery) {
                         amountsRaw.push(c.currentAmount);
                     }
                 }
-                let amountRefreshedRaw = Amounts.sum(amountsRaw).amount;
+                const amountRefreshedRaw = amounts.Amounts.sum(amountsRaw).amount;
                 let amountRefreshedEffective;
                 if (amountsEffective.length == 0) {
-                    amountRefreshedEffective = Amounts.getZero(amountRefreshedRaw.currency);
+                    amountRefreshedEffective = amounts.Amounts.getZero(amountRefreshedRaw.currency);
                 }
                 else {
-                    amountRefreshedEffective = Amounts.sum(amountsEffective).amount;
+                    amountRefreshedEffective = amounts.Amounts.sum(amountsEffective).amount;
                 }
                 let verboseDetails = undefined;
-                if ((_b = historyQuery) === null || _b === void 0 ? void 0 : _b.verboseDetails) {
+                if (historyQuery === null || historyQuery === void 0 ? void 0 : historyQuery.extraDebug) {
                     const outputCoins = [];
                     for (const rs of rg.refreshSessionPerCoin) {
                         if (!rs) {
@@ -11964,13 +11966,16 @@ function getHistory(ws, historyQuery) {
                             if (!nd) {
                                 continue;
                             }
-                            const d = yield tx.get(dbTypes.Stores.denominations, [rs.exchangeBaseUrl, nd]);
+                            const d = yield tx.get(dbTypes.Stores.denominations, [
+                                rs.exchangeBaseUrl,
+                                nd,
+                            ]);
                             if (!d) {
                                 continue;
                             }
                             outputCoins.push({
                                 denomPub: d.denomPub,
-                                value: Amounts.toString(d.value),
+                                value: amounts.Amounts.stringify(d.value),
                             });
                         }
                     }
@@ -11984,15 +11989,15 @@ function getHistory(ws, historyQuery) {
                     eventId: makeEventId("refreshed" /* Refreshed */, rg.refreshGroupId),
                     timestamp: rg.timestampFinished,
                     refreshReason: rg.reason,
-                    amountRefreshedEffective: Amounts.toString(amountRefreshedEffective),
-                    amountRefreshedRaw: Amounts.toString(amountRefreshedRaw),
+                    amountRefreshedEffective: amounts.Amounts.stringify(amountRefreshedEffective),
+                    amountRefreshedRaw: amounts.Amounts.stringify(amountRefreshedRaw),
                     numInputCoins,
                     numOutputCoins,
                     numRefreshedInputCoins,
                     verboseDetails,
                 });
             }));
-            tx.iter(dbTypes.Stores.reserveUpdatedEvents).forEachAsync((ru) => __awaiter(this, void 0, void 0, function* () {
+            tx.iter(dbTypes.Stores.reserveUpdatedEvents).forEachAsync((ru) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 const reserve = yield tx.get(dbTypes.Stores.reserves, ru.reservePub);
                 if (!reserve) {
                     return;
@@ -12009,32 +12014,33 @@ function getHistory(ws, historyQuery) {
                         type: "manual" /* Manual */,
                     };
                 }
+                const s = reserveHistoryUtil.summarizeReserveHistory(reserve.reserveTransactions, reserve.currency);
                 history.push({
                     type: "reserve-balance-updated" /* ReserveBalanceUpdated */,
                     eventId: makeEventId("reserve-balance-updated" /* ReserveBalanceUpdated */, ru.reserveUpdateId),
-                    amountExpected: ru.amountExpected,
-                    amountReserveBalance: ru.amountReserveBalance,
                     timestamp: ru.timestamp,
-                    newHistoryTransactions: ru.newHistoryTransactions,
                     reserveShortInfo: {
                         exchangeBaseUrl: reserve.exchangeBaseUrl,
                         reserveCreationDetail,
                         reservePub: reserve.reservePub,
                     },
+                    reserveAwaitedAmount: amounts.Amounts.stringify(s.awaitedReserveAmount),
+                    reserveBalance: amounts.Amounts.stringify(s.computedReserveBalance),
+                    reserveUnclaimedAmount: amounts.Amounts.stringify(s.unclaimedReserveAmount),
                 });
             }));
-            tx.iter(dbTypes.Stores.tips).forEach(tip => {
+            tx.iter(dbTypes.Stores.tips).forEach((tip) => {
                 if (tip.acceptedTimestamp) {
                     history.push({
                         type: "tip-accepted" /* TipAccepted */,
                         eventId: makeEventId("tip-accepted" /* TipAccepted */, tip.tipId),
                         timestamp: tip.acceptedTimestamp,
                         tipId: tip.tipId,
-                        tipAmountRaw: Amounts.toString(tip.amount),
+                        tipAmountRaw: amounts.Amounts.stringify(tip.amount),
                     });
                 }
             });
-            tx.iter(dbTypes.Stores.refundEvents).forEachAsync((re) => __awaiter(this, void 0, void 0, function* () {
+            tx.iter(dbTypes.Stores.refundEvents).forEachAsync((re) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 const proposal = yield tx.get(dbTypes.Stores.proposals, re.proposalId);
                 if (!proposal) {
                     return;
@@ -12048,31 +12054,31 @@ function getHistory(ws, historyQuery) {
                     return;
                 }
                 const purchaseAmount = purchase.contractData.amount;
-                let amountRefundedRaw = Amounts.getZero(purchaseAmount.currency);
-                let amountRefundedInvalid = Amounts.getZero(purchaseAmount.currency);
-                let amountRefundedEffective = Amounts.getZero(purchaseAmount.currency);
+                let amountRefundedRaw = amounts.Amounts.getZero(purchaseAmount.currency);
+                let amountRefundedInvalid = amounts.Amounts.getZero(purchaseAmount.currency);
+                let amountRefundedEffective = amounts.Amounts.getZero(purchaseAmount.currency);
                 Object.keys(purchase.refundState.refundsDone).forEach((x, i) => {
                     const r = purchase.refundState.refundsDone[x];
                     if (r.refundGroupId !== re.refundGroupId) {
                         return;
                     }
-                    const refundAmount = Amounts.parseOrThrow(r.perm.refund_amount);
-                    const refundFee = Amounts.parseOrThrow(r.perm.refund_fee);
-                    amountRefundedRaw = Amounts.add(amountRefundedRaw, refundAmount)
+                    const refundAmount = amounts.Amounts.parseOrThrow(r.perm.refund_amount);
+                    const refundFee = amounts.Amounts.parseOrThrow(r.perm.refund_fee);
+                    amountRefundedRaw = amounts.Amounts.add(amountRefundedRaw, refundAmount)
                         .amount;
-                    amountRefundedEffective = Amounts.add(amountRefundedEffective, refundAmount).amount;
-                    amountRefundedEffective = Amounts.sub(amountRefundedEffective, refundFee).amount;
+                    amountRefundedEffective = amounts.Amounts.add(amountRefundedEffective, refundAmount).amount;
+                    amountRefundedEffective = amounts.Amounts.sub(amountRefundedEffective, refundFee).amount;
                 });
                 Object.keys(purchase.refundState.refundsFailed).forEach((x, i) => {
                     const r = purchase.refundState.refundsFailed[x];
                     if (r.refundGroupId !== re.refundGroupId) {
                         return;
                     }
-                    const ra = Amounts.parseOrThrow(r.perm.refund_amount);
-                    const refundFee = Amounts.parseOrThrow(r.perm.refund_fee);
-                    amountRefundedRaw = Amounts.add(amountRefundedRaw, ra).amount;
-                    amountRefundedInvalid = Amounts.add(amountRefundedInvalid, ra).amount;
-                    amountRefundedEffective = Amounts.sub(amountRefundedEffective, refundFee).amount;
+                    const ra = amounts.Amounts.parseOrThrow(r.perm.refund_amount);
+                    const refundFee = amounts.Amounts.parseOrThrow(r.perm.refund_fee);
+                    amountRefundedRaw = amounts.Amounts.add(amountRefundedRaw, ra).amount;
+                    amountRefundedInvalid = amounts.Amounts.add(amountRefundedInvalid, ra).amount;
+                    amountRefundedEffective = amounts.Amounts.sub(amountRefundedEffective, refundFee).amount;
                 });
                 history.push({
                     type: "refund" /* Refund */,
@@ -12080,11 +12086,28 @@ function getHistory(ws, historyQuery) {
                     refundGroupId: re.refundGroupId,
                     orderShortInfo,
                     timestamp: re.timestamp,
-                    amountRefundedEffective: Amounts.toString(amountRefundedEffective),
-                    amountRefundedRaw: Amounts.toString(amountRefundedRaw),
-                    amountRefundedInvalid: Amounts.toString(amountRefundedInvalid),
+                    amountRefundedEffective: amounts.Amounts.stringify(amountRefundedEffective),
+                    amountRefundedRaw: amounts.Amounts.stringify(amountRefundedRaw),
+                    amountRefundedInvalid: amounts.Amounts.stringify(amountRefundedInvalid),
                 });
             }));
+            tx.iter(dbTypes.Stores.recoupGroups).forEach((rg) => {
+                if (rg.timestampFinished) {
+                    let verboseDetails = undefined;
+                    if (historyQuery === null || historyQuery === void 0 ? void 0 : historyQuery.extraDebug) {
+                        verboseDetails = {
+                            oldAmountPerCoin: rg.oldAmountPerCoin.map(amounts.Amounts.stringify),
+                        };
+                    }
+                    history.push({
+                        type: "funds-recouped" /* FundsRecouped */,
+                        timestamp: rg.timestampFinished,
+                        eventId: makeEventId("funds-recouped" /* FundsRecouped */, rg.recoupGroupId),
+                        numCoinsRecouped: rg.coinPubs.length,
+                        verboseDetails,
+                    });
+                }
+            });
         }));
         history.sort((h1, h2) => time.timestampCmp(h1.timestamp, h2.timestamp));
         return { history };
@@ -12096,6 +12119,134 @@ exports.getHistory = getHistory;
 
 unwrapExports(history);
 var history_1 = history.getHistory;
+
+var balance = createCommonjsModule(function (module, exports) {
+/*
+ This file is part of GNU Taler
+ (C) 2019 GNUnet e.V.
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+const Amounts = tslib_1.__importStar(amounts);
+
+const logger = new logging.Logger("withdraw.ts");
+/**
+ * Get balance information.
+ */
+function getBalancesInsideTransaction(ws, tx) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        /**
+         * Add amount to a balance field, both for
+         * the slicing by exchange and currency.
+         */
+        function addTo(balance, field, amount, exchange) {
+            const z = Amounts.getZero(amount.currency);
+            const balanceIdentity = {
+                available: z,
+                paybackAmount: z,
+                pendingIncoming: z,
+                pendingPayment: z,
+                pendingIncomingDirty: z,
+                pendingIncomingRefresh: z,
+                pendingIncomingWithdraw: z,
+            };
+            let entryCurr = balance.byCurrency[amount.currency];
+            if (!entryCurr) {
+                balance.byCurrency[amount.currency] = entryCurr = Object.assign({}, balanceIdentity);
+            }
+            let entryEx = balance.byExchange[exchange];
+            if (!entryEx) {
+                balance.byExchange[exchange] = entryEx = Object.assign({}, balanceIdentity);
+            }
+            entryCurr[field] = Amounts.add(entryCurr[field], amount).amount;
+            entryEx[field] = Amounts.add(entryEx[field], amount).amount;
+        }
+        const balanceStore = {
+            byCurrency: {},
+            byExchange: {},
+        };
+        yield tx.iter(dbTypes.Stores.coins).forEach((c) => {
+            if (c.suspended) {
+                return;
+            }
+            if (c.status === "fresh" /* Fresh */) {
+                addTo(balanceStore, "available", c.currentAmount, c.exchangeBaseUrl);
+            }
+        });
+        yield tx.iter(dbTypes.Stores.refreshGroups).forEach((r) => {
+            // Don't count finished refreshes, since the refresh already resulted
+            // in coins being added to the wallet.
+            if (r.timestampFinished) {
+                return;
+            }
+            for (let i = 0; i < r.oldCoinPubs.length; i++) {
+                const session = r.refreshSessionPerCoin[i];
+                if (session) {
+                    addTo(balanceStore, "pendingIncoming", session.amountRefreshOutput, session.exchangeBaseUrl);
+                    addTo(balanceStore, "pendingIncomingRefresh", session.amountRefreshOutput, session.exchangeBaseUrl);
+                }
+            }
+        });
+        yield tx.iter(dbTypes.Stores.withdrawalGroups).forEach((wds) => {
+            let w = wds.totalCoinValue;
+            for (let i = 0; i < wds.planchets.length; i++) {
+                if (wds.withdrawn[i]) {
+                    const p = wds.planchets[i];
+                    if (p) {
+                        w = Amounts.sub(w, p.coinValue).amount;
+                    }
+                }
+            }
+            addTo(balanceStore, "pendingIncoming", w, wds.exchangeBaseUrl);
+        });
+        yield tx.iter(dbTypes.Stores.purchases).forEach((t) => {
+            if (t.timestampFirstSuccessfulPay) {
+                return;
+            }
+            for (const c of t.payReq.coins) {
+                addTo(balanceStore, "pendingPayment", Amounts.parseOrThrow(c.contribution), c.exchange_url);
+            }
+        });
+        return balanceStore;
+    });
+}
+exports.getBalancesInsideTransaction = getBalancesInsideTransaction;
+/**
+ * Get detailed balance information, sliced by exchange and by currency.
+ */
+function getBalances(ws) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        logger.trace("starting to compute balance");
+        return yield ws.db.runWithReadTransaction([
+            dbTypes.Stores.coins,
+            dbTypes.Stores.refreshGroups,
+            dbTypes.Stores.reserves,
+            dbTypes.Stores.purchases,
+            dbTypes.Stores.withdrawalGroups,
+        ], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return getBalancesInsideTransaction(ws, tx);
+        }));
+    });
+}
+exports.getBalances = getBalances;
+
+});
+
+unwrapExports(balance);
+var balance_1 = balance.getBalancesInsideTransaction;
+var balance_2 = balance.getBalances;
 
 var pending = createCommonjsModule(function (module, exports) {
 /*
@@ -12113,19 +12264,12 @@ var pending = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+
 /**
  * Imports.
  */
+
 
 
 function updateRetryDelay(oldDelay, now, retryTimestamp) {
@@ -12134,12 +12278,12 @@ function updateRetryDelay(oldDelay, now, retryTimestamp) {
     return nextDelay;
 }
 function gatherExchangePending(tx, now, resp, onlyDue = false) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (onlyDue) {
             // FIXME: exchanges should also be updated regularly
             return;
         }
-        yield tx.iter(dbTypes.Stores.exchanges).forEach(e => {
+        yield tx.iter(dbTypes.Stores.exchanges).forEach((e) => {
             switch (e.updateStatus) {
                 case "finished" /* Finished */:
                     if (e.lastError) {
@@ -12177,7 +12321,7 @@ function gatherExchangePending(tx, now, resp, onlyDue = false) {
                     resp.pendingOperations.push({
                         type: "exchange-update" /* ExchangeUpdate */,
                         givesLifeness: false,
-                        stage: "fetch-keys",
+                        stage: "fetch-keys" /* FetchKeys */,
                         exchangeBaseUrl: e.baseUrl,
                         lastError: e.lastError,
                         reason: e.updateReason || "unknown",
@@ -12187,7 +12331,7 @@ function gatherExchangePending(tx, now, resp, onlyDue = false) {
                     resp.pendingOperations.push({
                         type: "exchange-update" /* ExchangeUpdate */,
                         givesLifeness: false,
-                        stage: "fetch-wire",
+                        stage: "fetch-wire" /* FetchWire */,
                         exchangeBaseUrl: e.baseUrl,
                         lastError: e.lastError,
                         reason: e.updateReason || "unknown",
@@ -12197,7 +12341,7 @@ function gatherExchangePending(tx, now, resp, onlyDue = false) {
                     resp.pendingOperations.push({
                         type: "exchange-update" /* ExchangeUpdate */,
                         givesLifeness: false,
-                        stage: "finalize-update",
+                        stage: "finalize-update" /* FinalizeUpdate */,
                         exchangeBaseUrl: e.baseUrl,
                         lastError: e.lastError,
                         reason: e.updateReason || "unknown",
@@ -12219,10 +12363,12 @@ function gatherExchangePending(tx, now, resp, onlyDue = false) {
     });
 }
 function gatherReservePending(tx, now, resp, onlyDue = false) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         // FIXME: this should be optimized by using an index for "onlyDue==true".
-        yield tx.iter(dbTypes.Stores.reserves).forEach(reserve => {
-            const reserveType = reserve.bankWithdrawStatusUrl ? "taler-bank" : "manual";
+        yield tx.iter(dbTypes.Stores.reserves).forEach((reserve) => {
+            const reserveType = reserve.bankWithdrawStatusUrl
+                ? "taler-bank-withdraw" /* TalerBankWithdraw */
+                : "manual" /* Manual */;
             if (!reserve.retryInfo.active) {
                 return;
             }
@@ -12278,8 +12424,8 @@ function gatherReservePending(tx, now, resp, onlyDue = false) {
     });
 }
 function gatherRefreshPending(tx, now, resp, onlyDue = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield tx.iter(dbTypes.Stores.refreshGroups).forEach(r => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield tx.iter(dbTypes.Stores.refreshGroups).forEach((r) => {
             if (r.timestampFinished) {
                 return;
             }
@@ -12298,8 +12444,8 @@ function gatherRefreshPending(tx, now, resp, onlyDue = false) {
     });
 }
 function gatherWithdrawalPending(tx, now, resp, onlyDue = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield tx.iter(dbTypes.Stores.withdrawalSession).forEach(wsr => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield tx.iter(dbTypes.Stores.withdrawalGroups).forEach((wsr) => {
             if (wsr.timestampFinish) {
                 return;
             }
@@ -12315,25 +12461,37 @@ function gatherWithdrawalPending(tx, now, resp, onlyDue = false) {
                 numCoinsTotal,
                 numCoinsWithdrawn,
                 source: wsr.source,
-                withdrawSessionId: wsr.withdrawSessionId,
+                withdrawalGroupId: wsr.withdrawalGroupId,
+                lastError: wsr.lastError,
             });
         });
     });
 }
 function gatherProposalPending(tx, now, resp, onlyDue = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield tx.iter(dbTypes.Stores.proposals).forEach(proposal => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield tx.iter(dbTypes.Stores.proposals).forEach((proposal) => {
             if (proposal.proposalStatus == "proposed" /* PROPOSED */) {
                 if (onlyDue) {
                     return;
                 }
-                resp.pendingOperations.push({
-                    type: "proposal-choice" /* ProposalChoice */,
-                    givesLifeness: false,
-                    merchantBaseUrl: proposal.download.contractData.merchantBaseUrl,
-                    proposalId: proposal.proposalId,
-                    proposalTimestamp: proposal.timestamp,
-                });
+                const dl = proposal.download;
+                if (!dl) {
+                    resp.pendingOperations.push({
+                        type: "bug" /* Bug */,
+                        message: "proposal is in invalid state",
+                        details: {},
+                        givesLifeness: false,
+                    });
+                }
+                else {
+                    resp.pendingOperations.push({
+                        type: "proposal-choice" /* ProposalChoice */,
+                        givesLifeness: false,
+                        merchantBaseUrl: dl.contractData.merchantBaseUrl,
+                        proposalId: proposal.proposalId,
+                        proposalTimestamp: proposal.timestamp,
+                    });
+                }
             }
             else if (proposal.proposalStatus == "downloading" /* DOWNLOADING */) {
                 resp.nextRetryDelay = updateRetryDelay(resp.nextRetryDelay, now, proposal.retryInfo.nextRetry);
@@ -12355,8 +12513,8 @@ function gatherProposalPending(tx, now, resp, onlyDue = false) {
     });
 }
 function gatherTipPending(tx, now, resp, onlyDue = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield tx.iter(dbTypes.Stores.tips).forEach(tip => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield tx.iter(dbTypes.Stores.tips).forEach((tip) => {
             if (tip.pickedUp) {
                 return;
             }
@@ -12377,8 +12535,8 @@ function gatherTipPending(tx, now, resp, onlyDue = false) {
     });
 }
 function gatherPurchasePending(tx, now, resp, onlyDue = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield tx.iter(dbTypes.Stores.purchases).forEach(pr => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield tx.iter(dbTypes.Stores.purchases).forEach((pr) => {
             if (pr.paymentSubmitPending) {
                 resp.nextRetryDelay = updateRetryDelay(resp.nextRetryDelay, now, pr.payRetryInfo.nextRetry);
                 if (!onlyDue || pr.payRetryInfo.nextRetry.t_ms <= now.t_ms) {
@@ -12423,24 +12581,47 @@ function gatherPurchasePending(tx, now, resp, onlyDue = false) {
         });
     });
 }
-function getPendingOperations(ws, onlyDue = false) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const resp = {
-            nextRetryDelay: { d_ms: Number.MAX_SAFE_INTEGER },
-            onlyDue: onlyDue,
-            pendingOperations: [],
-        };
+function gatherRecoupPending(tx, now, resp, onlyDue = false) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield tx.iter(dbTypes.Stores.recoupGroups).forEach((rg) => {
+            if (rg.timestampFinished) {
+                return;
+            }
+            resp.nextRetryDelay = updateRetryDelay(resp.nextRetryDelay, now, rg.retryInfo.nextRetry);
+            if (onlyDue && rg.retryInfo.nextRetry.t_ms > now.t_ms) {
+                return;
+            }
+            resp.pendingOperations.push({
+                type: "recoup" /* Recoup */,
+                givesLifeness: true,
+                recoupGroupId: rg.recoupGroupId,
+                retryInfo: rg.retryInfo,
+                lastError: rg.lastError,
+            });
+        });
+    });
+}
+function getPendingOperations(ws, { onlyDue = false } = {}) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const now = time.getTimestampNow();
-        yield ws.db.runWithReadTransaction([
+        return yield ws.db.runWithReadTransaction([
             dbTypes.Stores.exchanges,
             dbTypes.Stores.reserves,
             dbTypes.Stores.refreshGroups,
             dbTypes.Stores.coins,
-            dbTypes.Stores.withdrawalSession,
+            dbTypes.Stores.withdrawalGroups,
             dbTypes.Stores.proposals,
             dbTypes.Stores.tips,
             dbTypes.Stores.purchases,
-        ], (tx) => __awaiter(this, void 0, void 0, function* () {
+            dbTypes.Stores.recoupGroups,
+        ], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const walletBalance = yield balance.getBalancesInsideTransaction(ws, tx);
+            const resp = {
+                nextRetryDelay: { d_ms: Number.MAX_SAFE_INTEGER },
+                onlyDue: onlyDue,
+                walletBalance,
+                pendingOperations: [],
+            };
             yield gatherExchangePending(tx, now, resp, onlyDue);
             yield gatherReservePending(tx, now, resp, onlyDue);
             yield gatherRefreshPending(tx, now, resp, onlyDue);
@@ -12448,8 +12629,9 @@ function getPendingOperations(ws, onlyDue = false) {
             yield gatherProposalPending(tx, now, resp, onlyDue);
             yield gatherTipPending(tx, now, resp, onlyDue);
             yield gatherPurchasePending(tx, now, resp, onlyDue);
+            yield gatherRecoupPending(tx, now, resp, onlyDue);
+            return resp;
         }));
-        return resp;
     });
 }
 exports.getPendingOperations = getPendingOperations;
@@ -12458,134 +12640,6 @@ exports.getPendingOperations = getPendingOperations;
 
 unwrapExports(pending);
 var pending_1 = pending.getPendingOperations;
-
-var balance = createCommonjsModule(function (module, exports) {
-/*
- This file is part of GNU Taler
- (C) 2019 GNUnet e.V.
-
- GNU Taler is free software; you can redistribute it and/or modify it under the
- terms of the GNU General Public License as published by the Free Software
- Foundation; either version 3, or (at your option) any later version.
-
- GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along with
- GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
- */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-
-const Amounts = __importStar(amounts);
-
-const logger = new logging.Logger("withdraw.ts");
-/**
- * Get detailed balance information, sliced by exchange and by currency.
- */
-function getBalances(ws) {
-    return __awaiter(this, void 0, void 0, function* () {
-        logger.trace("starting to compute balance");
-        /**
-         * Add amount to a balance field, both for
-         * the slicing by exchange and currency.
-         */
-        function addTo(balance, field, amount, exchange) {
-            const z = Amounts.getZero(amount.currency);
-            const balanceIdentity = {
-                available: z,
-                paybackAmount: z,
-                pendingIncoming: z,
-                pendingPayment: z,
-                pendingIncomingDirty: z,
-                pendingIncomingRefresh: z,
-                pendingIncomingWithdraw: z,
-            };
-            let entryCurr = balance.byCurrency[amount.currency];
-            if (!entryCurr) {
-                balance.byCurrency[amount.currency] = entryCurr = Object.assign({}, balanceIdentity);
-            }
-            let entryEx = balance.byExchange[exchange];
-            if (!entryEx) {
-                balance.byExchange[exchange] = entryEx = Object.assign({}, balanceIdentity);
-            }
-            entryCurr[field] = Amounts.add(entryCurr[field], amount).amount;
-            entryEx[field] = Amounts.add(entryEx[field], amount).amount;
-        }
-        const balanceStore = {
-            byCurrency: {},
-            byExchange: {},
-        };
-        yield ws.db.runWithReadTransaction([dbTypes.Stores.coins, dbTypes.Stores.refreshGroups, dbTypes.Stores.reserves, dbTypes.Stores.purchases, dbTypes.Stores.withdrawalSession], (tx) => __awaiter(this, void 0, void 0, function* () {
-            yield tx.iter(dbTypes.Stores.coins).forEach(c => {
-                if (c.suspended) {
-                    return;
-                }
-                if (c.status === dbTypes.CoinStatus.Fresh) {
-                    addTo(balanceStore, "available", c.currentAmount, c.exchangeBaseUrl);
-                }
-            });
-            yield tx.iter(dbTypes.Stores.refreshGroups).forEach(r => {
-                // Don't count finished refreshes, since the refresh already resulted
-                // in coins being added to the wallet.
-                if (r.timestampFinished) {
-                    return;
-                }
-                for (let i = 0; i < r.oldCoinPubs.length; i++) {
-                    const session = r.refreshSessionPerCoin[i];
-                    if (session) {
-                        addTo(balanceStore, "pendingIncoming", session.amountRefreshOutput, session.exchangeBaseUrl);
-                        addTo(balanceStore, "pendingIncomingRefresh", session.amountRefreshOutput, session.exchangeBaseUrl);
-                    }
-                }
-            });
-            yield tx.iter(dbTypes.Stores.withdrawalSession).forEach(wds => {
-                let w = wds.totalCoinValue;
-                for (let i = 0; i < wds.planchets.length; i++) {
-                    if (wds.withdrawn[i]) {
-                        const p = wds.planchets[i];
-                        if (p) {
-                            w = Amounts.sub(w, p.coinValue).amount;
-                        }
-                    }
-                }
-                addTo(balanceStore, "pendingIncoming", w, wds.exchangeBaseUrl);
-            });
-            yield tx.iter(dbTypes.Stores.purchases).forEach(t => {
-                if (t.timestampFirstSuccessfulPay) {
-                    return;
-                }
-                for (const c of t.payReq.coins) {
-                    addTo(balanceStore, "pendingPayment", Amounts.parseOrThrow(c.contribution), c.exchange_url);
-                }
-            });
-        }));
-        logger.trace("computed balances:", balanceStore);
-        return balanceStore;
-    });
-}
-exports.getBalances = getBalances;
-
-});
-
-unwrapExports(balance);
-var balance_1 = balance.getBalances;
 
 var tip = createCommonjsModule(function (module, exports) {
 /*
@@ -12603,26 +12657,11 @@ var tip = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 
 
-const Amounts = __importStar(amounts);
+
+const Amounts = tslib_1.__importStar(amounts);
 
 
 
@@ -12630,7 +12669,7 @@ const Amounts = __importStar(amounts);
 
 
 function getTipStatus(ws, talerTipUri) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const res = taleruri.parseTipUri(talerTipUri);
         if (!res) {
             throw Error("invalid taler://tip URI");
@@ -12646,7 +12685,7 @@ function getTipStatus(ws, talerTipUri) {
         console.log("resp:", respJson);
         const tipPickupStatus = talerTypes.codecForTipPickupGetResponse().decode(respJson);
         console.log("status", tipPickupStatus);
-        let amount = Amounts.parseOrThrow(tipPickupStatus.amount);
+        const amount = Amounts.parseOrThrow(tipPickupStatus.amount);
         let tipRecord = yield ws.db.get(dbTypes.Stores.tips, [
             res.merchantTipId,
             res.merchantOrigin,
@@ -12692,8 +12731,8 @@ function getTipStatus(ws, talerTipUri) {
 }
 exports.getTipStatus = getTipStatus;
 function incrementTipRetry(ws, refreshSessionId, err) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.tips], (tx) => __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.tips], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const t = yield tx.get(dbTypes.Stores.tips, refreshSessionId);
             if (!t) {
                 return;
@@ -12710,15 +12749,15 @@ function incrementTipRetry(ws, refreshSessionId, err) {
     });
 }
 function processTip(ws, tipId, forceNow = false) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const onOpErr = (e) => incrementTipRetry(ws, tipId, e);
         yield errors.guardOperationException(() => processTipImpl(ws, tipId, forceNow), onOpErr);
     });
 }
 exports.processTip = processTip;
 function resetTipRetry(ws, tipId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield ws.db.mutate(dbTypes.Stores.tips, tipId, x => {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        yield ws.db.mutate(dbTypes.Stores.tips, tipId, (x) => {
             if (x.retryInfo.active) {
                 x.retryInfo = dbTypes.initRetryInfo();
             }
@@ -12727,7 +12766,7 @@ function resetTipRetry(ws, tipId) {
     });
 }
 function processTipImpl(ws, tipId, forceNow) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (forceNow) {
             yield resetTipRetry(ws, tipId);
         }
@@ -12742,8 +12781,8 @@ function processTipImpl(ws, tipId, forceNow) {
         if (!tipRecord.planchets) {
             yield exchanges.updateExchangeFromUrl(ws, tipRecord.exchangeUrl);
             const denomsForWithdraw = yield withdraw.getVerifiedWithdrawDenomList(ws, tipRecord.exchangeUrl, tipRecord.amount);
-            const planchets = yield Promise.all(denomsForWithdraw.map(d => ws.cryptoApi.createTipPlanchet(d)));
-            yield ws.db.mutate(dbTypes.Stores.tips, tipId, r => {
+            const planchets = yield Promise.all(denomsForWithdraw.map((d) => ws.cryptoApi.createTipPlanchet(d)));
+            yield ws.db.mutate(dbTypes.Stores.tips, tipId, (r) => {
                 if (!r.planchets) {
                     r.planchets = planchets;
                 }
@@ -12759,7 +12798,7 @@ function processTipImpl(ws, tipId, forceNow) {
         }
         console.log("got planchets for tip!");
         // Planchets in the form that the merchant expects
-        const planchetsDetail = tipRecord.planchets.map(p => ({
+        const planchetsDetail = tipRecord.planchets.map((p) => ({
             coin_ev: p.coinEv,
             denom_pub_hash: p.denomPubHash,
         }));
@@ -12784,6 +12823,7 @@ function processTipImpl(ws, tipId, forceNow) {
         const planchets = [];
         for (let i = 0; i < tipRecord.planchets.length; i++) {
             const tipPlanchet = tipRecord.planchets[i];
+            const coinEvHash = yield ws.cryptoApi.hashEncoded(tipPlanchet.coinEv);
             const planchet = {
                 blindingKey: tipPlanchet.blindingKey,
                 coinEv: tipPlanchet.coinEv,
@@ -12795,29 +12835,30 @@ function processTipImpl(ws, tipId, forceNow) {
                 reservePub: response.reserve_pub,
                 withdrawSig: response.reserve_sigs[i].reserve_sig,
                 isFromTip: true,
+                coinEvHash,
             };
             planchets.push(planchet);
         }
-        const withdrawalSessionId = talerCrypto.encodeCrock(talerCrypto.getRandomBytes(32));
-        const withdrawalSession = {
-            denoms: planchets.map(x => x.denomPub),
+        const withdrawalGroupId = talerCrypto.encodeCrock(talerCrypto.getRandomBytes(32));
+        const withdrawalGroup = {
+            denoms: planchets.map((x) => x.denomPub),
             exchangeBaseUrl: tipRecord.exchangeUrl,
             planchets: planchets,
             source: {
-                type: "tip",
+                type: "tip" /* Tip */,
                 tipId: tipRecord.tipId,
             },
             timestampStart: time.getTimestampNow(),
-            withdrawSessionId: withdrawalSessionId,
+            withdrawalGroupId: withdrawalGroupId,
             rawWithdrawalAmount: tipRecord.amount,
-            withdrawn: planchets.map(x => false),
-            totalCoinValue: Amounts.sum(planchets.map(p => p.coinValue)).amount,
+            withdrawn: planchets.map((x) => false),
+            totalCoinValue: Amounts.sum(planchets.map((p) => p.coinValue)).amount,
             lastErrorPerCoin: {},
             retryInfo: dbTypes.initRetryInfo(),
             timestampFinish: undefined,
             lastError: undefined,
         };
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.tips, dbTypes.Stores.withdrawalSession], (tx) => __awaiter(this, void 0, void 0, function* () {
+        yield ws.db.runWithWriteTransaction([dbTypes.Stores.tips, dbTypes.Stores.withdrawalGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             const tr = yield tx.get(dbTypes.Stores.tips, tipId);
             if (!tr) {
                 return;
@@ -12828,14 +12869,14 @@ function processTipImpl(ws, tipId, forceNow) {
             tr.pickedUp = true;
             tr.retryInfo = dbTypes.initRetryInfo(false);
             yield tx.put(dbTypes.Stores.tips, tr);
-            yield tx.put(dbTypes.Stores.withdrawalSession, withdrawalSession);
+            yield tx.put(dbTypes.Stores.withdrawalGroups, withdrawalGroup);
         }));
-        yield withdraw.processWithdrawSession(ws, withdrawalSessionId);
+        yield withdraw.processWithdrawGroup(ws, withdrawalGroupId);
         return;
     });
 }
 function acceptTip(ws, tipId) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const tipRecord = yield ws.db.get(dbTypes.Stores.tips, tipId);
         if (!tipRecord) {
             console.log("tip not found");
@@ -12856,96 +12897,6 @@ var tip_1 = tip.getTipStatus;
 var tip_2 = tip.processTip;
 var tip_3 = tip.acceptTip;
 
-var payback_1 = createCommonjsModule(function (module, exports) {
-/*
- This file is part of GNU Taler
- (C) 2019 GNUnet e.V.
-
- GNU Taler is free software; you can redistribute it and/or modify it under the
- terms of the GNU General Public License as published by the Free Software
- Foundation; either version 3, or (at your option) any later version.
-
- GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along with
- GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
- */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-
-const logger = new logging.Logger("payback.ts");
-function payback(ws, coinPub) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let coin = yield ws.db.get(dbTypes.Stores.coins, coinPub);
-        if (!coin) {
-            throw Error(`Coin ${coinPub} not found, can't request payback`);
-        }
-        const reservePub = coin.reservePub;
-        if (!reservePub) {
-            throw Error(`Can't request payback for a refreshed coin`);
-        }
-        const reserve = yield ws.db.get(dbTypes.Stores.reserves, reservePub);
-        if (!reserve) {
-            throw Error(`Reserve of coin ${coinPub} not found`);
-        }
-        switch (coin.status) {
-            case dbTypes.CoinStatus.Dormant:
-                throw Error(`Can't do payback for coin ${coinPub} since it's dormant`);
-        }
-        coin.status = dbTypes.CoinStatus.Dormant;
-        // Even if we didn't get the payback yet, we suspend withdrawal, since
-        // technically we might update reserve status before we get the response
-        // from the reserve for the payback request.
-        reserve.hasPayback = true;
-        yield ws.db.runWithWriteTransaction([dbTypes.Stores.coins, dbTypes.Stores.reserves], (tx) => __awaiter(this, void 0, void 0, function* () {
-            yield tx.put(dbTypes.Stores.coins, coin);
-            yield tx.put(dbTypes.Stores.reserves, reserve);
-        }));
-        ws.notify({
-            type: "payback-started" /* PaybackStarted */,
-        });
-        const paybackRequest = yield ws.cryptoApi.createPaybackRequest(coin);
-        const reqUrl = new URL("payback", coin.exchangeBaseUrl);
-        const resp = yield ws.http.postJson(reqUrl.href, paybackRequest);
-        if (resp.status !== 200) {
-            throw Error();
-        }
-        const paybackConfirmation = talerTypes.codecForRecoupConfirmation().decode(yield resp.json());
-        if (paybackConfirmation.reserve_pub !== coin.reservePub) {
-            throw Error(`Coin's reserve doesn't match reserve on payback`);
-        }
-        coin = yield ws.db.get(dbTypes.Stores.coins, coinPub);
-        if (!coin) {
-            throw Error(`Coin ${coinPub} not found, can't confirm payback`);
-        }
-        coin.status = dbTypes.CoinStatus.Dormant;
-        yield ws.db.put(dbTypes.Stores.coins, coin);
-        ws.notify({
-            type: "payback-finished" /* PaybackFinished */,
-        });
-        yield exchanges.updateExchangeFromUrl(ws, coin.exchangeBaseUrl, true);
-    });
-}
-exports.payback = payback;
-
-});
-
-unwrapExports(payback_1);
-var payback_2 = payback_1.payback;
-
 var wallet = createCommonjsModule(function (module, exports) {
 /*
  This file is part of GNU Taler
@@ -12962,24 +12913,9 @@ var wallet = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Amounts = __importStar(amounts);
+
+
 
 
 
@@ -12991,6 +12927,7 @@ const Amounts = __importStar(amounts);
 const reserves_2 = reserves;
 
 const withdraw_2 = withdraw;
+
 
 
 
@@ -13043,7 +12980,7 @@ class Wallet {
      * Execute one operation based on the pending operation info record.
      */
     processOnePendingOperation(pending, forceNow = false) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             console.log("running pending", pending);
             switch (pending.type) {
                 case "bug" /* Bug */:
@@ -13059,7 +12996,7 @@ class Wallet {
                     yield reserves.processReserve(this.ws, pending.reservePub, forceNow);
                     break;
                 case "withdraw" /* Withdraw */:
-                    yield withdraw_2.processWithdrawSession(this.ws, pending.withdrawSessionId, forceNow);
+                    yield withdraw_2.processWithdrawGroup(this.ws, pending.withdrawalGroupId, forceNow);
                     break;
                 case "proposal-choice" /* ProposalChoice */:
                     // Nothing to do, user needs to accept/reject
@@ -13082,6 +13019,9 @@ class Wallet {
                 case "refund-apply" /* RefundApply */:
                     yield refund.processPurchaseApplyRefund(this.ws, pending.proposalId, forceNow);
                     break;
+                case "recoup" /* Recoup */:
+                    yield recoup.processRecoupGroup(this.ws, pending.recoupGroupId, forceNow);
+                    break;
                 default:
                     assertUnreachable_1.assertUnreachable(pending);
             }
@@ -13091,15 +13031,20 @@ class Wallet {
      * Process pending operations.
      */
     runPending(forceNow = false) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const onlyDue = !forceNow;
-            const pendingOpsResponse = yield this.getPendingOperations(onlyDue);
+            const pendingOpsResponse = yield this.getPendingOperations({ onlyDue });
             for (const p of pendingOpsResponse.pendingOperations) {
                 try {
                     yield this.processOnePendingOperation(p, forceNow);
                 }
                 catch (e) {
-                    console.error(e);
+                    if (e instanceof errors.OperationFailedAndReportedError) {
+                        console.error("Operation failed:", JSON.stringify(e.operationError, undefined, 2));
+                    }
+                    else {
+                        console.error(e);
+                    }
                 }
             }
         });
@@ -13110,17 +13055,17 @@ class Wallet {
      * returns without resolving to an exception.
      */
     runUntilDone() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const p = new Promise((resolve, reject) => {
                 // Run this asynchronously
-                this.addNotificationListener(n => {
+                this.addNotificationListener((n) => {
                     if (n.type === "waiting-for-retry" /* WaitingForRetry */ &&
                         n.numGivingLiveness == 0) {
                         logger.trace("no liveness-giving operations left, returning");
                         resolve();
                     }
                 });
-                this.runRetryLoop().catch(e => {
+                this.runRetryLoop().catch((e) => {
                     console.log("exception in wallet retry loop");
                     reject(e);
                 });
@@ -13129,22 +13074,22 @@ class Wallet {
         });
     }
     /**
-   * Run the wallet until there are no more pending operations that give
-   * liveness left.  The wallet will be in a stopped state when this function
-   * returns without resolving to an exception.
-   */
+     * Run the wallet until there are no more pending operations that give
+     * liveness left.  The wallet will be in a stopped state when this function
+     * returns without resolving to an exception.
+     */
     runUntilDoneAndStop() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const p = new Promise((resolve, reject) => {
                 // Run this asynchronously
-                this.addNotificationListener(n => {
+                this.addNotificationListener((n) => {
                     if (n.type === "waiting-for-retry" /* WaitingForRetry */ &&
                         n.numGivingLiveness == 0) {
                         logger.trace("no liveness-giving operations left, stopping");
                         this.stop();
                     }
                 });
-                this.runRetryLoop().catch(e => {
+                this.runRetryLoop().catch((e) => {
                     console.log("exception in wallet retry loop");
                     reject(e);
                 });
@@ -13157,9 +13102,9 @@ class Wallet {
      * a loop until the wallet is stopped explicitly.
      */
     runRetryLoop() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             // Make sure we only run one main loop at a time.
-            return this.memoRunRetryLoop.memo(() => __awaiter(this, void 0, void 0, function* () {
+            return this.memoRunRetryLoop.memo(() => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 try {
                     yield this.runRetryLoopImpl();
                 }
@@ -13171,13 +13116,13 @@ class Wallet {
         });
     }
     runRetryLoopImpl() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             while (!this.stopped) {
                 console.log("running wallet retry loop iteration");
-                let pending = yield this.getPendingOperations(true);
+                const pending = yield this.getPendingOperations({ onlyDue: true });
                 console.log("pending ops", JSON.stringify(pending, undefined, 2));
                 if (pending.pendingOperations.length === 0) {
-                    const allPending = yield this.getPendingOperations(false);
+                    const allPending = yield this.getPendingOperations({ onlyDue: false });
                     let numPending = 0;
                     let numGivingLiveness = 0;
                     for (const p of allPending.pendingOperations) {
@@ -13229,16 +13174,16 @@ class Wallet {
      * already been applied.
      */
     fillDefaults() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.db.runWithWriteTransaction([dbTypes.Stores.config, dbTypes.Stores.currencies], (tx) => __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.db.runWithWriteTransaction([dbTypes.Stores.config, dbTypes.Stores.currencies], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 let applied = false;
-                yield tx.iter(dbTypes.Stores.config).forEach(x => {
+                yield tx.iter(dbTypes.Stores.config).forEach((x) => {
                     if (x.key == "currencyDefaultsApplied" && x.value == true) {
                         applied = true;
                     }
                 });
                 if (!applied) {
-                    for (let c of builtinCurrencies) {
+                    for (const c of builtinCurrencies) {
                         yield tx.put(dbTypes.Stores.currencies, c);
                     }
                 }
@@ -13252,7 +13197,7 @@ class Wallet {
      * yet send to the merchant.
      */
     preparePayForUri(talerPayUri) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return pay.preparePayForUri(this.ws, talerPayUri);
         });
     }
@@ -13260,7 +13205,7 @@ class Wallet {
      * Add a contract to the wallet and sign coins, and send them.
      */
     confirmPay(proposalId, sessionIdOverride) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 return yield pay.confirmPay(this.ws, proposalId, sessionIdOverride);
             }
@@ -13277,7 +13222,7 @@ class Wallet {
      * state DORMANT.
      */
     processReserve(reservePub) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 return yield reserves.processReserve(this.ws, reservePub);
             }
@@ -13293,7 +13238,7 @@ class Wallet {
      * audited nor trusted already.
      */
     createReserve(req) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 return reserves_2.createReserve(this.ws, req);
             }
@@ -13312,7 +13257,7 @@ class Wallet {
      * an unconfirmed reserve should be hidden.
      */
     confirmReserve(req) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 return reserves_2.confirmReserve(this.ws, req);
             }
@@ -13325,12 +13270,12 @@ class Wallet {
      * Check if and how an exchange is trusted and/or audited.
      */
     getExchangeTrust(exchangeInfo) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return exchanges.getExchangeTrust(this.ws, exchangeInfo);
         });
     }
     getWithdrawDetailsForUri(talerWithdrawUri, maybeSelectedExchange) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return withdraw.getWithdrawDetailsForUri(this.ws, talerWithdrawUri, maybeSelectedExchange);
         });
     }
@@ -13340,7 +13285,7 @@ class Wallet {
      * exchange entry in then DB.
      */
     updateExchangeFromUrl(baseUrl, force = false) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 return exchanges.updateExchangeFromUrl(this.ws, baseUrl, force);
             }
@@ -13353,14 +13298,14 @@ class Wallet {
      * Get detailed balance information, sliced by exchange and by currency.
      */
     getBalances() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.ws.memoGetBalance.memo(() => balance.getBalances(this.ws));
         });
     }
     refresh(oldCoinPub) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
-                const refreshGroupId = yield this.db.runWithWriteTransaction([dbTypes.Stores.refreshGroups], (tx) => __awaiter(this, void 0, void 0, function* () {
+                const refreshGroupId = yield this.db.runWithWriteTransaction([dbTypes.Stores.refreshGroups], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                     return yield refresh.createRefreshGroup(tx, [{ coinPub: oldCoinPub }], "manual" /* Manual */);
                 }));
                 yield refresh.processRefreshGroup(this.ws, refreshGroupId.refreshGroupId);
@@ -13371,7 +13316,7 @@ class Wallet {
         });
     }
     findExchange(exchangeBaseUrl) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.db.get(dbTypes.Stores.exchanges, exchangeBaseUrl);
         });
     }
@@ -13379,22 +13324,22 @@ class Wallet {
      * Retrive the full event history for this wallet.
      */
     getHistory(historyQuery) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return history.getHistory(this.ws, historyQuery);
         });
     }
-    getPendingOperations(onlyDue = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.ws.memoGetPending.memo(() => pending.getPendingOperations(this.ws, onlyDue));
+    getPendingOperations({ onlyDue = false } = {}) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.ws.memoGetPending.memo(() => pending.getPendingOperations(this.ws, { onlyDue }));
         });
     }
     acceptExchangeTermsOfService(exchangeBaseUrl, etag) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return exchanges.acceptExchangeTermsOfService(this.ws, exchangeBaseUrl, etag);
         });
     }
     getDenoms(exchangeUrl) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const denoms = yield this.db
                 .iterIndex(dbTypes.Stores.denominations.exchangeBaseUrlIndex, exchangeUrl)
                 .toArray();
@@ -13402,48 +13347,43 @@ class Wallet {
         });
     }
     getExchanges() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.db.iter(dbTypes.Stores.exchanges).toArray();
         });
     }
     getCurrencies() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.db.iter(dbTypes.Stores.currencies).toArray();
         });
     }
     updateCurrency(currencyRecord) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             logger.trace("updating currency to", currencyRecord);
             yield this.db.put(dbTypes.Stores.currencies, currencyRecord);
         });
     }
     getReserves(exchangeBaseUrl) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.db
-                .iter(dbTypes.Stores.reserves)
-                .filter(r => r.exchangeBaseUrl === exchangeBaseUrl);
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if (exchangeBaseUrl) {
+                return yield this.db
+                    .iter(dbTypes.Stores.reserves)
+                    .filter((r) => r.exchangeBaseUrl === exchangeBaseUrl);
+            }
+            else {
+                return yield this.db.iter(dbTypes.Stores.reserves).toArray();
+            }
         });
     }
     getCoinsForExchange(exchangeBaseUrl) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.db
                 .iter(dbTypes.Stores.coins)
-                .filter(c => c.exchangeBaseUrl === exchangeBaseUrl);
+                .filter((c) => c.exchangeBaseUrl === exchangeBaseUrl);
         });
     }
     getCoins() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.db.iter(dbTypes.Stores.coins).toArray();
-        });
-    }
-    payback(coinPub) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return payback_1.payback(this.ws, coinPub);
-        });
-    }
-    getPaybackReserves() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.db.iter(dbTypes.Stores.reserves).filter(r => r.hasPayback);
         });
     }
     /**
@@ -13455,22 +13395,22 @@ class Wallet {
         this.ws.cryptoApi.stop();
     }
     getSenderWireInfos() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const m = {};
-            yield this.db.iter(dbTypes.Stores.exchanges).forEach(x => {
+            yield this.db.iter(dbTypes.Stores.exchanges).forEach((x) => {
                 const wi = x.wireInfo;
                 if (!wi) {
                     return;
                 }
                 const s = (m[x.baseUrl] = m[x.baseUrl] || new Set());
-                Object.keys(wi.feesForType).map(k => s.add(k));
+                Object.keys(wi.feesForType).map((k) => s.add(k));
             });
             const exchangeWireTypes = {};
-            Object.keys(m).map(e => {
+            Object.keys(m).map((e) => {
                 exchangeWireTypes[e] = Array.from(m[e]);
             });
             const senderWiresSet = new Set();
-            yield this.db.iter(dbTypes.Stores.senderWires).forEach(x => {
+            yield this.db.iter(dbTypes.Stores.senderWires).forEach((x) => {
                 senderWiresSet.add(x.paytoUri);
             });
             const senderWires = Array.from(senderWiresSet);
@@ -13484,7 +13424,7 @@ class Wallet {
      * Trigger paying coins back into the user's account.
      */
     returnCoins(req) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             throw Error("not implemented");
         });
     }
@@ -13493,22 +13433,22 @@ class Wallet {
      * that was involved in the refund.
      */
     applyRefund(talerRefundUri) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return refund.applyRefund(this.ws, talerRefundUri);
         });
     }
     getPurchase(contractTermsHash) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.db.get(dbTypes.Stores.purchases, contractTermsHash);
         });
     }
     getFullRefundFees(refundPermissions) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return refund.getFullRefundFees(this.ws, refundPermissions);
         });
     }
     acceptTip(talerTipUri) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 return tip.acceptTip(this.ws, talerTipUri);
             }
@@ -13518,12 +13458,12 @@ class Wallet {
         });
     }
     getTipStatus(talerTipUri) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return tip.getTipStatus(this.ws, talerTipUri);
         });
     }
     abortFailedPayment(contractTermsHash) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 return pay.abortFailedPayment(this.ws, contractTermsHash);
             }
@@ -13537,7 +13477,7 @@ class Wallet {
      * confirmation from the bank.).
      */
     handleNotifyReserve() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const reserves = yield this.db.iter(dbTypes.Stores.reserves).toArray();
             for (const r of reserves) {
                 if (r.reserveStatus === dbTypes.ReserveRecordStatus.WAIT_CONFIRM_BANK) {
@@ -13556,7 +13496,7 @@ class Wallet {
      * based on the current system time.
      */
     collectGarbage() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             // FIXME(#5845)
             // We currently do not garbage-collect the wallet database.  This might change
             // after the feature has been properly re-designed, and we have come up with a
@@ -13564,7 +13504,7 @@ class Wallet {
         });
     }
     acceptWithdrawal(talerWithdrawUri, selectedExchange) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 return reserves.createTalerWithdrawReserve(this.ws, talerWithdrawUri, selectedExchange);
             }
@@ -13573,26 +13513,37 @@ class Wallet {
             }
         });
     }
+    updateReserve(reservePub) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield reserves.forceQueryReserve(this.ws, reservePub);
+            return yield this.ws.db.get(dbTypes.Stores.reserves, reservePub);
+        });
+    }
+    getReserve(reservePub) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.ws.db.get(dbTypes.Stores.reserves, reservePub);
+        });
+    }
     refuseProposal(proposalId) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return pay.refuseProposal(this.ws, proposalId);
         });
     }
     getPurchaseDetails(hc) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const purchase = yield this.db.get(dbTypes.Stores.purchases, hc);
             if (!purchase) {
                 throw Error("unknown purchase");
             }
-            const refundsDoneAmounts = Object.values(purchase.refundState.refundsDone).map(x => Amounts.parseOrThrow(x.perm.refund_amount));
-            const refundsPendingAmounts = Object.values(purchase.refundState.refundsPending).map(x => Amounts.parseOrThrow(x.perm.refund_amount));
-            const totalRefundAmount = Amounts.sum([
+            const refundsDoneAmounts = Object.values(purchase.refundState.refundsDone).map((x) => amounts.Amounts.parseOrThrow(x.perm.refund_amount));
+            const refundsPendingAmounts = Object.values(purchase.refundState.refundsPending).map((x) => amounts.Amounts.parseOrThrow(x.perm.refund_amount));
+            const totalRefundAmount = amounts.Amounts.sum([
                 ...refundsDoneAmounts,
                 ...refundsPendingAmounts,
             ]).amount;
-            const refundsDoneFees = Object.values(purchase.refundState.refundsDone).map(x => Amounts.parseOrThrow(x.perm.refund_amount));
-            const refundsPendingFees = Object.values(purchase.refundState.refundsPending).map(x => Amounts.parseOrThrow(x.perm.refund_amount));
-            const totalRefundFees = Amounts.sum([
+            const refundsDoneFees = Object.values(purchase.refundState.refundsDone).map((x) => amounts.Amounts.parseOrThrow(x.perm.refund_amount));
+            const refundsPendingFees = Object.values(purchase.refundState.refundsPending).map((x) => amounts.Amounts.parseOrThrow(x.perm.refund_amount));
+            const totalRefundFees = amounts.Amounts.sum([
                 ...refundsDoneFees,
                 ...refundsPendingFees,
             ]).amount;
@@ -13607,6 +13558,66 @@ class Wallet {
     }
     benchmarkCrypto(repetitions) {
         return this.ws.cryptoApi.benchmark(repetitions);
+    }
+    setCoinSuspended(coinPub, suspended) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.db.runWithWriteTransaction([dbTypes.Stores.coins], (tx) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                const c = yield tx.get(dbTypes.Stores.coins, coinPub);
+                if (!c) {
+                    logger.warn(`coin ${coinPub} not found, won't suspend`);
+                    return;
+                }
+                c.suspended = suspended;
+                yield tx.put(dbTypes.Stores.coins, c);
+            }));
+        });
+    }
+    /**
+     * Dump the public information of coins we have in an easy-to-process format.
+     */
+    dumpCoins() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const coins = yield this.db.iter(dbTypes.Stores.coins).toArray();
+            const coinsJson = { coins: [] };
+            for (const c of coins) {
+                const denom = yield this.db.get(dbTypes.Stores.denominations, [
+                    c.exchangeBaseUrl,
+                    c.denomPub,
+                ]);
+                if (!denom) {
+                    console.error("no denom session found for coin");
+                    continue;
+                }
+                const cs = c.coinSource;
+                let refreshParentCoinPub;
+                if (cs.type == "refresh" /* Refresh */) {
+                    refreshParentCoinPub = cs.oldCoinPub;
+                }
+                let withdrawalReservePub;
+                if (cs.type == "withdraw" /* Withdraw */) {
+                    const ws = yield this.db.get(dbTypes.Stores.withdrawalGroups, cs.withdrawalGroupId);
+                    if (!ws) {
+                        console.error("no withdrawal session found for coin");
+                        continue;
+                    }
+                    if (ws.source.type == "reserve") {
+                        withdrawalReservePub = ws.source.reservePub;
+                    }
+                }
+                coinsJson.coins.push({
+                    coin_pub: c.coinPub,
+                    denom_pub: c.denomPub,
+                    denom_pub_hash: c.denomPubHash,
+                    denom_value: amounts.Amounts.stringify(denom.value),
+                    exchange_base_url: c.exchangeBaseUrl,
+                    refresh_parent_coin_pub: refreshParentCoinPub,
+                    remaining_value: amounts.Amounts.stringify(c.currentAmount),
+                    withdrawal_reserve_pub: withdrawalReservePub,
+                    coin_suspended: c.suspended,
+                });
+            }
+            return coinsJson;
+        });
     }
 }
 exports.Wallet = Wallet;
@@ -13796,7 +13807,7 @@ unwrapExports(errors$1);
 var errors_1$1 = errors$1.AbortError;
 var errors_2$1 = errors$1.ConstraintError;
 var errors_3$1 = errors$1.DataCloneError;
-var errors_4 = errors$1.DataError;
+var errors_4$1 = errors$1.DataError;
 var errors_5 = errors$1.InvalidAccessError;
 var errors_6 = errors$1.InvalidStateError;
 var errors_7 = errors$1.NotFoundError;
@@ -19843,18 +19854,6 @@ var bind = function bind(fn, thisArg) {
   };
 };
 
-/*!
- * Determine if an object is a Buffer
- *
- * @author   Feross Aboukhadijeh <https://feross.org>
- * @license  MIT
- */
-
-var isBuffer = function isBuffer (obj) {
-  return obj != null && obj.constructor != null &&
-    typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
-};
-
 /*global toString:true*/
 
 // utils is a library of generic helper functions non-specific to axios
@@ -19869,6 +19868,27 @@ var toString = Object.prototype.toString;
  */
 function isArray(val) {
   return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is a Buffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Buffer, otherwise false
+ */
+function isBuffer(val) {
+  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
+    && typeof val.constructor.isBuffer === 'function' && val.constructor.isBuffer(val);
 }
 
 /**
@@ -19925,16 +19945,6 @@ function isString(val) {
  */
 function isNumber(val) {
   return typeof val === 'number';
-}
-
-/**
- * Determine if a value is undefined
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if the value is undefined, otherwise false
- */
-function isUndefined(val) {
-  return typeof val === 'undefined';
 }
 
 /**
@@ -20408,6 +20418,384 @@ var settle = function settle(resolve, reject, response) {
       response
     ));
   }
+};
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+var isAbsoluteURL = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+var combineURLs = function combineURLs(baseURL, relativeURL) {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+};
+
+/**
+ * Creates a new URL by combining the baseURL with the requestedURL,
+ * only when the requestedURL is not already an absolute URL.
+ * If the requestURL is absolute, this function returns the requestedURL untouched.
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} requestedURL Absolute or relative URL to combine
+ * @returns {string} The combined full path
+ */
+var buildFullPath = function buildFullPath(baseURL, requestedURL) {
+  if (baseURL && !isAbsoluteURL(requestedURL)) {
+    return combineURLs(baseURL, requestedURL);
+  }
+  return requestedURL;
+};
+
+// Headers whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+var ignoreDuplicateOf = [
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+];
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+var parseHeaders = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) { return parsed; }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+        return;
+      }
+      if (key === 'set-cookie') {
+        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
+    }
+  });
+
+  return parsed;
+};
+
+var isURLSameOrigin = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs have full support of the APIs needed to test
+  // whether the request URL is of the same origin as current location.
+    (function standardBrowserEnv() {
+      var msie = /(msie|trident)/i.test(navigator.userAgent);
+      var urlParsingNode = document.createElement('a');
+      var originURL;
+
+      /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+      function resolveURL(url) {
+        var href = url;
+
+        if (msie) {
+        // IE needs attribute set twice to normalize properties
+          urlParsingNode.setAttribute('href', href);
+          href = urlParsingNode.href;
+        }
+
+        urlParsingNode.setAttribute('href', href);
+
+        // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+        return {
+          href: urlParsingNode.href,
+          protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+          host: urlParsingNode.host,
+          search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+          hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+          hostname: urlParsingNode.hostname,
+          port: urlParsingNode.port,
+          pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+            urlParsingNode.pathname :
+            '/' + urlParsingNode.pathname
+        };
+      }
+
+      originURL = resolveURL(window.location.href);
+
+      /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+      return function isURLSameOrigin(requestURL) {
+        var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+        return (parsed.protocol === originURL.protocol &&
+            parsed.host === originURL.host);
+      };
+    })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+    (function nonStandardBrowserEnv() {
+      return function isURLSameOrigin() {
+        return true;
+      };
+    })()
+);
+
+var cookies = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs support document.cookie
+    (function standardBrowserEnv() {
+      return {
+        write: function write(name, value, expires, path, domain, secure) {
+          var cookie = [];
+          cookie.push(name + '=' + encodeURIComponent(value));
+
+          if (utils.isNumber(expires)) {
+            cookie.push('expires=' + new Date(expires).toGMTString());
+          }
+
+          if (utils.isString(path)) {
+            cookie.push('path=' + path);
+          }
+
+          if (utils.isString(domain)) {
+            cookie.push('domain=' + domain);
+          }
+
+          if (secure === true) {
+            cookie.push('secure');
+          }
+
+          document.cookie = cookie.join('; ');
+        },
+
+        read: function read(name) {
+          var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+          return (match ? decodeURIComponent(match[3]) : null);
+        },
+
+        remove: function remove(name) {
+          this.write(name, '', Date.now() - 86400000);
+        }
+      };
+    })() :
+
+  // Non standard browser env (web workers, react-native) lack needed support.
+    (function nonStandardBrowserEnv() {
+      return {
+        write: function write() {},
+        read: function read() { return null; },
+        remove: function remove() {}
+      };
+    })()
+);
+
+var xhr = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password || '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    var fullPath = buildFullPath(config.baseURL, config.url);
+    request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    // Listen for ready state
+    request.onreadystatechange = function handleLoad() {
+      if (!request || request.readyState !== 4) {
+        return;
+      }
+
+      // The request errored out and we didn't get a response, this will be
+      // handled by onerror instead
+      // With one exception: request that using file: protocol, most browsers
+      // will return status as 0 even though it's a successful request
+      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+        return;
+      }
+
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
+      var response = {
+        data: responseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle browser request cancellation (as opposed to a manual cancellation)
+    request.onabort = function handleAbort() {
+      if (!request) {
+        return;
+      }
+
+      reject(createError('Request aborted', config, 'ECONNABORTED', request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config, null, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      var timeoutErrorMessage = 'timeout of ' + config.timeout + 'ms exceeded';
+      if (config.timeoutErrorMessage) {
+        timeoutErrorMessage = config.timeoutErrorMessage;
+      }
+      reject(createError(timeoutErrorMessage, config, 'ECONNABORTED',
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      var cookies$1 = cookies;
+
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
+        cookies$1.read(config.xsrfCookieName) :
+        undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (!utils.isUndefined(config.withCredentials)) {
+      request.withCredentials = !!config.withCredentials;
+    }
+
+    // Add responseType to request if needed
+    if (config.responseType) {
+      try {
+        request.responseType = config.responseType;
+      } catch (e) {
+        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
+        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
+        if (config.responseType !== 'json') {
+          throw e;
+        }
+      }
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
+
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
+
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+      });
+    }
+
+    if (requestData === undefined) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
 };
 
 /**
@@ -21004,12 +21392,11 @@ var browser_5 = browser.useColors;
 var browser_6 = browser.storage;
 var browser_7 = browser.colors;
 
-var hasFlag = (flag, argv) => {
-	argv = argv || process.argv;
+var hasFlag = (flag, argv = process.argv) => {
 	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
-	const pos = argv.indexOf(prefix + flag);
-	const terminatorPos = argv.indexOf('--');
-	return pos !== -1 && (terminatorPos === -1 ? true : pos < terminatorPos);
+	const position = argv.indexOf(prefix + flag);
+	const terminatorPosition = argv.indexOf('--');
+	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
 };
 
 const {env} = process;
@@ -21026,10 +21413,11 @@ if (hasFlag('no-color') ||
 	hasFlag('color=always')) {
 	forceColor = 1;
 }
+
 if ('FORCE_COLOR' in env) {
-	if (env.FORCE_COLOR === true || env.FORCE_COLOR === 'true') {
+	if (env.FORCE_COLOR === 'true') {
 		forceColor = 1;
-	} else if (env.FORCE_COLOR === false || env.FORCE_COLOR === 'false') {
+	} else if (env.FORCE_COLOR === 'false') {
 		forceColor = 0;
 	} else {
 		forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
@@ -21049,7 +21437,7 @@ function translateLevel(level) {
 	};
 }
 
-function supportsColor(stream) {
+function supportsColor(haveStream, streamIsTTY) {
 	if (forceColor === 0) {
 		return 0;
 	}
@@ -21064,7 +21452,7 @@ function supportsColor(stream) {
 		return 2;
 	}
 
-	if (stream && !stream.isTTY && forceColor === undefined) {
+	if (haveStream && !streamIsTTY && forceColor === undefined) {
 		return 0;
 	}
 
@@ -21075,15 +21463,10 @@ function supportsColor(stream) {
 	}
 
 	if (process.platform === 'win32') {
-		// Node.js 7.5.0 is the first version of Node.js to include a patch to
-		// libuv that enables 256 color output on Windows. Anything earlier and it
-		// won't work. However, here we target Node.js 8 at minimum as it is an LTS
-		// release, and Node.js 7 is not. Windows 10 build 10586 is the first Windows
-		// release that supports 256 colors. Windows 10 build 14931 is the first release
-		// that supports 16m/TrueColor.
+		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
+		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
 		const osRelease = os.release().split('.');
 		if (
-			Number(process.versions.node.split('.')[0]) >= 8 &&
 			Number(osRelease[0]) >= 10 &&
 			Number(osRelease[2]) >= 10586
 		) {
@@ -21103,6 +21486,10 @@ function supportsColor(stream) {
 
 	if ('TEAMCITY_VERSION' in env) {
 		return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
+	}
+
+	if ('GITHUB_ACTIONS' in env) {
+		return 1;
 	}
 
 	if (env.COLORTERM === 'truecolor') {
@@ -21137,14 +21524,14 @@ function supportsColor(stream) {
 }
 
 function getSupportLevel(stream) {
-	const level = supportsColor(stream);
+	const level = supportsColor(stream, stream && stream.isTTY);
 	return translateLevel(level);
 }
 
 var supportsColor_1 = {
 	supportsColor: getSupportLevel,
-	stdout: getSupportLevel(process.stdout),
-	stderr: getSupportLevel(process.stderr)
+	stdout: translateLevel(supportsColor(true, tty.isatty(1))),
+	stderr: translateLevel(supportsColor(true, tty.isatty(2)))
 };
 
 var node = createCommonjsModule(function (module, exports) {
@@ -21678,7 +22065,7 @@ var wrap_1 = wrap;
 followRedirects.wrap = wrap_1;
 
 var name = "axios";
-var version = "0.19.0";
+var version = "0.19.2";
 var description = "Promise based HTTP client for the browser and node.js";
 var main = "index.js";
 var scripts = {
@@ -21751,8 +22138,7 @@ var browser$1 = {
 };
 var typings = "./index.d.ts";
 var dependencies = {
-	"follow-redirects": "1.5.10",
-	"is-buffer": "^2.0.2"
+	"follow-redirects": "1.5.10"
 };
 var bundlesize = [
 	{
@@ -21815,13 +22201,10 @@ var isHttps = /https:?/;
 /*eslint consistent-return:0*/
 var http_1$1 = function httpAdapter(config) {
   return new Promise(function dispatchHttpRequest(resolvePromise, rejectPromise) {
-    var timer;
     var resolve = function resolve(value) {
-      clearTimeout(timer);
       resolvePromise(value);
     };
     var reject = function reject(value) {
-      clearTimeout(timer);
       rejectPromise(value);
     };
     var data = config.data;
@@ -21859,7 +22242,8 @@ var http_1$1 = function httpAdapter(config) {
     }
 
     // Parse url
-    var parsed = url.parse(config.url);
+    var fullPath = buildFullPath(config.baseURL, config.url);
+    var parsed = url.parse(fullPath);
     var protocol = parsed.protocol || 'http:';
 
     if (!auth && parsed.auth) {
@@ -21881,6 +22265,7 @@ var http_1$1 = function httpAdapter(config) {
       method: config.method.toUpperCase(),
       headers: headers,
       agent: agent,
+      agents: { http: config.httpAgent, https: config.httpsAgent },
       auth: auth
     };
 
@@ -21913,8 +22298,7 @@ var http_1$1 = function httpAdapter(config) {
               return true;
             }
             if (proxyElement[0] === '.' &&
-                parsed.hostname.substr(parsed.hostname.length - proxyElement.length) === proxyElement &&
-                proxyElement.match(/\./g).length === parsed.hostname.match(/\./g).length) {
+                parsed.hostname.substr(parsed.hostname.length - proxyElement.length) === proxyElement) {
               return true;
             }
 
@@ -22042,10 +22426,15 @@ var http_1$1 = function httpAdapter(config) {
 
     // Handle request timeout
     if (config.timeout) {
-      timer = setTimeout(function handleRequestTimeout() {
+      // Sometime, the response will be very slow, and does not respond, the connect event will be block by event loop system.
+      // And timer callback will be fired, and abort() will be invoked before connection, then get "socket hang up" and code ECONNRESET.
+      // At this time, if we have a large number of request, nodejs will hang up some socket on background. and the number will up and up.
+      // And then these socket which be hang up will devoring CPU little by little.
+      // ClientRequest.setTimeout will be fired on the specify milliseconds, and can make sure that abort() will be fired after connect.
+      req.setTimeout(config.timeout, function handleRequestTimeout() {
         req.abort();
         reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED', req));
-      }, config.timeout);
+      });
     }
 
     if (config.cancelToken) {
@@ -22069,337 +22458,6 @@ var http_1$1 = function httpAdapter(config) {
   });
 };
 
-// Headers whose duplicates are ignored by node
-// c.f. https://nodejs.org/api/http.html#http_message_headers
-var ignoreDuplicateOf = [
-  'age', 'authorization', 'content-length', 'content-type', 'etag',
-  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
-  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
-  'referer', 'retry-after', 'user-agent'
-];
-
-/**
- * Parse headers into an object
- *
- * ```
- * Date: Wed, 27 Aug 2014 08:58:49 GMT
- * Content-Type: application/json
- * Connection: keep-alive
- * Transfer-Encoding: chunked
- * ```
- *
- * @param {String} headers Headers needing to be parsed
- * @returns {Object} Headers parsed into an object
- */
-var parseHeaders = function parseHeaders(headers) {
-  var parsed = {};
-  var key;
-  var val;
-  var i;
-
-  if (!headers) { return parsed; }
-
-  utils.forEach(headers.split('\n'), function parser(line) {
-    i = line.indexOf(':');
-    key = utils.trim(line.substr(0, i)).toLowerCase();
-    val = utils.trim(line.substr(i + 1));
-
-    if (key) {
-      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
-        return;
-      }
-      if (key === 'set-cookie') {
-        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
-      } else {
-        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
-      }
-    }
-  });
-
-  return parsed;
-};
-
-var isURLSameOrigin = (
-  utils.isStandardBrowserEnv() ?
-
-  // Standard browser envs have full support of the APIs needed to test
-  // whether the request URL is of the same origin as current location.
-    (function standardBrowserEnv() {
-      var msie = /(msie|trident)/i.test(navigator.userAgent);
-      var urlParsingNode = document.createElement('a');
-      var originURL;
-
-      /**
-    * Parse a URL to discover it's components
-    *
-    * @param {String} url The URL to be parsed
-    * @returns {Object}
-    */
-      function resolveURL(url) {
-        var href = url;
-
-        if (msie) {
-        // IE needs attribute set twice to normalize properties
-          urlParsingNode.setAttribute('href', href);
-          href = urlParsingNode.href;
-        }
-
-        urlParsingNode.setAttribute('href', href);
-
-        // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-        return {
-          href: urlParsingNode.href,
-          protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
-          host: urlParsingNode.host,
-          search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
-          hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
-          hostname: urlParsingNode.hostname,
-          port: urlParsingNode.port,
-          pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
-            urlParsingNode.pathname :
-            '/' + urlParsingNode.pathname
-        };
-      }
-
-      originURL = resolveURL(window.location.href);
-
-      /**
-    * Determine if a URL shares the same origin as the current location
-    *
-    * @param {String} requestURL The URL to test
-    * @returns {boolean} True if URL shares the same origin, otherwise false
-    */
-      return function isURLSameOrigin(requestURL) {
-        var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
-        return (parsed.protocol === originURL.protocol &&
-            parsed.host === originURL.host);
-      };
-    })() :
-
-  // Non standard browser envs (web workers, react-native) lack needed support.
-    (function nonStandardBrowserEnv() {
-      return function isURLSameOrigin() {
-        return true;
-      };
-    })()
-);
-
-var cookies = (
-  utils.isStandardBrowserEnv() ?
-
-  // Standard browser envs support document.cookie
-    (function standardBrowserEnv() {
-      return {
-        write: function write(name, value, expires, path, domain, secure) {
-          var cookie = [];
-          cookie.push(name + '=' + encodeURIComponent(value));
-
-          if (utils.isNumber(expires)) {
-            cookie.push('expires=' + new Date(expires).toGMTString());
-          }
-
-          if (utils.isString(path)) {
-            cookie.push('path=' + path);
-          }
-
-          if (utils.isString(domain)) {
-            cookie.push('domain=' + domain);
-          }
-
-          if (secure === true) {
-            cookie.push('secure');
-          }
-
-          document.cookie = cookie.join('; ');
-        },
-
-        read: function read(name) {
-          var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-          return (match ? decodeURIComponent(match[3]) : null);
-        },
-
-        remove: function remove(name) {
-          this.write(name, '', Date.now() - 86400000);
-        }
-      };
-    })() :
-
-  // Non standard browser env (web workers, react-native) lack needed support.
-    (function nonStandardBrowserEnv() {
-      return {
-        write: function write() {},
-        read: function read() { return null; },
-        remove: function remove() {}
-      };
-    })()
-);
-
-var xhr = function xhrAdapter(config) {
-  return new Promise(function dispatchXhrRequest(resolve, reject) {
-    var requestData = config.data;
-    var requestHeaders = config.headers;
-
-    if (utils.isFormData(requestData)) {
-      delete requestHeaders['Content-Type']; // Let the browser set it
-    }
-
-    var request = new XMLHttpRequest();
-
-    // HTTP basic authentication
-    if (config.auth) {
-      var username = config.auth.username || '';
-      var password = config.auth.password || '';
-      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
-    }
-
-    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
-
-    // Set the request timeout in MS
-    request.timeout = config.timeout;
-
-    // Listen for ready state
-    request.onreadystatechange = function handleLoad() {
-      if (!request || request.readyState !== 4) {
-        return;
-      }
-
-      // The request errored out and we didn't get a response, this will be
-      // handled by onerror instead
-      // With one exception: request that using file: protocol, most browsers
-      // will return status as 0 even though it's a successful request
-      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-        return;
-      }
-
-      // Prepare the response
-      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
-      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
-      var response = {
-        data: responseData,
-        status: request.status,
-        statusText: request.statusText,
-        headers: responseHeaders,
-        config: config,
-        request: request
-      };
-
-      settle(resolve, reject, response);
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle browser request cancellation (as opposed to a manual cancellation)
-    request.onabort = function handleAbort() {
-      if (!request) {
-        return;
-      }
-
-      reject(createError('Request aborted', config, 'ECONNABORTED', request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle low level network errors
-    request.onerror = function handleError() {
-      // Real errors are hidden from us by the browser
-      // onerror should only fire if it's a network error
-      reject(createError('Network Error', config, null, request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle timeout
-    request.ontimeout = function handleTimeout() {
-      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED',
-        request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Add xsrf header
-    // This is only done if running in a standard browser environment.
-    // Specifically not if we're in a web worker, or react-native.
-    if (utils.isStandardBrowserEnv()) {
-      var cookies$1 = cookies;
-
-      // Add xsrf header
-      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
-        cookies$1.read(config.xsrfCookieName) :
-        undefined;
-
-      if (xsrfValue) {
-        requestHeaders[config.xsrfHeaderName] = xsrfValue;
-      }
-    }
-
-    // Add headers to the request
-    if ('setRequestHeader' in request) {
-      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
-        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
-          // Remove Content-Type if data is undefined
-          delete requestHeaders[key];
-        } else {
-          // Otherwise add header to the request
-          request.setRequestHeader(key, val);
-        }
-      });
-    }
-
-    // Add withCredentials to request if needed
-    if (config.withCredentials) {
-      request.withCredentials = true;
-    }
-
-    // Add responseType to request if needed
-    if (config.responseType) {
-      try {
-        request.responseType = config.responseType;
-      } catch (e) {
-        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
-        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
-        if (config.responseType !== 'json') {
-          throw e;
-        }
-      }
-    }
-
-    // Handle progress if needed
-    if (typeof config.onDownloadProgress === 'function') {
-      request.addEventListener('progress', config.onDownloadProgress);
-    }
-
-    // Not all browsers support upload events
-    if (typeof config.onUploadProgress === 'function' && request.upload) {
-      request.upload.addEventListener('progress', config.onUploadProgress);
-    }
-
-    if (config.cancelToken) {
-      // Handle cancellation
-      config.cancelToken.promise.then(function onCanceled(cancel) {
-        if (!request) {
-          return;
-        }
-
-        request.abort();
-        reject(cancel);
-        // Clean up request
-        request = null;
-      });
-    }
-
-    if (requestData === undefined) {
-      requestData = null;
-    }
-
-    // Send the request
-    request.send(requestData);
-  });
-};
-
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
 };
@@ -22412,13 +22470,12 @@ function setContentTypeIfUnset(headers, value) {
 
 function getDefaultAdapter() {
   var adapter;
-  // Only Node.JS has a process variable that is of [[Class]] process
-  if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
-    // For node use HTTP adapter
-    adapter = http_1$1;
-  } else if (typeof XMLHttpRequest !== 'undefined') {
+  if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
     adapter = xhr;
+  } else if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+    // For node use HTTP adapter
+    adapter = http_1$1;
   }
   return adapter;
 }
@@ -22495,32 +22552,6 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 var defaults_1 = defaults;
 
 /**
- * Determines whether the specified URL is absolute
- *
- * @param {string} url The URL to test
- * @returns {boolean} True if the specified URL is absolute, otherwise false
- */
-var isAbsoluteURL = function isAbsoluteURL(url) {
-  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
-  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
-  // by any combination of letters, digits, plus, period, or hyphen.
-  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
-};
-
-/**
- * Creates a new URL by combining the specified URLs
- *
- * @param {string} baseURL The base URL
- * @param {string} relativeURL The relative URL
- * @returns {string} The combined URL
- */
-var combineURLs = function combineURLs(baseURL, relativeURL) {
-  return relativeURL
-    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
-    : baseURL;
-};
-
-/**
  * Throws a `Cancel` if cancellation has been requested.
  */
 function throwIfCancellationRequested(config) {
@@ -22538,11 +22569,6 @@ function throwIfCancellationRequested(config) {
 var dispatchRequest = function dispatchRequest(config) {
   throwIfCancellationRequested(config);
 
-  // Support baseURL config
-  if (config.baseURL && !isAbsoluteURL(config.url)) {
-    config.url = combineURLs(config.baseURL, config.url);
-  }
-
   // Ensure headers exist
   config.headers = config.headers || {};
 
@@ -22557,7 +22583,7 @@ var dispatchRequest = function dispatchRequest(config) {
   config.headers = utils.merge(
     config.headers.common || {},
     config.headers[config.method] || {},
-    config.headers || {}
+    config.headers
   );
 
   utils.forEach(
@@ -22611,13 +22637,23 @@ var mergeConfig = function mergeConfig(config1, config2) {
   config2 = config2 || {};
   var config = {};
 
-  utils.forEach(['url', 'method', 'params', 'data'], function valueFromConfig2(prop) {
+  var valueFromConfig2Keys = ['url', 'method', 'params', 'data'];
+  var mergeDeepPropertiesKeys = ['headers', 'auth', 'proxy'];
+  var defaultToConfig2Keys = [
+    'baseURL', 'url', 'transformRequest', 'transformResponse', 'paramsSerializer',
+    'timeout', 'withCredentials', 'adapter', 'responseType', 'xsrfCookieName',
+    'xsrfHeaderName', 'onUploadProgress', 'onDownloadProgress',
+    'maxContentLength', 'validateStatus', 'maxRedirects', 'httpAgent',
+    'httpsAgent', 'cancelToken', 'socketPath'
+  ];
+
+  utils.forEach(valueFromConfig2Keys, function valueFromConfig2(prop) {
     if (typeof config2[prop] !== 'undefined') {
       config[prop] = config2[prop];
     }
   });
 
-  utils.forEach(['headers', 'auth', 'proxy'], function mergeDeepProperties(prop) {
+  utils.forEach(mergeDeepPropertiesKeys, function mergeDeepProperties(prop) {
     if (utils.isObject(config2[prop])) {
       config[prop] = utils.deepMerge(config1[prop], config2[prop]);
     } else if (typeof config2[prop] !== 'undefined') {
@@ -22629,13 +22665,25 @@ var mergeConfig = function mergeConfig(config1, config2) {
     }
   });
 
-  utils.forEach([
-    'baseURL', 'transformRequest', 'transformResponse', 'paramsSerializer',
-    'timeout', 'withCredentials', 'adapter', 'responseType', 'xsrfCookieName',
-    'xsrfHeaderName', 'onUploadProgress', 'onDownloadProgress', 'maxContentLength',
-    'validateStatus', 'maxRedirects', 'httpAgent', 'httpsAgent', 'cancelToken',
-    'socketPath'
-  ], function defaultToConfig2(prop) {
+  utils.forEach(defaultToConfig2Keys, function defaultToConfig2(prop) {
+    if (typeof config2[prop] !== 'undefined') {
+      config[prop] = config2[prop];
+    } else if (typeof config1[prop] !== 'undefined') {
+      config[prop] = config1[prop];
+    }
+  });
+
+  var axiosKeys = valueFromConfig2Keys
+    .concat(mergeDeepPropertiesKeys)
+    .concat(defaultToConfig2Keys);
+
+  var otherKeys = Object
+    .keys(config2)
+    .filter(function filterAxiosKeys(key) {
+      return axiosKeys.indexOf(key) === -1;
+    });
+
+  utils.forEach(otherKeys, function otherKeysDefaultToConfig2(prop) {
     if (typeof config2[prop] !== 'undefined') {
       config[prop] = config2[prop];
     } else if (typeof config1[prop] !== 'undefined') {
@@ -22675,7 +22723,15 @@ Axios.prototype.request = function request(config) {
   }
 
   config = mergeConfig(this.defaults, config);
-  config.method = config.method ? config.method.toLowerCase() : 'get';
+
+  // Set config.method
+  if (config.method) {
+    config.method = config.method.toLowerCase();
+  } else if (this.defaults.method) {
+    config.method = this.defaults.method.toLowerCase();
+  } else {
+    config.method = 'get';
+  }
 
   // Hook up interceptors middleware
   var chain = [dispatchRequest, undefined];
@@ -22888,19 +22944,8 @@ var bank = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+
 /**
  * Helper functions to deal with the GNU Taler demo bank.
  *
@@ -22909,8 +22954,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Imports.
  */
-const axios_1 = __importDefault(axios$1);
-
+const axios_1 = tslib_1.__importDefault(axios$1);
+/**
+ * Generate a random alphanumeric ID.  Does *not* use cryptographically
+ * secure randomness.
+ */
 function makeId(length) {
     let result = "";
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -22919,17 +22967,23 @@ function makeId(length) {
     }
     return result;
 }
+/**
+ * Helper function to generate the "Authorization" HTTP header.
+ */
 function makeAuth(username, password) {
     const auth = `${username}:${password}`;
     const authEncoded = Buffer.from(auth).toString("base64");
     return `Basic ${authEncoded}`;
 }
+/**
+ * Client for the Taler bank access API.
+ */
 class Bank {
     constructor(bankBaseUrl) {
         this.bankBaseUrl = bankBaseUrl;
     }
     generateWithdrawUri(bankUser, amount) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const body = {
                 amount,
             };
@@ -22940,7 +22994,7 @@ class Bank {
                 data: body,
                 responseType: "json",
                 headers: {
-                    "Authorization": makeAuth(bankUser.username, bankUser.password),
+                    Authorization: makeAuth(bankUser.username, bankUser.password),
                 },
             });
             if (resp.status != 200) {
@@ -22954,14 +23008,13 @@ class Bank {
         });
     }
     createReserve(bankUser, amount, reservePub, exchangePaytoUri) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const reqUrl = new URL("api/withdraw-headless", this.bankBaseUrl).href;
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const reqUrl = new URL("testing/withdraw", this.bankBaseUrl).href;
             const body = {
-                auth: { type: "basic" },
                 username: bankUser,
                 amount,
                 reserve_pub: reservePub,
-                exchange_wire_detail: exchangePaytoUri,
+                exchange_payto_uri: exchangePaytoUri,
             };
             const resp = yield axios_1.default({
                 method: "post",
@@ -22969,7 +23022,7 @@ class Bank {
                 data: body,
                 responseType: "json",
                 headers: {
-                    "Authorization": makeAuth(bankUser.username, bankUser.password),
+                    Authorization: makeAuth(bankUser.username, bankUser.password),
                 },
             });
             if (resp.status != 200) {
@@ -22978,8 +23031,8 @@ class Bank {
         });
     }
     registerRandomUser() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const reqUrl = new URL("api/register", this.bankBaseUrl).href;
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const reqUrl = new URL("testing/register", this.bankBaseUrl).href;
             const randId = makeId(8);
             const bankUser = {
                 username: `testuser-${randId}`,
@@ -22988,7 +23041,7 @@ class Bank {
             const resp = yield axios_1.default({
                 method: "post",
                 url: reqUrl,
-                data: querystring.stringify(bankUser),
+                data: bankUser,
                 responseType: "json",
             });
             if (resp.status != 200) {
@@ -23008,7 +23061,7 @@ var bank_1 = bank.Bank;
 var cryptoImplementation = createCommonjsModule(function (module, exports) {
 /*
  This file is part of GNU Taler
- (C) 2019 GNUnet e.V.
+ (C) 2019-2020 Taler Systems SA
 
  TALER is free software; you can redistribute it and/or modify it under the
  terms of the GNU General Public License as published by the Free Software
@@ -23021,16 +23074,10 @@ var cryptoImplementation = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  TALER; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Amounts = __importStar(amounts);
-const timer$1 = __importStar(timer);
+
+
+const timer$1 = tslib_1.__importStar(timer);
 
 
 
@@ -23045,8 +23092,10 @@ var SignaturePurpose;
     SignaturePurpose[SignaturePurpose["WALLET_COIN_MELT"] = 1202] = "WALLET_COIN_MELT";
     SignaturePurpose[SignaturePurpose["TEST"] = 4242] = "TEST";
     SignaturePurpose[SignaturePurpose["MERCHANT_PAYMENT_OK"] = 1104] = "MERCHANT_PAYMENT_OK";
-    SignaturePurpose[SignaturePurpose["WALLET_COIN_PAYBACK"] = 1203] = "WALLET_COIN_PAYBACK";
+    SignaturePurpose[SignaturePurpose["WALLET_COIN_RECOUP"] = 1203] = "WALLET_COIN_RECOUP";
     SignaturePurpose[SignaturePurpose["WALLET_COIN_LINK"] = 1204] = "WALLET_COIN_LINK";
+    SignaturePurpose[SignaturePurpose["EXCHANGE_CONFIRM_RECOUP"] = 1039] = "EXCHANGE_CONFIRM_RECOUP";
+    SignaturePurpose[SignaturePurpose["EXCHANGE_CONFIRM_RECOUP_REFRESH"] = 1041] = "EXCHANGE_CONFIRM_RECOUP_REFRESH";
 })(SignaturePurpose || (SignaturePurpose = {}));
 function amountToBuffer(amount) {
     const buffer = new ArrayBuffer(8 + 4 + 12);
@@ -23059,10 +23108,11 @@ function amountToBuffer(amount) {
     u8buf.set(curr, 8 + 4);
     return u8buf;
 }
-function timestampToBuffer(ts) {
+function timestampRoundedToBuffer(ts) {
     const b = new ArrayBuffer(8);
     const v = new DataView(b);
-    const s = BigInt(ts.t_ms) * BigInt(1000);
+    const tsRounded = time.timestampTruncateToSecond(ts);
+    const s = BigInt(tsRounded.t_ms) * BigInt(1000);
     v.setBigUint64(0, s);
     return new Uint8Array(b);
 }
@@ -23077,13 +23127,13 @@ class SignaturePurposeBuilder {
     }
     build() {
         let payloadLen = 0;
-        for (let c of this.chunks) {
+        for (const c of this.chunks) {
             payloadLen += c.byteLength;
         }
         const buf = new ArrayBuffer(4 + 4 + payloadLen);
         const u8buf = new Uint8Array(buf);
         let p = 8;
-        for (let c of this.chunks) {
+        for (const c of this.chunks) {
             u8buf.set(c, p);
             p += c.byteLength;
         }
@@ -23097,8 +23147,6 @@ function buildSigPS(purposeNum) {
     return new SignaturePurposeBuilder(purposeNum);
 }
 class CryptoImplementation {
-    constructor() {
-    }
     /**
      * Create a pre-coin of the given denomination to be withdrawn from then given
      * reserve.
@@ -23111,7 +23159,7 @@ class CryptoImplementation {
         const blindingFactor = talerCrypto.createBlindingKeySecret();
         const coinPubHash = talerCrypto.hash(coinKeyPair.eddsaPub);
         const ev = talerCrypto.rsaBlind(coinPubHash, blindingFactor, denomPub);
-        const amountWithFee = Amounts.add(req.value, req.feeWithdraw).amount;
+        const amountWithFee = amounts.Amounts.add(req.value, req.feeWithdraw).amount;
         const denomPubHash = talerCrypto.hash(denomPub);
         const evHash = talerCrypto.hash(ev);
         const withdrawRequest = buildSigPS(SignaturePurpose.RESERVE_WITHDRAW)
@@ -23132,6 +23180,7 @@ class CryptoImplementation {
             denomPubHash: talerCrypto.encodeCrock(denomPubHash),
             reservePub: talerCrypto.encodeCrock(reservePub),
             withdrawSig: talerCrypto.encodeCrock(sig),
+            coinEvHash: talerCrypto.encodeCrock(evHash),
         };
         return planchet;
     }
@@ -23156,10 +23205,10 @@ class CryptoImplementation {
         return tipPlanchet;
     }
     /**
-     * Create and sign a message to request payback for a coin.
+     * Create and sign a message to recoup a coin.
      */
-    createPaybackRequest(coin) {
-        const p = buildSigPS(SignaturePurpose.WALLET_COIN_PAYBACK)
+    createRecoupRequest(coin) {
+        const p = buildSigPS(SignaturePurpose.WALLET_COIN_RECOUP)
             .put(talerCrypto.decodeCrock(coin.coinPub))
             .put(talerCrypto.decodeCrock(coin.denomPubHash))
             .put(talerCrypto.decodeCrock(coin.blindingKey))
@@ -23170,8 +23219,9 @@ class CryptoImplementation {
             coin_blind_key_secret: coin.blindingKey,
             coin_pub: coin.coinPub,
             coin_sig: talerCrypto.encodeCrock(coinSig),
-            denom_pub: coin.denomPub,
+            denom_pub_hash: coin.denomPubHash,
             denom_sig: coin.denomSig,
+            refreshed: coin.coinSource.type === "refresh" /* Refresh */,
         };
         return paybackRequest;
     }
@@ -23192,8 +23242,8 @@ class CryptoImplementation {
     isValidWireFee(type, wf, masterPub) {
         const p = buildSigPS(SignaturePurpose.MASTER_WIRE_FEES)
             .put(talerCrypto.hash(talerCrypto.stringToBytes(type + "\0")))
-            .put(timestampToBuffer(wf.startStamp))
-            .put(timestampToBuffer(wf.endStamp))
+            .put(timestampRoundedToBuffer(wf.startStamp))
+            .put(timestampRoundedToBuffer(wf.endStamp))
             .put(amountToBuffer(wf.wireFee))
             .put(amountToBuffer(wf.closingFee))
             .build();
@@ -23207,10 +23257,10 @@ class CryptoImplementation {
     isValidDenom(denom, masterPub) {
         const p = buildSigPS(SignaturePurpose.MASTER_DENOMINATION_KEY_VALIDITY)
             .put(talerCrypto.decodeCrock(masterPub))
-            .put(timestampToBuffer(denom.stampStart))
-            .put(timestampToBuffer(denom.stampExpireWithdraw))
-            .put(timestampToBuffer(denom.stampExpireDeposit))
-            .put(timestampToBuffer(denom.stampExpireLegal))
+            .put(timestampRoundedToBuffer(denom.stampStart))
+            .put(timestampRoundedToBuffer(denom.stampExpireWithdraw))
+            .put(timestampRoundedToBuffer(denom.stampExpireDeposit))
+            .put(timestampRoundedToBuffer(denom.stampExpireLegal))
             .put(amountToBuffer(denom.value))
             .put(amountToBuffer(denom.feeWithdraw))
             .put(amountToBuffer(denom.feeDeposit))
@@ -23224,9 +23274,7 @@ class CryptoImplementation {
     }
     isValidWireAccount(paytoUri, sig, masterPub) {
         const h = kdf_1.kdf(64, talerCrypto.stringToBytes("exchange-wire-signature"), talerCrypto.stringToBytes(paytoUri + "\0"), new Uint8Array(0));
-        const p = buildSigPS(SignaturePurpose.MASTER_WIRE_DETAILS)
-            .put(h)
-            .build();
+        const p = buildSigPS(SignaturePurpose.MASTER_WIRE_DETAILS).put(h).build();
         return talerCrypto.eddsaVerify(p, talerCrypto.decodeCrock(sig), talerCrypto.decodeCrock(masterPub));
     }
     /**
@@ -23260,8 +23308,8 @@ class CryptoImplementation {
         const d = buildSigPS(SignaturePurpose.WALLET_COIN_DEPOSIT)
             .put(talerCrypto.decodeCrock(depositInfo.contractTermsHash))
             .put(talerCrypto.decodeCrock(depositInfo.wireInfoHash))
-            .put(timestampToBuffer(depositInfo.timestamp))
-            .put(timestampToBuffer(depositInfo.refundDeadline))
+            .put(timestampRoundedToBuffer(depositInfo.timestamp))
+            .put(timestampRoundedToBuffer(depositInfo.refundDeadline))
             .put(amountToBuffer(depositInfo.spendAmount))
             .put(amountToBuffer(depositInfo.feeDeposit))
             .put(talerCrypto.decodeCrock(depositInfo.merchantPub))
@@ -23271,7 +23319,7 @@ class CryptoImplementation {
         const s = {
             coin_pub: depositInfo.coinPub,
             coin_sig: talerCrypto.encodeCrock(coinSig),
-            contribution: Amounts.toString(depositInfo.spendAmount),
+            contribution: amounts.Amounts.stringify(depositInfo.spendAmount),
             denom_pub: depositInfo.denomPub,
             exchange_url: depositInfo.exchangeBaseUrl,
             ub_sig: depositInfo.denomSig,
@@ -23282,13 +23330,13 @@ class CryptoImplementation {
      * Create a new refresh session.
      */
     createRefreshSession(exchangeBaseUrl, kappa, meltCoin, newCoinDenoms, meltFee) {
-        let valueWithFee = Amounts.getZero(newCoinDenoms[0].value.currency);
+        let valueWithFee = amounts.Amounts.getZero(newCoinDenoms[0].value.currency);
         for (const ncd of newCoinDenoms) {
-            valueWithFee = Amounts.add(valueWithFee, ncd.value, ncd.feeWithdraw)
+            valueWithFee = amounts.Amounts.add(valueWithFee, ncd.value, ncd.feeWithdraw)
                 .amount;
         }
         // melt fee
-        valueWithFee = Amounts.add(valueWithFee, meltFee).amount;
+        valueWithFee = amounts.Amounts.add(valueWithFee, meltFee).amount;
         const sessionHc = talerCrypto.createHashContext();
         const transferPubs = [];
         const transferPrivs = [];
@@ -23337,17 +23385,17 @@ class CryptoImplementation {
             .put(talerCrypto.decodeCrock(meltCoin.coinPub))
             .build();
         const confirmSig = talerCrypto.eddsaSign(confirmData, talerCrypto.decodeCrock(meltCoin.coinPriv));
-        let valueOutput = Amounts.getZero(newCoinDenoms[0].value.currency);
+        let valueOutput = amounts.Amounts.getZero(newCoinDenoms[0].value.currency);
         for (const denom of newCoinDenoms) {
-            valueOutput = Amounts.add(valueOutput, denom.value).amount;
+            valueOutput = amounts.Amounts.add(valueOutput, denom.value).amount;
         }
         const refreshSession = {
             confirmSig: talerCrypto.encodeCrock(confirmSig),
             exchangeBaseUrl,
             hash: talerCrypto.encodeCrock(sessionHash),
             meltCoinPub: meltCoin.coinPub,
-            newDenomHashes: newCoinDenoms.map(d => d.denomPubHash),
-            newDenoms: newCoinDenoms.map(d => d.denomPub),
+            newDenomHashes: newCoinDenoms.map((d) => d.denomPubHash),
+            newDenoms: newCoinDenoms.map((d) => d.denomPub),
             norevealIndex: undefined,
             planchetsForGammas: planchetsForGammas,
             transferPrivs,
@@ -23369,10 +23417,10 @@ class CryptoImplementation {
         return talerCrypto.encodeCrock(talerCrypto.hash(b));
     }
     /**
-     * Hash a denomination public key.
+     * Hash a crockford encoded value.
      */
-    hashDenomPub(denomPub) {
-        return talerCrypto.encodeCrock(talerCrypto.hash(talerCrypto.decodeCrock(denomPub)));
+    hashEncoded(encodedBytes) {
+        return talerCrypto.encodeCrock(talerCrypto.hash(talerCrypto.decodeCrock(encodedBytes)));
     }
     signCoinLink(oldCoinPriv, newDenomHash, oldCoinPub, transferPub, coinEv) {
         const coinEvHash = talerCrypto.hash(talerCrypto.decodeCrock(coinEv));
@@ -23403,7 +23451,7 @@ class CryptoImplementation {
         let time_eddsa_create = 0;
         for (let i = 0; i < repetitions; i++) {
             const start = timer$1.performanceNow();
-            const pair = talerCrypto.createEddsaKeyPair();
+            talerCrypto.createEddsaKeyPair();
             time_eddsa_create += timer$1.performanceNow() - start;
         }
         let time_eddsa_sign = 0;
@@ -23442,17 +23490,24 @@ unwrapExports(cryptoImplementation);
 var cryptoImplementation_1 = cryptoImplementation.CryptoImplementation;
 
 var nodeThreadWorker = createCommonjsModule(function (module, exports) {
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+/*
+ This file is part of TALER
+ (C) 2016 GNUnet e.V.
+
+ TALER is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ TALER is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ TALER; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 
+const os_1 = tslib_1.__importDefault(os);
 
 const f = __filename;
 const workerCode = `
@@ -23501,7 +23556,7 @@ function handleWorkerMessage(msg) {
         console.error("RPC operation must be string");
         return;
     }
-    const handleRequest = () => __awaiter(this, void 0, void 0, function* () {
+    const handleRequest = () => tslib_1.__awaiter(this, void 0, void 0, function* () {
         var _a;
         const impl = new cryptoImplementation.CryptoImplementation();
         if (!(operation in impl)) {
@@ -23510,6 +23565,7 @@ function handleWorkerMessage(msg) {
         }
         try {
             const result = impl[operation](...args);
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const worker_threads$1 = worker_threads;
             const p = worker_threads$1.parentPort;
             (_a = worker_threads$1.parentPort) === null || _a === void 0 ? void 0 : _a.postMessage;
@@ -23525,7 +23581,7 @@ function handleWorkerMessage(msg) {
             return;
         }
     });
-    handleRequest().catch(e => {
+    handleRequest().catch((e) => {
         console.error("error in node worker", e);
     });
 }
@@ -23542,7 +23598,7 @@ class NodeThreadCryptoWorkerFactory {
         return new NodeThreadCryptoWorker();
     }
     getConcurrency() {
-        return Math.max(1, os.cpus().length - 1);
+        return Math.max(1, os_1.default.cpus().length - 1);
     }
 }
 exports.NodeThreadCryptoWorkerFactory = NodeThreadCryptoWorkerFactory;
@@ -23551,6 +23607,7 @@ exports.NodeThreadCryptoWorkerFactory = NodeThreadCryptoWorkerFactory;
  */
 class NodeThreadCryptoWorker {
     constructor() {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const worker_threads$1 = worker_threads;
         this.nodeWorker = new worker_threads$1.Worker(workerCode, { eval: true });
         this.nodeWorker.on("error", (err) => {
@@ -23653,9 +23710,9 @@ class OriginState {
             throw Error("assertion failed");
         }
         const d_s = d.d_ms / 1000;
-        this.tokensSecond = Math.min(MAX_PER_SECOND, this.tokensSecond + (d_s / 1000));
-        this.tokensMinute = Math.min(MAX_PER_MINUTE, this.tokensMinute + (d_s / 1000 * 60));
-        this.tokensHour = Math.min(MAX_PER_HOUR, this.tokensHour + (d_s / 1000 * 60 * 60));
+        this.tokensSecond = Math.min(MAX_PER_SECOND, this.tokensSecond + d_s / 1000);
+        this.tokensMinute = Math.min(MAX_PER_MINUTE, this.tokensMinute + (d_s / 1000) * 60);
+        this.tokensHour = Math.min(MAX_PER_HOUR, this.tokensHour + (d_s / 1000) * 60 * 60);
         this.lastUpdate = now;
     }
     /**
@@ -23701,7 +23758,7 @@ class RequestThrottler {
         if (s) {
             return s;
         }
-        const ns = this.perOriginInfo[origin] = new OriginState();
+        const ns = (this.perOriginInfo[origin] = new OriginState());
         return ns;
     }
     /**
@@ -23739,22 +23796,14 @@ var NodeHttpLib_1 = createCommonjsModule(function (module, exports) {
 
  SPDX-License-Identifier: AGPL3.0-or-later
 */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 
+/**
+ * Imports.
+ */
 
-const axios_1 = __importDefault(axios$1);
+
+const axios_1 = tslib_1.__importDefault(axios$1);
 /**
  * Implementation of the HTTP request library interface for node.
  */
@@ -23770,31 +23819,24 @@ class NodeHttpLib {
         this.throttlingEnabled = enabled;
     }
     req(method, url, body, opt) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (this.throttlingEnabled && this.throttle.applyThrottle(url)) {
                 throw Error("request throttled");
             }
-            let resp;
-            try {
-                resp = yield axios_1.default({
-                    method,
-                    url: url,
-                    responseType: "text",
-                    headers: (_a = opt) === null || _a === void 0 ? void 0 : _a.headers,
-                    validateStatus: () => true,
-                    transformResponse: (x) => x,
-                    data: body,
-                });
-            }
-            catch (e) {
-                throw e;
-            }
+            const resp = yield axios_1.default({
+                method,
+                url: url,
+                responseType: "text",
+                headers: opt === null || opt === void 0 ? void 0 : opt.headers,
+                validateStatus: () => true,
+                transformResponse: (x) => x,
+                data: body,
+            });
             const respText = resp.data;
             if (typeof respText !== "string") {
                 throw Error("unexpected response type");
             }
-            const makeJson = () => __awaiter(this, void 0, void 0, function* () {
+            const makeJson = () => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 let responseJson;
                 try {
                     responseJson = JSON.parse(respText);
@@ -23814,18 +23856,18 @@ class NodeHttpLib {
             return {
                 headers,
                 status: resp.status,
-                text: () => __awaiter(this, void 0, void 0, function* () { return resp.data; }),
+                text: () => tslib_1.__awaiter(this, void 0, void 0, function* () { return resp.data; }),
                 json: makeJson,
             };
         });
     }
     get(url, opt) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.req("get", url, undefined, opt);
         });
     }
     postJson(url, body, opt) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.req("post", url, body, opt);
         });
     }
@@ -23853,16 +23895,8 @@ var synchronousWorker = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+
 
 /**
  * The synchronous crypto worker produced by this factory doesn't run in the
@@ -23908,7 +23942,7 @@ class SynchronousCryptoWorker {
         }
     }
     handleRequest(operation, id, args) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const impl = new cryptoImplementation.CryptoImplementation();
             if (!(operation in impl)) {
                 console.error(`crypto operation '${operation}' not found`);
@@ -23923,7 +23957,7 @@ class SynchronousCryptoWorker {
                 return;
             }
             try {
-                setImmediate(() => this.dispatchMessage({ result, id }));
+                setTimeout(() => this.dispatchMessage({ result, id }), 0);
             }
             catch (e) {
                 console.log("got error during dispatch", e);
@@ -23949,7 +23983,7 @@ class SynchronousCryptoWorker {
             console.error("RPC operation must be string");
             return;
         }
-        this.handleRequest(operation, id, args).catch(e => {
+        this.handleRequest(operation, id, args).catch((e) => {
             console.error("Error while handling crypto request:", e);
         });
     }
@@ -23984,23 +24018,8 @@ var helpers$1 = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+
 /**
  * Helpers to create headless wallets.
  * @author Florian Dold <dold@taler.net>
@@ -24011,9 +24030,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 
 
-const amounts$1 = __importStar(amounts);
+const amounts$1 = tslib_1.__importStar(amounts);
 
-
+const fs_1 = tslib_1.__importDefault(fs);
 
 
 
@@ -24024,14 +24043,14 @@ const logger = new logging.Logger("helpers.ts");
  * Get a wallet instance with default settings for node.
  */
 function getDefaultNodeWallet(args = {}) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         build.BridgeIDBFactory.enableTracing = false;
         const myBackend = new build.MemoryBackend();
         myBackend.enableTracing = false;
         const storagePath = args.persistentStoragePath;
         if (storagePath) {
             try {
-                const dbContentStr = fs.readFileSync(storagePath, {
+                const dbContentStr = fs_1.default.readFileSync(storagePath, {
                     encoding: "utf-8",
                 });
                 const dbContent = JSON.parse(dbContentStr);
@@ -24040,13 +24059,13 @@ function getDefaultNodeWallet(args = {}) {
             catch (e) {
                 console.error("could not read wallet file");
             }
-            myBackend.afterCommitCallback = () => __awaiter(this, void 0, void 0, function* () {
+            myBackend.afterCommitCallback = () => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 // Allow caller to stop persisting the wallet.
                 if (args.persistentStoragePath === undefined) {
                     return;
                 }
                 const dbContent = myBackend.exportDump();
-                fs.writeFileSync(storagePath, JSON.stringify(dbContent, undefined, 2), {
+                fs_1.default.writeFileSync(storagePath, JSON.stringify(dbContent, undefined, 2), {
                     encoding: "utf-8",
                 });
             });
@@ -24087,7 +24106,7 @@ function getDefaultNodeWallet(args = {}) {
 }
 exports.getDefaultNodeWallet = getDefaultNodeWallet;
 function withdrawTestBalance(myWallet, amount = "TESTKUDOS:10", bankBaseUrl = "https://bank.test.taler.net/", exchangeBaseUrl = "https://exchange.test.taler.net/") {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const reserveResponse = yield myWallet.createReserve({
             amount: amounts$1.parseOrThrow(amount),
             exchange: exchangeBaseUrl,
@@ -24101,9 +24120,13 @@ function withdrawTestBalance(myWallet, amount = "TESTKUDOS:10", bankBaseUrl = "h
             "x-taler-bank",
         ]);
         const donePromise = new Promise((resolve, reject) => {
-            myWallet.addNotificationListener(n => {
-                if (n.type === "reserve-depleted" /* ReserveDepleted */ &&
-                    n.reservePub === reservePub) {
+            myWallet.runRetryLoop().catch((x) => {
+                reject(x);
+            });
+            myWallet.addNotificationListener((n) => {
+                if (n.type === "withdraw-group-finished" /* WithdrawGroupFinished */ &&
+                    n.withdrawalSource.type === "reserve" /* Reserve */ &&
+                    n.withdrawalSource.reservePub === reservePub) {
                     resolve();
                 }
             });
@@ -24137,19 +24160,11 @@ var android = createCommonjsModule(function (module, exports) {
  You should have received a copy of the GNU General Public License along with
  GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
-var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 
 
 
+const fs_1 = tslib_1.__importDefault(fs);
 
 
 // @ts-ignore: special built-in module
@@ -24213,8 +24228,8 @@ class AndroidHttpLib {
             const resp = {
                 headers,
                 status: msg.status,
-                json: () => __awaiter(this, void 0, void 0, function* () { return JSON.parse(msg.responseText); }),
-                text: () => __awaiter(this, void 0, void 0, function* () { return msg.responseText; }),
+                json: () => tslib_1.__awaiter(this, void 0, void 0, function* () { return JSON.parse(msg.responseText); }),
+                text: () => tslib_1.__awaiter(this, void 0, void 0, function* () { return msg.responseText; }),
             };
             p.resolve(resp);
         }
@@ -24238,19 +24253,19 @@ class AndroidWalletMessageHandler {
      * Handle a request from the Android wallet.
      */
     handleMessage(operation, id, args) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             switch (operation) {
                 case "init": {
                     this.walletArgs = {
-                        notifyHandler: () => __awaiter(this, void 0, void 0, function* () {
-                            sendAkonoMessage(JSON.stringify({ type: "notification" }));
+                        notifyHandler: (notification) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                            sendAkonoMessage(JSON.stringify({ type: "notification", payload: notification }));
                         }),
                         persistentStoragePath: args.persistentStoragePath,
                         httpLib: this.httpLib,
                     };
                     const w = yield helpers$1.getDefaultNodeWallet(this.walletArgs);
                     this.maybeWallet = w;
-                    w.runRetryLoop().catch(e => {
+                    w.runRetryLoop().catch((e) => {
                         console.error("Error during wallet retry loop", e);
                     });
                     this.wp.resolve(w);
@@ -24314,6 +24329,10 @@ class AndroidWalletMessageHandler {
                     const wallet = yield this.wp.promise;
                     return yield wallet.getWithdrawDetailsForUri(args.talerWithdrawUri, args.selectedExchange);
                 }
+                case "applyRefund": {
+                    const wallet = yield this.wp.promise;
+                    return yield wallet.applyRefund(args.talerRefundUri);
+                }
                 case "acceptExchangeTermsOfService": {
                     const wallet = yield this.wp.promise;
                     return yield wallet.acceptExchangeTermsOfService(args.exchangeBaseUrl, args.etag);
@@ -24327,7 +24346,7 @@ class AndroidWalletMessageHandler {
                     this.walletArgs = Object.assign({}, oldArgs);
                     if (oldArgs && oldArgs.persistentStoragePath) {
                         try {
-                            fs.unlinkSync(oldArgs.persistentStoragePath);
+                            fs_1.default.unlinkSync(oldArgs.persistentStoragePath);
                         }
                         catch (e) {
                             console.error("Error while deleting the wallet db:", e);
@@ -24341,7 +24360,7 @@ class AndroidWalletMessageHandler {
                     this.maybeWallet = undefined;
                     const w = yield helpers$1.getDefaultNodeWallet(this.walletArgs);
                     this.maybeWallet = w;
-                    w.runRetryLoop().catch(e => {
+                    w.runRetryLoop().catch((e) => {
                         console.error("Error during wallet retry loop", e);
                     });
                     this.wp.resolve(w);
@@ -24362,7 +24381,7 @@ function installAndroidWalletListener() {
         throw new Error(errMsg);
     }
     const handler = new AndroidWalletMessageHandler();
-    const onMessage = (msgStr) => __awaiter(this, void 0, void 0, function* () {
+    const onMessage = (msgStr) => tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (typeof msgStr !== "string") {
             console.error("expected string as message");
             return;
@@ -24378,7 +24397,13 @@ function installAndroidWalletListener() {
         try {
             const result = yield handler.handleMessage(operation, id, msg.args);
             console.log(`android listener: sending success response for ${operation} (${id})`);
-            const respMsg = { type: "response", id, operation, isError: false, result };
+            const respMsg = {
+                type: "response",
+                id,
+                operation,
+                isError: false,
+                result,
+            };
             sendMessage(JSON.stringify(respMsg));
         }
         catch (e) {
